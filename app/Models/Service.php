@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['service_category_id', 'name', 'short_description', 'icon', 'is_featured', 'sort_order'])]
+#[Fillable(['service_category_id', 'featured_media_id', 'name', 'short_description', 'icon', 'is_featured', 'sort_order'])]
 class Service extends Model
 {
     /** @use HasFactory<ServiceFactory> */
@@ -28,6 +28,11 @@ class Service extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(ServiceCategory::class, 'service_category_id');
+    }
+
+    public function featuredMedia(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'featured_media_id');
     }
 
     public function areas(): BelongsToMany

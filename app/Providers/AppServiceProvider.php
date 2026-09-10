@@ -3,17 +3,67 @@
 namespace App\Providers;
 
 use App\Models\Area;
+use App\Models\AreaGroup;
 use App\Models\Article;
+use App\Models\ArticleCategory;
+use App\Models\Faq;
+use App\Models\Lead;
+use App\Models\Media;
 use App\Models\Offer;
+use App\Models\Page;
 use App\Models\Project;
+use App\Models\Redirect;
 use App\Models\Service;
+use App\Models\ServiceCategory;
+use App\Models\Testimonial;
 use App\Models\User;
+use App\Policies\AreaGroupPolicy;
+use App\Policies\AreaPolicy;
+use App\Policies\ArticleCategoryPolicy;
+use App\Policies\ArticlePolicy;
+use App\Policies\FaqPolicy;
+use App\Policies\LeadPolicy;
+use App\Policies\MediaPolicy;
+use App\Policies\OfferPolicy;
+use App\Policies\PagePolicy;
+use App\Policies\ProjectPolicy;
+use App\Policies\RedirectPolicy;
+use App\Policies\RolePolicy;
+use App\Policies\ServiceCategoryPolicy;
+use App\Policies\ServicePolicy;
+use App\Policies\TestimonialPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Permission\Models\Role;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * Model => Policy map. Registered explicitly (rather than relying on
+     * Laravel's App\Models-only auto-discovery) so it stays correct even
+     * for Role, which lives outside our namespace.
+     */
+    private const POLICIES = [
+        Page::class => PagePolicy::class,
+        Service::class => ServicePolicy::class,
+        ServiceCategory::class => ServiceCategoryPolicy::class,
+        Area::class => AreaPolicy::class,
+        AreaGroup::class => AreaGroupPolicy::class,
+        Project::class => ProjectPolicy::class,
+        Article::class => ArticlePolicy::class,
+        ArticleCategory::class => ArticleCategoryPolicy::class,
+        Offer::class => OfferPolicy::class,
+        Faq::class => FaqPolicy::class,
+        Testimonial::class => TestimonialPolicy::class,
+        Media::class => MediaPolicy::class,
+        Lead::class => LeadPolicy::class,
+        Redirect::class => RedirectPolicy::class,
+        User::class => UserPolicy::class,
+        Role::class => RolePolicy::class,
+    ];
+
     /**
      * Register any application services.
      */
@@ -41,6 +91,15 @@ class AppServiceProvider extends ServiceProvider
             'offer' => Offer::class,
             'user' => User::class,
         ]);
+
+        foreach (self::POLICIES as $model => $policy) {
+            Gate::policy($model, $policy);
+        }
+
+        // BusinessProfile and SiteSettings are singleton settings screens, not
+        // list-based resources: each is gated by its own manage_* permission,
+        // checked directly via $user->can() in the page class - no Policy or
+        // Gate::define needed for a single-record settings screen.
 
         // Super Admin bypasses every Policy/Gate check outright.
         Gate::before(fn ($user, string $ability) => $user->hasRole('Super Admin') ? true : null);

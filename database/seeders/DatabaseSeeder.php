@@ -16,11 +16,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(RoleSeeder::class);
+        $this->call(RolePermissionSeeder::class);
 
         $admin = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Local Admin (dev only)',
+            'email' => 'admin@vibecleanpro.test',
         ]);
         $admin->assignRole('Super Admin');
 

@@ -10,7 +10,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['name', 'phone', 'email', 'message', 'status', 'ip_address', 'user_agent'])]
+#[Fillable([
+    'source_page_id', 'service_id', 'area_id', 'name', 'phone', 'email', 'message', 'notes', 'status',
+    'ip_address', 'user_agent', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
+])]
 class Lead extends Model
 {
     /** @use HasFactory<LeadFactory> */

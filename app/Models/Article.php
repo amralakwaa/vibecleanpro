@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['article_category_id', 'featured_media_id', 'title', 'excerpt'])]
+#[Fillable(['article_category_id', 'featured_media_id', 'author_id', 'title', 'excerpt'])]
 class Article extends Model
 {
     /** @use HasFactory<ArticleFactory> */
@@ -25,6 +25,11 @@ class Article extends Model
     public function featuredMedia(): BelongsTo
     {
         return $this->belongsTo(Media::class, 'featured_media_id');
+    }
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'author_id');
     }
 
     public function services(): BelongsToMany

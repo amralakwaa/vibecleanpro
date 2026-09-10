@@ -6,6 +6,9 @@ enum LeadStatus: string
 {
     case New = 'new';
     case Contacted = 'contacted';
-    case Converted = 'converted';
-    case Closed = 'closed';
+    case Qualified = 'qualified';
+    case Quoted = 'quoted';
+    case Won = 'won';
+    case Lost = 'lost';
+    case Spam = 'spam';
 }

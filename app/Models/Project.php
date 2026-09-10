@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable(['area_id', 'title', 'summary', 'completed_at', 'is_featured', 'sort_order'])]
@@ -46,5 +47,15 @@ class Project extends Model
     public function mediaByStage(MediaStage $stage): BelongsToMany
     {
         return $this->media()->wherePivot('stage', $stage->value)->orderByPivot('sort_order');
+    }
+
+    /**
+     * Same data as media(), exposed as HasMany so Filament's Repeater can
+     * manage it (Repeater's relationship() integration needs HasMany/
+     * MorphMany, not BelongsToMany - see ProjectMedia).
+     */
+    public function projectMedia(): HasMany
+    {
+        return $this->hasMany(ProjectMedia::class)->orderBy('sort_order');
     }
 }
