@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['slug'])]
+#[Fillable(['page_id', 'slug'])]
 class SlugHistory extends Model
 {
     const UPDATED_AT = null;
+
+    protected $table = 'slug_history';
 
     public function page(): BelongsTo
     {

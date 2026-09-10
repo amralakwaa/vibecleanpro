@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'name', 'phone', 'whatsapp_number', 'email', 'address', 'city',
-    'latitude', 'longitude', 'working_hours', 'social_links',
+    'latitude', 'longitude', 'working_hours', 'social_links', 'logo_media_id',
 ])]
 class BusinessProfile extends Model
 {

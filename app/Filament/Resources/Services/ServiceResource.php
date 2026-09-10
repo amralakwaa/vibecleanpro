@@ -115,6 +115,7 @@ class ServiceResource extends Resource
                                         ->label('الحالة')
                                         ->options([
                                             PageStatus::Draft->value => 'مسودة',
+                                            PageStatus::Review->value => 'قيد المراجعة',
                                             PageStatus::Published->value => 'منشورة',
                                             PageStatus::Archived->value => 'مؤرشفة',
                                         ])

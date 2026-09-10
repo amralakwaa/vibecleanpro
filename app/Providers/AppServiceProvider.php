@@ -7,6 +7,7 @@ use App\Models\AreaGroup;
 use App\Models\Article;
 use App\Models\ArticleCategory;
 use App\Models\Faq;
+use App\Models\InternalLink;
 use App\Models\Lead;
 use App\Models\Media;
 use App\Models\Offer;
@@ -22,6 +23,7 @@ use App\Policies\AreaPolicy;
 use App\Policies\ArticleCategoryPolicy;
 use App\Policies\ArticlePolicy;
 use App\Policies\FaqPolicy;
+use App\Policies\InternalLinkPolicy;
 use App\Policies\LeadPolicy;
 use App\Policies\MediaPolicy;
 use App\Policies\OfferPolicy;
@@ -33,6 +35,7 @@ use App\Policies\ServiceCategoryPolicy;
 use App\Policies\ServicePolicy;
 use App\Policies\TestimonialPolicy;
 use App\Policies\UserPolicy;
+use App\Seo\DuplicateSimilarityAnalyzer;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -56,6 +59,7 @@ class AppServiceProvider extends ServiceProvider
         ArticleCategory::class => ArticleCategoryPolicy::class,
         Offer::class => OfferPolicy::class,
         Faq::class => FaqPolicy::class,
+        InternalLink::class => InternalLinkPolicy::class,
         Testimonial::class => TestimonialPolicy::class,
         Media::class => MediaPolicy::class,
         Lead::class => LeadPolicy::class,
@@ -69,7 +73,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Bound as a singleton so its in-request memoization actually works:
+        // PublishingGate resolves a similarity check per Area page it
+        // evaluates, and the SEO Dashboard evaluates every published page,
+        // so without a shared instance the O(n^2) scan would re-run once
+        // per page in the same request.
+        $this->app->singleton(DuplicateSimilarityAnalyzer::class);
     }
 
     /**

@@ -52,9 +52,10 @@ class DashboardStats extends BaseWidget
         }
 
         if (Auth::user()?->can('view_any_page')) {
-            $stats[] = Stat::make('مسودة / منشورة', sprintf(
-                '%d / %d',
+            $stats[] = Stat::make('مسودة / مراجعة / منشورة', sprintf(
+                '%d / %d / %d',
                 Page::query()->where('status', PageStatus::Draft)->count(),
+                Page::query()->where('status', PageStatus::Review)->count(),
                 Page::query()->where('status', PageStatus::Published)->count(),
             ))->icon(Heroicon::OutlinedDocumentText)->color('warning');
         }

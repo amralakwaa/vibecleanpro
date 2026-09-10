@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Enums\PageStatus;
 use App\Enums\PageType;
+use App\Observers\PageObserver;
 use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable(['type', 'title', 'slug', 'status', 'published_at', 'sort_order'])]
+#[ObservedBy(PageObserver::class)]
 class Page extends Model
 {
     /** @use HasFactory<PageFactory> */

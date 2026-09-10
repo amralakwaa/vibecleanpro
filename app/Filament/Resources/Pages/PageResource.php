@@ -10,6 +10,9 @@ use App\Filament\Resources\Pages\Pages\ListPages;
 use App\Filament\Support\ContentBlocks;
 use App\Filament\Support\MediaPicker;
 use App\Models\Page;
+use App\Seo\CanonicalResolver;
+use App\Seo\PageQualityScorer;
+use App\Seo\PublishingGate;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -104,6 +107,7 @@ class PageResource extends Resource
                         ->label('الحالة')
                         ->options([
                             PageStatus::Draft->value => 'مسودة',
+                            PageStatus::Review->value => 'قيد المراجعة',
                             PageStatus::Published->value => 'منشورة',
                             PageStatus::Archived->value => 'مؤرشفة',
                         ])
@@ -149,12 +153,48 @@ class PageResource extends Resource
                                     MediaPicker::make('og_image_media_id', 'صورة المشاركة (OG Image)'),
                                 ])
                                 ->columns(2),
+                            Placeholder::make('search_preview')
+                                ->label('')
+                                ->content(fn (Get $get, ?Page $record) => $record
+                                    ? view('filament.resources.pages.partials.search-preview', [
+                                        // Get() reflects live edits once the sibling
+                                        // fields have fired their own ->live() update,
+                                        // but on the form's very first render it is
+                                        // still empty even though the field itself is
+                                        // already filled from the database - fall back
+                                        // to the real saved value first, then the page
+                                        // title, so the preview is never wrong on load.
+                                        'title' => $get('meta_title') ?: $record->seoMetadata?->meta_title ?: $record->title,
+                                        'description' => $get('meta_description') ?: $record->seoMetadata?->meta_description,
+                                        'url' => app(CanonicalResolver::class)->resolve($record),
+                                    ])
+                                    : null)
+                                ->visible(fn (?Page $record) => $record !== null),
                         ]),
 
                     Tab::make('أقسام الصفحة')
                         ->icon('heroicon-o-squares-2x2')
                         ->schema([
                             ContentBlocks::field('content_blocks_builder'),
+                        ]),
+
+                    Tab::make('تدقيق SEO')
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->schema([
+                            Placeholder::make('quality_score')
+                                ->label('')
+                                ->content(fn (?Page $record) => $record
+                                    ? view('filament.resources.pages.partials.quality-score', [
+                                        'breakdown' => app(PageQualityScorer::class)->score($record->fresh(['contentBlocks', 'seoMetadata', 'pageable'])),
+                                    ])
+                                    : null),
+                            Placeholder::make('seo_audit')
+                                ->label('')
+                                ->content(fn (?Page $record) => $record
+                                    ? view('filament.resources.pages.partials.seo-audit', [
+                                        'result' => app(PublishingGate::class)->evaluate($record->fresh(['contentBlocks', 'seoMetadata', 'pageable'])),
+                                    ])
+                                    : null),
                         ]),
 
                     Tab::make('الأسئلة الشائعة')
@@ -189,11 +229,13 @@ class PageResource extends Resource
                 TextColumn::make('status')->label('الحالة')->badge()
                     ->formatStateUsing(fn (PageStatus $state) => match ($state) {
                         PageStatus::Draft => 'مسودة',
+                        PageStatus::Review => 'قيد المراجعة',
                         PageStatus::Published => 'منشورة',
                         PageStatus::Archived => 'مؤرشفة',
                     })
                     ->color(fn (PageStatus $state) => match ($state) {
                         PageStatus::Draft => 'gray',
+                        PageStatus::Review => 'info',
                         PageStatus::Published => 'success',
                         PageStatus::Archived => 'warning',
                     }),
@@ -210,6 +252,7 @@ class PageResource extends Resource
                     ->label('الحالة')
                     ->options([
                         PageStatus::Draft->value => 'مسودة',
+                        PageStatus::Review->value => 'قيد المراجعة',
                         PageStatus::Published->value => 'منشورة',
                         PageStatus::Archived->value => 'مؤرشفة',
                     ]),

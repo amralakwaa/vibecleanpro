@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['data'])]
+#[Fillable(['page_id', 'user_id', 'data'])]
 class PageRevision extends Model
 {
     const UPDATED_AT = null;

@@ -9,6 +9,16 @@
         "dev"
       ],
       "port": 5173
+    },
+    {
+      "name": "php-serve",
+      "runtimeExecutable": "C:/php84/php",
+      "runtimeArgs": [
+        "artisan",
+        "serve",
+        "--port=8000"
+      ],
+      "port": 8000
     }
   ]
 }

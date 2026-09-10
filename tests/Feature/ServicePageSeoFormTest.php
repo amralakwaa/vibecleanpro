@@ -43,7 +43,7 @@ class ServicePageSeoFormTest extends TestCase
                 'name' => 'صيانة وتنظيف السجاد',
                 'page.title' => 'صيانة وتنظيف السجاد بالرياض',
                 'page.slug' => 'carpet-cleaning-riyadh',
-                'page.status' => PageStatus::Published->value,
+                'page.status' => PageStatus::Draft->value,
                 'page.seoMetadata.meta_title' => 'تنظيف السجاد بالرياض | Vibe Clean Pro',
             ])
             ->call('create')
@@ -53,7 +53,7 @@ class ServicePageSeoFormTest extends TestCase
 
         $this->assertNotNull($service->page, 'Service was not linked to a Page.');
         $this->assertSame('carpet-cleaning-riyadh', $service->page->slug, 'Manual slug was overwritten by auto-generation.');
-        $this->assertSame(PageStatus::Published, $service->page->status);
+        $this->assertSame(PageStatus::Draft, $service->page->status);
 
         $this->assertNotNull($service->page->seoMetadata, 'Page was not linked to SeoMetadata.');
         $this->assertSame('تنظيف السجاد بالرياض | Vibe Clean Pro', $service->page->seoMetadata->meta_title);
@@ -73,7 +73,7 @@ class ServicePageSeoFormTest extends TestCase
             ->fillForm([
                 'name' => 'اسم محدث',
                 'page.title' => 'عنوان محدث',
-                'page.status' => PageStatus::Published->value,
+                'page.status' => PageStatus::Draft->value,
                 'page.seoMetadata.meta_title' => 'عنوان SEO محدث',
             ])
             ->call('save')
@@ -84,7 +84,7 @@ class ServicePageSeoFormTest extends TestCase
         $this->assertSame('اسم محدث', $service->name);
         $this->assertSame($page->id, $service->page->id, 'Editing created a second Page instead of updating the existing one.');
         $this->assertSame('عنوان محدث', $service->page->title);
-        $this->assertSame(PageStatus::Published, $service->page->status);
+        $this->assertSame(PageStatus::Draft, $service->page->status);
 
         $this->assertSame($seo->id, $service->page->seoMetadata->id, 'Editing created a second SeoMetadata row instead of updating the existing one.');
         $this->assertSame('عنوان SEO محدث', $service->page->seoMetadata->meta_title);

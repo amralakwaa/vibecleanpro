@@ -8,11 +8,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['anchor_text', 'context', 'sort_order'])]
+#[Fillable(['anchor_text', 'context', 'sort_order', 'is_active'])]
 class InternalLink extends Model
 {
     /** @use HasFactory<InternalLinkFactory> */
     use HasFactory;
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
+    }
 
     public function fromPage(): BelongsTo
     {

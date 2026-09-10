@@ -52,14 +52,35 @@ class EditPage extends EditRecord
         return $data;
     }
 
+    /**
+     * Rewrites content_blocks only when the submitted blocks actually
+     * differ from what's stored - both to avoid pointless writes on every
+     * save, and so pages.updated_at (touched by ContentBlock, see its
+     * #[Touches] attribute) only moves for a real content change, keeping
+     * the sitemap's lastmod meaningful.
+     */
     protected function afterSave(): void
     {
+        $incoming = collect(array_values($this->pendingContentBlocks))
+            ->map(fn (array $item) => ['type' => $item['type'], 'data' => $item['data'] ?? []])
+            ->all();
+
+        $current = $this->record->contentBlocks()
+            ->orderBy('position')
+            ->get(['type', 'data'])
+            ->map(fn ($block) => ['type' => $block->type, 'data' => $block->data ?? []])
+            ->all();
+
+        if ($incoming === $current) {
+            return;
+        }
+
         $this->record->contentBlocks()->delete();
 
-        foreach (array_values($this->pendingContentBlocks) as $position => $item) {
+        foreach ($incoming as $position => $item) {
             $this->record->contentBlocks()->create([
                 'type' => $item['type'],
-                'data' => $item['data'] ?? [],
+                'data' => $item['data'],
                 'position' => $position,
             ]);
         }

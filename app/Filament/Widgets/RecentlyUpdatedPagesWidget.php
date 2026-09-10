@@ -31,11 +31,13 @@ class RecentlyUpdatedPagesWidget extends TableWidget
                     ->formatStateUsing(fn (PageStatus $state) => match ($state) {
                         PageStatus::Published => 'منشورة',
                         PageStatus::Draft => 'مسودة',
+                        PageStatus::Review => 'قيد المراجعة',
                         PageStatus::Archived => 'مؤرشفة',
                     })
                     ->color(fn (PageStatus $state) => match ($state) {
                         PageStatus::Published => 'success',
                         PageStatus::Draft => 'gray',
+                        PageStatus::Review => 'info',
                         PageStatus::Archived => 'warning',
                     }),
                 TextColumn::make('updated_at')->label('آخر تعديل')->since(),

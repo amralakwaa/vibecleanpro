@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['action', 'auditable_type', 'auditable_id', 'changes', 'ip_address'])]
+#[Fillable(['user_id', 'action', 'auditable_type', 'auditable_id', 'changes', 'ip_address'])]
 class AuditLog extends Model
 {
     const UPDATED_AT = null;

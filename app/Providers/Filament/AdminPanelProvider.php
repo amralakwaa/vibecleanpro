@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Widgets\DashboardStats;
 use App\Filament\Widgets\LatestLeadsWidget;
 use App\Filament\Widgets\RecentlyUpdatedPagesWidget;
+use App\Filament\Widgets\SeoDashboardWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -50,6 +51,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
                 DashboardStats::class,
+                SeoDashboardWidget::class,
                 LatestLeadsWidget::class,
                 RecentlyUpdatedPagesWidget::class,
             ])

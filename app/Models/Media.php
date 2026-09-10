@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 
 #[Fillable(['disk', 'path', 'original_filename', 'mime_type', 'size', 'width', 'height', 'alt_text', 'caption', 'variants'])]
 class Media extends Model
@@ -20,6 +21,11 @@ class Media extends Model
         return [
             'variants' => 'array',
         ];
+    }
+
+    public function url(): string
+    {
+        return Storage::disk($this->disk)->url($this->path);
     }
 
     public function uploadedBy(): BelongsTo

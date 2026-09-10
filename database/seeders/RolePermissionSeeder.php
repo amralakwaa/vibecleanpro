@@ -22,13 +22,20 @@ class RolePermissionSeeder extends Seeder
      * Resources with plain CRUD only, no Trash.
      */
     private const PLAIN_RESOURCES = [
-        'user', 'role', 'service_category', 'area_group', 'article_category', 'faq', 'media', 'redirect',
+        'user', 'role', 'service_category', 'area_group', 'article_category', 'faq', 'media', 'redirect', 'internal_link',
     ];
 
     /**
      * Singleton settings screens: one manage_* permission each, no CRUD shape.
      */
     private const SINGLETON_RESOURCES = ['business_profile', 'site_settings'];
+
+    /**
+     * One standalone permission (not CRUD-shaped) for the sitewide SEO
+     * Dashboard - distinct from update_page, which already gates the
+     * per-page audit panel on the Page edit screen itself.
+     */
+    private const STANDALONE_PERMISSIONS = ['view_seo_dashboard'];
 
     /**
      * The editorial content resources (a subset of the two CRUD lists above)
@@ -71,6 +78,10 @@ class RolePermissionSeeder extends Seeder
         foreach (self::SINGLETON_RESOURCES as $resource) {
             Permission::findOrCreate("manage_{$resource}", 'web');
         }
+
+        foreach (self::STANDALONE_PERMISSIONS as $permission) {
+            Permission::findOrCreate($permission, 'web');
+        }
     }
 
     private function assignRolePermissions(): void
@@ -84,20 +95,25 @@ class RolePermissionSeeder extends Seeder
         $administrator->syncPermissions([
             ...$this->crud(self::CONTENT_RESOURCES, restore: true),
             ...$this->crud(['lead'], restore: true),
-            ...$this->crud(['redirect', 'user', 'role']),
+            ...$this->crud(['redirect', 'internal_link', 'user', 'role']),
             'manage_business_profile',
             'manage_site_settings',
+            'view_seo_dashboard',
         ]);
 
         $seoManager = Role::findOrCreate('SEO Manager', 'web');
         $seoManager->syncPermissions([
             ...$this->crud(['page'], restore: true),
-            ...$this->crud(['redirect']),
+            ...$this->crud(['redirect', 'internal_link']),
             'view_any_service', 'view_any_area', 'view_any_project', 'view_any_article', 'view_any_offer', 'view_any_media',
+            'view_seo_dashboard',
         ]);
 
         $contentManager = Role::findOrCreate('Content Manager', 'web');
-        $contentManager->syncPermissions($this->crud(self::CONTENT_RESOURCES));
+        $contentManager->syncPermissions([
+            ...$this->crud(self::CONTENT_RESOURCES),
+            ...$this->crud(['internal_link']),
+        ]);
 
         $projectManager = Role::findOrCreate('Project Manager', 'web');
         $projectManager->syncPermissions([
