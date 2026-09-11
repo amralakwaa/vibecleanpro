@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OfferAvailability;
 use App\Models\Area;
 use App\Models\BusinessProfile;
+use App\Models\Faq;
+use App\Models\Offer;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\Testimonial;
@@ -45,16 +48,57 @@ class HomeController extends Controller
             ->limit(8)
             ->get();
 
-        $projects = Project::query()
+        // Only projects that actually have both a "before" and an "after"
+        // photo qualify for the homepage showcase - a project with just one
+        // stage photographed has nothing to contrast, so it sits this
+        // section out rather than rendering a misleading half-pair.
+        $beforeAfterProjects = Project::query()
             ->whereHas('page', fn ($query) => $query->published())
-            ->with(['area', 'media'])
+            ->whereHas('media', fn ($query) => $query->where('project_media.stage', 'before'))
+            ->whereHas('media', fn ($query) => $query->where('project_media.stage', 'after'))
+            ->with(['area', 'services', 'media'])
             ->orderByDesc('is_featured')
             ->orderByDesc('completed_at')
             ->limit(3)
             ->get();
 
+        // Hero image priority: the featured project's "after" photo, then
+        // the most recently completed published project that has one -
+        // never a stock or invented image (see the Phase 3 report).
+        $heroProject = Project::query()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->whereHas('media', fn ($query) => $query->where('project_media.stage', 'after'))
+            ->with('media')
+            ->orderByDesc('is_featured')
+            ->orderByDesc('completed_at')
+            ->first();
+        $heroImage = $heroProject?->media->firstWhere('pivot.stage', 'after');
+
         $testimonials = Testimonial::query()
             ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit(6)
+            ->get();
+
+        // Same "currently reachable" rule as /offers (see
+        // OffersIndexController): expired offers never appear here.
+        $offers = Offer::query()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->where('is_active', true)
+            ->with('featuredMedia')
+            ->orderBy('sort_order')
+            ->get()
+            ->filter(fn (Offer $offer) => $offer->availability() !== OfferAvailability::Expired)
+            ->sortBy(fn (Offer $offer) => $offer->availability() === OfferAvailability::Active ? 0 : 1)
+            ->values()
+            ->take(3);
+
+        // Sitewide FAQs (page_id = null - the same scope the Filament FAQ
+        // resource already manages, see FaqResource::getEloquentQuery()),
+        // not any single page's FAQ block.
+        $faqs = Faq::query()
+            ->whereNull('page_id')
+            ->where('is_active', true)
             ->orderBy('sort_order')
             ->limit(6)
             ->get();
@@ -84,8 +128,11 @@ class HomeController extends Controller
             'businessProfile' => $profile,
             'services' => $services,
             'areas' => $areas,
-            'projects' => $projects,
+            'beforeAfterProjects' => $beforeAfterProjects,
+            'heroImage' => $heroImage,
             'testimonials' => $testimonials,
+            'offers' => $offers,
+            'faqs' => $faqs,
         ], 200);
     }
 }

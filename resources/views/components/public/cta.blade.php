@@ -6,9 +6,20 @@
 @props([
     'title',
     'description' => null,
+    'quoteUrl' => null,
     'whatsappUrl' => null,
     'phoneUrl' => null,
 ])
+
+@php
+    // Only one terracotta ("cta" variant) button per screen (see the
+    // design-system rules): when a quoteUrl is given it takes the accent
+    // slot as the primary action, and WhatsApp steps down to the same
+    // muted secondary style phone already uses. Without a quoteUrl (every
+    // pre-existing caller), WhatsApp keeps its original accent styling -
+    // fully backward compatible.
+    $secondaryClass = '!bg-white/10 !text-white !border-white/20 hover:!bg-white/20';
+@endphp
 
 <div {{ $attributes->class(['rounded-3xl bg-primary-900 text-white px-6 py-10 md:px-12 md:py-14 text-center']) }}>
     <h2 class="text-2xl md:text-3xl font-bold">{{ $title }}</h2>
@@ -17,17 +28,23 @@
         <p class="mt-3 text-primary-100 max-w-xl mx-auto">{{ $description }}</p>
     @endif
 
-    @if ($whatsappUrl || $phoneUrl)
+    @if ($quoteUrl || $whatsappUrl || $phoneUrl)
         <div class="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
+            @if ($quoteUrl)
+                <x-public.button href="{{ $quoteUrl }}" variant="cta" size="lg" icon="check-circle">
+                    طلب خدمة
+                </x-public.button>
+            @endif
+
             @if ($whatsappUrl)
-                <x-public.button href="{{ $whatsappUrl }}" external variant="cta" size="lg" icon="whatsapp">
+                <x-public.button href="{{ $whatsappUrl }}" external :variant="$quoteUrl ? 'secondary' : 'cta'" size="lg" icon="whatsapp"
+                    :class="$quoteUrl ? $secondaryClass : ''">
                     تواصل عبر واتساب
                 </x-public.button>
             @endif
 
             @if ($phoneUrl)
-                <x-public.button href="{{ $phoneUrl }}" variant="secondary" size="lg" icon="phone"
-                    class="!bg-white/10 !text-white !border-white/20 hover:!bg-white/20">
+                <x-public.button href="{{ $phoneUrl }}" variant="secondary" size="lg" icon="phone" :class="$secondaryClass">
                     اتصل بنا الآن
                 </x-public.button>
             @endif

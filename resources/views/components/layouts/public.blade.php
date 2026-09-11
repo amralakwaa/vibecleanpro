@@ -26,7 +26,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#1c7267">
+    <meta name="theme-color" content="#132A24">
 
     <title>{{ $seo->title }}</title>
     @if ($seo->metaDescription)

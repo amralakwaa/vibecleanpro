@@ -98,5 +98,17 @@
         @case('inbox')
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h4.13a2 2 0 0 1 1.79 1.11l.35.69a2 2 0 0 0 1.79 1.1h.38a2 2 0 0 0 1.79-1.1l.35-.69A2 2 0 0 1 16.12 12h4.13M3.75 12l1.32-5.52A1.5 1.5 0 0 1 6.53 5.25h10.94a1.5 1.5 0 0 1 1.46 1.23L20.25 12M3.75 12v5.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V12" />
             @break
+
+        @case('home')
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 4l7.5 6.5M6 9.25V19a.75.75 0 0 0 .75.75H10v-4.5a2 2 0 0 1 4 0v4.5h3.25a.75.75 0 0 0 .75-.75V9.25" />
+            @break
+
+        @case('building')
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 20.25V4.5a.75.75 0 0 1 .75-.75h8a.75.75 0 0 1 .75.75v15.75M5.25 20.25h13.5M14.75 20.25V13a.75.75 0 0 1 .75-.75h2.75a.75.75 0 0 1 .75.75v7.25M8.25 7.5h1.5m-1.5 3.5h1.5m-1.5 3.5h1.5" />
+            @break
+
+        @case('users')
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 11.25a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.5 19.25a5.5 5.5 0 0 1 11 0M15.5 6.6a3 3 0 0 1 0 5.66M18 13.4a5.48 5.48 0 0 1 3 4.85" />
+            @break
     @endswitch
 </svg>
