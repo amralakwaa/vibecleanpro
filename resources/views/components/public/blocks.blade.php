@@ -106,6 +106,30 @@
             @endif
             @break
 
+        @case('packages')
+            @php($items = $block->data['items'] ?? [])
+            @if (! empty($items))
+                <x-public.section tone="surface">
+                    @if (! empty($block->data['heading']))
+                        <x-public.section-header :title="$block->data['heading']" align="center" class="mb-10" />
+                    @endif
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+                        @foreach ($items as $item)
+                            @continue(empty($item['name']) || ! isset($item['price']))
+                            <x-public.service-package-card
+                                :name="$item['name']"
+                                :variant="$item['variant'] ?? null"
+                                :price="$item['price']"
+                                :previous-price="$item['previous_price'] ?? null"
+                                :included-items="array_values(array_filter(preg_split('/\r?\n/', (string) ($item['included_items'] ?? ''))))"
+                                :cta-url="$item['cta_url'] ?? null"
+                            />
+                        @endforeach
+                    </div>
+                </x-public.section>
+            @endif
+            @break
+
         @case('cta')
             <x-public.section>
                 <x-public.cta :title="$block->data['heading'] ?? ''" :whatsapp-url="$block->data['button_url'] ?? null" />

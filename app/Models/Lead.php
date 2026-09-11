@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
-    'source_page_id', 'service_id', 'area_id', 'name', 'phone', 'email', 'message', 'notes', 'status',
+    'source_page_id', 'landing_page', 'source', 'service_id', 'area_id', 'name', 'phone', 'email', 'message', 'notes', 'status',
     'ip_address', 'user_agent', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
 ])]
 class Lead extends Model

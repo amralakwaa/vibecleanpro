@@ -1,7 +1,7 @@
 @php
     use App\Seo\UrlResolver;
 
-    $whatsappUrl = $businessProfile?->whatsappUrl();
+    $whatsappUrl = $businessProfile?->whatsappUrl('مرحبًا، أرغب في الاستفسار عن خدماتكم');
     $phoneUrl = $businessProfile?->phoneUrl();
     $urlResolver = app(UrlResolver::class);
 @endphp
@@ -10,9 +10,17 @@
     <x-public.hero
         :heading="($businessProfile->name ?? config('app.name')).' لخدمات التنظيف الاحترافية بالرياض'"
         subheading="فريق مدرّب وأدوات احترافية لتنظيف منزلك أو منشأتك التجارية، بمواعيد موثوقة ونتيجة تدوم."
-        :cta-label="$whatsappUrl ? 'احجز عبر واتساب' : null"
-        :cta-url="$whatsappUrl"
-    />
+    >
+        <div class="mt-7 flex flex-col sm:flex-row items-center gap-3">
+            <x-public.button :href="route('public.quote')" variant="cta" size="lg" icon="check-circle">اطلب عرض سعر</x-public.button>
+            @if ($whatsappUrl)
+                <x-public.button :href="$whatsappUrl" external variant="secondary" size="lg" icon="whatsapp"
+                    class="!bg-white/10 !text-white !border-white/20 hover:!bg-white/20">
+                    واتساب
+                </x-public.button>
+            @endif
+        </div>
+    </x-public.hero>
 
     {{-- Trust strip: general, true statements only - no invented figures
          or certifications (see Phase 5 report, item 23). --}}
@@ -33,6 +41,11 @@
                     <x-public.service-card :service="$service" :url="$urlResolver->urlForPage($service->page)" />
                 @endforeach
             </div>
+            <div class="mt-8 text-center">
+                <x-public.button :href="route('public.services.index')" variant="text" icon-trailing="arrow-start">
+                    عرض جميع الخدمات
+                </x-public.button>
+            </div>
         @else
             <x-public.empty-state icon="sparkles" title="لم تُضَف خدمات منشورة بعد" />
         @endif
@@ -52,6 +65,11 @@
                     />
                 @endforeach
             </div>
+            <div class="mt-8 text-center">
+                <x-public.button :href="route('public.projects.index')" variant="text" icon-trailing="arrow-start">
+                    عرض جميع الأعمال
+                </x-public.button>
+            </div>
         @else
             <x-public.empty-state icon="briefcase" title="لم تُضَف مشاريع منشورة بعد" />
         @endif
@@ -65,6 +83,11 @@
                 @foreach ($areas as $area)
                     <x-public.area-card :area="$area" :url="$urlResolver->urlForPage($area->page)" :services-count="$area->services_count" />
                 @endforeach
+            </div>
+            <div class="mt-8 text-center">
+                <x-public.button :href="route('public.areas.index')" variant="text" icon-trailing="arrow-start">
+                    عرض جميع المناطق
+                </x-public.button>
             </div>
         @else
             <x-public.empty-state icon="map-pin" title="لم تُضَف مناطق منشورة بعد" />

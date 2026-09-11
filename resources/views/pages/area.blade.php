@@ -5,9 +5,10 @@
     projects proof, nearby areas, local FAQ, CTA.
 --}}
 @php
-    $whatsappUrl = $businessProfile?->whatsappUrl();
+    $whatsappUrl = $businessProfile?->whatsappUrl('مرحبًا، أرغب في طلب خدمة في '.$area->name);
     $phoneUrl = $businessProfile?->phoneUrl();
     $urlResolver = app(\App\Seo\UrlResolver::class);
+    $quoteUrl = route('public.quote', ['area' => $area->id]);
 @endphp
 
 <x-layouts.public :seo="$seo" :business-profile="$businessProfile">
@@ -18,6 +19,10 @@
                 <x-public.icon name="map-pin" class="w-4 h-4" /> منطقة تغطية
             </span>
             <h1 class="text-3xl md:text-4xl font-bold tracking-tight">{{ $page->title }}</h1>
+
+            <div class="mt-7">
+                <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle">اطلب عرض سعر</x-public.button>
+            </div>
         </x-public.container>
     </div>
 

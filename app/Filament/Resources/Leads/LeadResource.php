@@ -83,6 +83,16 @@ class LeadResource extends Resource
 
             Section::make('مصدر الطلب')
                 ->schema([
+                    Placeholder::make('source')
+                        ->label('نموذج الإرسال')
+                        ->content(fn (?Lead $record) => match ($record?->source) {
+                            'quote_form' => 'طلب عرض سعر',
+                            'contact_form' => 'نموذج التواصل',
+                            default => $record?->source ?? '—',
+                        }),
+                    Placeholder::make('landing_page')
+                        ->label('صفحة الدخول الأولى')
+                        ->content(fn (?Lead $record) => $record?->landing_page ?? '—'),
                     Placeholder::make('source_page_info')
                         ->label('الصفحة المصدر')
                         ->content(fn (?Lead $record) => $record?->sourcePage?->title ?? '—'),

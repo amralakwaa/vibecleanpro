@@ -6,6 +6,7 @@
     'error' => null,
     'help' => null,
     'required' => false,
+    'selected' => null,
 ])
 
 <div>
@@ -34,7 +35,7 @@
             @endif
 
             @foreach ($options as $value => $optionLabel)
-                <option value="{{ $value }}">{{ $optionLabel }}</option>
+                <option value="{{ $value }}" @selected((string) $selected === (string) $value)>{{ $optionLabel }}</option>
             @endforeach
         </select>
 

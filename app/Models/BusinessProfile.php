@@ -29,13 +29,20 @@ class BusinessProfile extends Model
 
     /**
      * wa.me only accepts digits - strips everything else (spaces, +, -)
-     * from whatever format an editor typed the number in.
+     * from whatever format an editor typed the number in. $message, when
+     * given, is a short prefilled greeting (e.g. "مرحبًا، أرغب في
+     * الاستفسار عن خدمة تنظيف السجاد") - always urlencoded here so no
+     * caller has to remember to do it.
      */
-    public function whatsappUrl(): ?string
+    public function whatsappUrl(?string $message = null): ?string
     {
-        return $this->whatsapp_number
-            ? 'https://wa.me/'.preg_replace('/\D/', '', $this->whatsapp_number)
-            : null;
+        if (! $this->whatsapp_number) {
+            return null;
+        }
+
+        $url = 'https://wa.me/'.preg_replace('/\D/', '', $this->whatsapp_number);
+
+        return $message ? $url.'?text='.rawurlencode($message) : $url;
     }
 
     public function phoneUrl(): ?string

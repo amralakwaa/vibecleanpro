@@ -154,15 +154,17 @@ class PublicFrontendTest extends TestCase
         $this->get('/admin')->assertRedirect('/admin/login');
     }
 
-    public function test_the_header_navigation_points_at_real_reachable_urls(): void
+    public function test_the_header_navigation_points_at_real_indexable_routes_not_homepage_anchors(): void
     {
         $html = $this->get('/')->getContent();
 
-        // Every nav link must at least resolve to a URL rooted at this
-        // app (never an external/placeholder domain) - see the Phase 5
-        // report's note on the header nav pointing at homepage anchors
-        // until dedicated listing routes exist.
-        $this->assertMatchesRegularExpression('~href="'.preg_quote(config('app.url'), '~').'#[a-z]+"~', $html);
+        // Phase 6 replaced the homepage-anchor placeholders with real
+        // listing routes (see the Phase 6 report, item 3) - the nav must
+        // never fall back to "#services"-style anchors again.
+        $this->assertStringNotContainsString('#services', $html);
+        $this->assertStringContainsString('href="'.route('public.services.index').'"', $html);
+        $this->assertStringContainsString('href="'.route('public.areas.index').'"', $html);
+        $this->assertStringContainsString('href="'.route('public.contact').'"', $html);
     }
 
     public function test_the_mobile_cta_bar_and_header_cta_are_absent_without_contact_details(): void

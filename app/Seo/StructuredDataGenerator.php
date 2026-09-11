@@ -173,7 +173,11 @@ class StructuredDataGenerator
             'provider' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],
         ]);
 
-        $areas = $service->relationLoaded('areas') ? $service->areas : $service->areas()->get();
+        // Only areas that are themselves real, reachable public
+        // destinations - never a Place naming a location our own site has
+        // no live page for (see the Phase 6 report: found via a test that
+        // caught an unpublished Area's name leaking into this JSON-LD).
+        $areas = $service->areas()->whereHas('page', fn ($query) => $query->published())->get();
 
         if ($areas->isNotEmpty()) {
             $data['areaServed'] = $areas->map(fn ($area) => [

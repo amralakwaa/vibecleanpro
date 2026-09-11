@@ -195,7 +195,26 @@ class PublicPageController extends Controller
     {
         /** @var Project $project */
         $project = $page->pageable;
-        $project->load(['area', 'media', 'services.page']);
+        $project->load(['area.page', 'media']);
+
+        // Only a genuinely reachable Area is ever linked - $project->area
+        // itself always renders as plain text (see pages/project.blade.php).
+        $areaPage = $project->area?->page;
+        $linkedArea = $areaPage && $areaPage->status === PageStatus::Published && (! $areaPage->published_at || $areaPage->published_at->isPast())
+            ? $project->area
+            : null;
+
+        $relatedServices = $project->services()->whereHas('page', fn ($query) => $query->published())->with('page')->get();
+
+        $relatedProjects = $project->area
+            ? Project::query()
+                ->whereKeyNot($project->id)
+                ->where('area_id', $project->area_id)
+                ->whereHas('page', fn ($query) => $query->published())
+                ->with(['media', 'page'])
+                ->limit(3)
+                ->get()
+            : collect();
 
         return response()->view('pages.project', [
             'page' => $page,
@@ -203,6 +222,9 @@ class PublicPageController extends Controller
             'businessProfile' => $businessProfile,
             'project' => $project,
             'faqs' => $faqs,
+            'linkedArea' => $linkedArea,
+            'relatedServices' => $relatedServices,
+            'relatedProjects' => $relatedProjects,
         ], 200);
     }
 
@@ -213,6 +235,37 @@ class PublicPageController extends Controller
         $article->load(['featuredMedia', 'category', 'author']);
 
         $related = $article->services()->whereHas('page', fn ($query) => $query->published())->with('page')->limit(3)->get();
+        $relatedAreas = $article->areas()->whereHas('page', fn ($query) => $query->published())->with('page')->limit(3)->get();
+
+        $relatedArticles = Article::query()
+            ->whereKeyNot($article->id)
+            ->whereHas('page', fn ($query) => $query->published())
+            ->when($article->article_category_id, fn ($query) => $query->where('article_category_id', $article->article_category_id))
+            ->with(['featuredMedia', 'category', 'page'])
+            ->limit(3)
+            ->get();
+
+        // No direct Article -> Project relation exists (and per the Phase
+        // 6 report, item 25, none is being added) - "related" projects
+        // here are purely inferred from the topics (Service/Area) this
+        // Article already shares real relations with, never stored.
+        $topicServiceIds = $article->services()->pluck('services.id');
+        $topicAreaIds = $article->areas()->pluck('areas.id');
+
+        $relatedProjects = ($topicServiceIds->isEmpty() && $topicAreaIds->isEmpty())
+            ? collect()
+            : Project::query()
+                ->whereHas('page', fn ($query) => $query->published())
+                ->where(function ($query) use ($topicServiceIds, $topicAreaIds) {
+                    $query->when($topicAreaIds->isNotEmpty(), fn ($q) => $q->whereIn('area_id', $topicAreaIds));
+                    $query->when($topicServiceIds->isNotEmpty(), fn ($q) => $q->orWhereHas(
+                        'services',
+                        fn ($sq) => $sq->whereIn('services.id', $topicServiceIds)
+                    ));
+                })
+                ->with(['media', 'page', 'area'])
+                ->limit(3)
+                ->get();
 
         return response()->view('pages.article', [
             'page' => $page,
@@ -221,6 +274,9 @@ class PublicPageController extends Controller
             'article' => $article,
             'faqs' => $faqs,
             'related' => $related,
+            'relatedAreas' => $relatedAreas,
+            'relatedArticles' => $relatedArticles,
+            'relatedProjects' => $relatedProjects,
         ], 200);
     }
 
@@ -230,7 +286,8 @@ class PublicPageController extends Controller
         $offer = $page->pageable;
         $offer->load('featuredMedia');
 
-        $related = $offer->services()->whereHas('page', fn ($query) => $query->published())->with('page')->limit(3)->get();
+        $offerServices = $offer->services()->whereHas('page', fn ($query) => $query->published())->with('page')->get();
+        $offerAreas = $offer->areas()->whereHas('page', fn ($query) => $query->published())->with('page')->get();
 
         return response()->view('pages.offer', [
             'page' => $page,
@@ -238,7 +295,9 @@ class PublicPageController extends Controller
             'businessProfile' => $businessProfile,
             'offer' => $offer,
             'faqs' => $faqs,
-            'related' => $related,
+            'related' => $offerServices,
+            'offerServices' => $offerServices,
+            'offerAreas' => $offerAreas,
         ], 200);
     }
 }

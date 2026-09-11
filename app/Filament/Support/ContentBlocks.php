@@ -91,6 +91,25 @@ class ContentBlocks
                             ->defaultItems(1),
                     ]),
 
+                Block::make('packages')
+                    ->label('باقات الخدمة')
+                    ->icon('heroicon-o-tag')
+                    ->schema([
+                        TextInput::make('heading')->label('عنوان القسم'),
+                        Repeater::make('items')
+                            ->label('الباقات')
+                            ->schema([
+                                TextInput::make('name')->label('اسم الباقة')->required(),
+                                TextInput::make('variant')->label('المساحة/الكمية/النوع'),
+                                TextInput::make('price')->label('السعر (ريال)')->numeric()->required(),
+                                TextInput::make('previous_price')->label('السعر السابق (عند خصم حقيقي فقط)')->numeric(),
+                                Textarea::make('included_items')->label('العناصر المشمولة (سطر لكل عنصر)')->rows(3),
+                                TextInput::make('cta_url')->label('رابط الدعوة للعمل')->url(),
+                            ])
+                            ->columns(2)
+                            ->defaultItems(1),
+                    ]),
+
                 Block::make('cta')
                     ->label('دعوة للعمل (CTA)')
                     ->icon('heroicon-o-megaphone')

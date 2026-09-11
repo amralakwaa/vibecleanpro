@@ -7,16 +7,19 @@
     $whatsappUrl = $businessProfile?->whatsappUrl();
     $phoneUrl = $businessProfile?->phoneUrl();
 
-    // No Services/Areas index route exists yet (see Phase 5 report, item
-    // 8) - these point at the homepage's own sections for now and become
-    // real listing routes without any Header/Footer changes once those
-    // pages exist.
     $navItems = [
-        'خدماتنا' => url('/').'#services',
-        'مناطق التغطية' => url('/').'#areas',
-        'أعمالنا' => url('/').'#projects',
-        'تواصل معنا' => url('/').'#contact',
+        'خدماتنا' => route('public.services.index'),
+        'مناطق التغطية' => route('public.areas.index'),
+        'أعمالنا' => route('public.projects.index'),
+        'المدونة' => route('public.blog.index'),
+        'العروض' => route('public.offers.index'),
+        'تواصل معنا' => route('public.contact'),
     ];
+
+    // Empty on purpose: no Legal-type page exists yet (see item 15/16 of
+    // the Phase 6 spec) - a fabricated Privacy/Terms link would be worse
+    // than none. The footer already omits this row entirely when empty.
+    $legalLinks = [];
 @endphp
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">

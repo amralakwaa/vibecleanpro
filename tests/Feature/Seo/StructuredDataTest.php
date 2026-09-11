@@ -2,8 +2,12 @@
 
 namespace Tests\Feature\Seo;
 
+use App\Enums\PageStatus;
+use App\Enums\PageType;
 use App\Models\BusinessProfile;
+use App\Models\ContentBlock;
 use App\Models\Media;
+use App\Models\Page;
 use App\Seo\StructuredDataGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Seo\Concerns\BuildsSeoFixtures;
@@ -156,11 +160,29 @@ class StructuredDataTest extends TestCase
     {
         $page = $this->createCompliantServicePage();
 
+        // areaServed must only ever name areas that are themselves real,
+        // reachable public pages - give the fixture's attached Area one.
+        $areaPage = Page::factory()->create(['type' => PageType::Area, 'slug' => 'area-served-fixture']);
+        $page->pageable->areas->first()->page()->save($areaPage);
+        ContentBlock::factory()->for($areaPage)->create(['type' => 'rich_text', 'data' => ['content' => 'نص.']]);
+        $areaPage->update(['status' => PageStatus::Published]);
+
         $service = collect($this->generator->forPage($page))->firstWhere('@type', 'Service');
 
         $this->assertNotNull($service);
         $this->assertNotEmpty($service['areaServed']);
         $this->assertArrayHasKey('name', $service['areaServed'][0]);
+    }
+
+    public function test_area_served_never_names_an_area_with_no_published_page(): void
+    {
+        $page = $this->createCompliantServicePage();
+        // The fixture's own attached Area has no Page at all.
+
+        $service = collect($this->generator->forPage($page))->firstWhere('@type', 'Service');
+
+        $this->assertNotNull($service);
+        $this->assertArrayNotHasKey('areaServed', $service);
     }
 
     public function test_an_area_page_produces_no_service_or_article_typed_block(): void

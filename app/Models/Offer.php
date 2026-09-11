@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OfferAvailability;
 use App\Models\Concerns\HasPage;
 use Database\Factories\OfferFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -39,5 +40,28 @@ class Offer extends Model
     public function areas(): BelongsToMany
     {
         return $this->belongsToMany(Area::class, 'offer_area')->withTimestamps();
+    }
+
+    /**
+     * Derived from is_active/starts_at/ends_at - never a separate status
+     * to keep in sync by hand. An editor-disabled offer (is_active=false)
+     * is always Expired regardless of its dates: that flag is the
+     * explicit "pull this down" switch.
+     */
+    public function availability(): OfferAvailability
+    {
+        if (! $this->is_active) {
+            return OfferAvailability::Expired;
+        }
+
+        if ($this->ends_at && $this->ends_at->isPast()) {
+            return OfferAvailability::Expired;
+        }
+
+        if ($this->starts_at && $this->starts_at->isFuture()) {
+            return OfferAvailability::Scheduled;
+        }
+
+        return OfferAvailability::Active;
     }
 }
