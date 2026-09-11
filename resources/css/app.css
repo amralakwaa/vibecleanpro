@@ -3,7 +3,150 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/*
+ * Vibe Clean Pro - Public Design System tokens.
+ *
+ * Scope: the PUBLIC site only. The admin panel is Filament's own separate
+ * asset pipeline (see app/Providers/Filament/AdminPanelProvider.php - it
+ * never references this file), so nothing here touches /admin.
+ *
+ * Brand direction (see the Phase 5 report for the full rationale): a
+ * premium-but-approachable Riyadh cleaning-services brand built on a deep,
+ * calm teal (cleanliness/trust/professionalism) with a warm gold accent
+ * reserved for action (CTA warmth, a touch of premium hospitality) against
+ * warm-neutral graphite text/surfaces - never a bright, generic "cleaning
+ * app" blue, never a loud multi-color template.
+ *
+ * One typeface, IBM Plex Sans Arabic, covers both Arabic and Latin glyphs
+ * (the brand name "Vibe Clean Pro" included) so the whole site reads as a
+ * single, consistent system with only one font family to load. Loaded via
+ * a direct <link> to fonts.bunny.net in the public layout's <head> - see
+ * vite.config.js's docblock for why that's a <link> and not this plugin's
+ * usual self-hosted `fonts: [bunny(...)]` option right now.
+ */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Primary - deep teal. 600 is the main brand anchor used for the
+       header, links, and most primary-colored UI. */
+    --color-primary-50: #eefaf8;
+    --color-primary-100: #d3f1ec;
+    --color-primary-200: #a8e2d9;
+    --color-primary-300: #74cbbe;
+    --color-primary-400: #45ac9d;
+    --color-primary-500: #298f81;
+    --color-primary-600: #1c7267;
+    --color-primary-700: #185c54;
+    --color-primary-800: #164a44;
+    --color-primary-900: #143e39;
+    --color-primary-950: #08211e;
+
+    /* Secondary - a quieter tint of the same teal family, used for subtle
+       backgrounds/badges rather than a second competing hue. */
+    --color-secondary-50: #f3faf9;
+    --color-secondary-100: #e2f2ef;
+    --color-secondary-200: #c6e4de;
+    --color-secondary-300: #9fcec5;
+    --color-secondary-400: #71afa4;
+    --color-secondary-500: #4f9288;
+    --color-secondary-600: #3c766e;
+    --color-secondary-700: #325f59;
+    --color-secondary-800: #2b4d48;
+    --color-secondary-900: #26413d;
+    --color-secondary-950: #122422;
+
+    /* Accent - warm gold, reserved for calls to action (WhatsApp / Call /
+       Request Quote) so it stays meaningful instead of decorative. */
+    --color-accent-50: #fdf8ec;
+    --color-accent-100: #faedc9;
+    --color-accent-200: #f4d78c;
+    --color-accent-300: #eec05a;
+    --color-accent-400: #e2a838;
+    --color-accent-500: #cf8f28;
+    --color-accent-600: #ac7420;
+    --color-accent-700: #8a5c1d;
+    --color-accent-800: #714b1d;
+    --color-accent-900: #5f3f1c;
+    --color-accent-950: #35210d;
+
+    /* Neutral - warm graphite (not cold/clinical gray), used for nearly
+       all text, borders, and surface distinctions. */
+    --color-neutral-50: #fafaf9;
+    --color-neutral-100: #f5f5f4;
+    --color-neutral-200: #e7e5e4;
+    --color-neutral-300: #d6d3d1;
+    --color-neutral-400: #a8a29e;
+    --color-neutral-500: #78716c;
+    --color-neutral-600: #57534e;
+    --color-neutral-700: #44403c;
+    --color-neutral-800: #292524;
+    --color-neutral-900: #1c1917;
+    --color-neutral-950: #0f0e0d;
+
+    /* Semantic status colors - kept separate from the brand accent so a
+       form error/success is never confused with a marketing CTA. */
+    --color-success-50: #f0fdf4;
+    --color-success-500: #22a35a;
+    --color-success-600: #178048;
+    --color-warning-50: #fffbeb;
+    --color-warning-500: #d97706;
+    --color-warning-600: #b45309;
+    --color-error-50: #fef2f2;
+    --color-error-500: #dc2626;
+    --color-error-600: #b91c1c;
+
+    /* Semantic aliases: every component should reach for these, not a raw
+       palette shade, so the whole site can be retinted from this file
+       alone. */
+    --color-background: var(--color-neutral-50);
+    --color-surface: #ffffff;
+    --color-text-primary: var(--color-neutral-900);
+    --color-text-secondary: var(--color-neutral-600);
+    --color-text-inverted: #ffffff;
+    --color-border: var(--color-neutral-200);
+    --color-border-strong: var(--color-neutral-300);
+}
+
+/*
+ * Base layer: sane, RTL-safe defaults. Component-level rules belong in the
+ * Blade components themselves (resources/views/components/public/**), not
+ * here - this file stays limited to true global resets.
+ */
+@layer base {
+    html {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+        background-color: var(--color-background);
+        color: var(--color-text-primary);
+    }
+
+    /* Every interactive element gets one consistent, visible focus style
+       instead of relying on (or removing) the browser default - see the
+       Accessibility section of the Phase 5 report. */
+    :focus-visible {
+        outline: 2px solid var(--color-primary-500);
+        outline-offset: 2px;
+        border-radius: 2px;
+    }
+
+    /* Alpine convention: hide anything still `x-cloak`-ed before Alpine
+       has initialized, so toggled menus/panels don't flash open on load. */
+    [x-cloak] {
+        display: none !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
 }

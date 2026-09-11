@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * can manage before/during/after project photos as a HasMany relationship -
  * Repeater only integrates cleanly with HasMany/MorphMany, not BelongsToMany.
  */
-#[Fillable(['media_id', 'stage', 'sort_order'])]
+#[Fillable(['project_id', 'media_id', 'stage', 'sort_order'])]
 class ProjectMedia extends Pivot
 {
     public $incrementing = true;

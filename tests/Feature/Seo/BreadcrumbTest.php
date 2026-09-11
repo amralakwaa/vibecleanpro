@@ -37,9 +37,15 @@ class BreadcrumbTest extends TestCase
         $page = $this->createCompliantServicePage(slug: 'breadcrumb-check');
 
         $response = $this->get('/services/breadcrumb-check');
-
         $response->assertOk();
-        $response->assertSee('<a href="/">الرئيسية</a>', false);
-        $response->assertSee('<span>'.$page->title.'</span>', false);
+        $html = $response->getContent();
+
+        // Home renders as a real link to "/" ...
+        $this->assertMatchesRegularExpression('#<a[^>]*href="/"[^>]*>\s*الرئيسية\s*</a>#u', $html);
+
+        // ... but the current page never links to itself, and is marked
+        // aria-current="page" instead of being a clickable element.
+        $this->assertMatchesRegularExpression('#<span[^>]*aria-current="page"[^>]*>\s*'.preg_quote($page->title, '#').'\s*</span>#u', $html);
+        $this->assertDoesNotMatchRegularExpression('#<a[^>]*>\s*'.preg_quote($page->title, '#').'\s*</a>#u', $html);
     }
 }
