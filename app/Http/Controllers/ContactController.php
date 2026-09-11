@@ -9,6 +9,7 @@ use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Redirect;
 
@@ -21,8 +22,14 @@ class ContactController extends Controller
 {
     public function __construct(private readonly UrlResolver $urlResolver) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        // "حلول الشركات" on the homepage links here with ?for=business - a
+        // query param rather than a new route, so the B2B framing (heading,
+        // intro, message prompt) survives the click without a dedicated
+        // page (see the Homepage Conversion Review report).
+        $isBusinessContext = $request->query('for') === 'business';
+
         $businessProfile = BusinessProfile::query()->first();
 
         $seo = new SeoHeadData(
@@ -48,6 +55,7 @@ class ContactController extends Controller
             'seo' => $seo,
             'businessProfile' => $businessProfile,
             'submitted' => session('lead_submitted', false),
+            'isBusinessContext' => $isBusinessContext,
         ], 200);
     }
 
@@ -60,7 +68,7 @@ class ContactController extends Controller
         Lead::query()->create([
             ...$request->validated(),
             'landing_page' => session('lead_attribution.landing_page'),
-            'source' => 'contact_form',
+            'source' => $request->input('context') === 'business' ? 'contact_form_business' : 'contact_form',
             'ip_address' => $request->ip(),
             'user_agent' => (string) $request->userAgent(),
             'utm_source' => session('lead_attribution.utm_source'),

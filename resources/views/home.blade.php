@@ -8,23 +8,23 @@
 <x-layouts.public :seo="$seo" :business-profile="$businessProfile">
     <x-public.hero
         eyebrow="VIBE CLEAN PRO"
-        heading="عناية احترافية للمنازل والمنشآت في الرياض"
-        subheading="تنظيف متخصص وإدارة مرافق بمعايير واضحة وجودة يمكن الاعتماد عليها."
+        heading="تنظيف احترافي للمنازل والمنشآت في الرياض"
+        subheading="عناية شاملة بمساحتك السكنية أو التجارية، بمعايير واضحة وجودة يمكن الاعتماد عليها."
         :image="$heroImage"
     >
         <div class="mt-7 flex flex-col sm:flex-row items-center gap-3">
             <x-public.button :href="route('public.quote')" variant="cta" size="lg" icon="check-circle">
                 اطلب خدمة منزلية
             </x-public.button>
-            <x-public.button :href="route('public.contact')" variant="secondary" size="lg" icon="building">
+            <x-public.button :href="route('public.contact', ['for' => 'business'])" variant="secondary" size="lg" icon="building">
                 حلول الشركات
             </x-public.button>
         </div>
     </x-public.hero>
 
-    {{-- Section 2: reduces B2C/B2B hesitation from the first scroll - see
-         the Phase 3 report. Purely navigational, no CMS data (Service has
-         no audience/segment field to query against). --}}
+    {{-- Reduces B2C/B2B hesitation from the first scroll - see the Phase 3
+         report. Purely navigational, no CMS data (Service has no
+         audience/segment field to query against). --}}
     <x-public.section id="audience">
         <x-public.section-header eyebrow="ابدأ من هنا" title="كيف نخدمك؟" align="center" class="mb-10" />
         <div class="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
@@ -38,7 +38,7 @@
                 icon="building"
                 title="حلول النظافة للمنشآت"
                 description="خدمات تنظيف وعقود تشغيل للشركات."
-                :url="route('public.contact')"
+                :url="route('public.contact', ['for' => 'business'])"
             />
         </div>
     </x-public.section>
@@ -62,37 +62,12 @@
         @endif
     </x-public.section>
 
-    {{-- Section 4: real, structural reasons only - no invented figures or
-         unverified review counts (see the Phase 3 report). --}}
-    <x-public.section id="why-us">
-        <x-public.section-header eyebrow="لماذا نحن" title="لماذا يختارنا العملاء؟" align="center" class="mb-10" />
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 max-w-5xl mx-auto">
-            <x-public.trust-card icon="users" title="فريق مدرّب ومتخصص"
-                description="أفراد فريقنا مؤهلون ومدربون على معايير عمل واضحة." />
-            <x-public.trust-card icon="sparkles" title="معدات ومواد احترافية"
-                description="أدوات وتقنيات تنظيف مناسبة لكل نوع مساحة." />
-            <x-public.trust-card icon="check-circle" title="إجراءات عمل واضحة"
-                description="خطوات محددة لكل خدمة من البداية حتى التسليم." />
-            <x-public.trust-card icon="shield-check" title="متابعة الجودة"
-                description="نراجع نتيجة العمل قبل اعتماد أي خدمة." />
-            <x-public.trust-card icon="clock" title="خدمة منظمة وموثوقة"
-                description="مواعيد واضحة والتزام بما تم الاتفاق عليه." />
-        </div>
-    </x-public.section>
-
-    <x-public.section id="how-we-work" tone="surface">
-        <x-public.section-header title="كيف نعمل؟" align="center" class="mb-12" />
-        <ol class="grid sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6">
-            <x-public.step-card :number="1" title="تقييم الاحتياج" description="نفهم طبيعة المساحة ومتطلبات الخدمة." />
-            <x-public.step-card :number="2" title="تحديد خطة الخدمة" description="نحدد نطاق العمل والجدول الزمني المناسب." />
-            <x-public.step-card :number="3" title="التنفيذ الاحترافي" description="فريقنا ينفذ العمل وفق معايير واضحة." />
-            <x-public.step-card :number="4" title="مراجعة الجودة" description="نراجع النتيجة معك قبل الاعتماد النهائي." />
-        </ol>
-    </x-public.section>
-
-    {{-- Section 6: only projects with a real before AND after photo qualify
-         (see HomeController::index) - meta badges (service/area) render
-         only when that data actually exists on the project. --}}
+    {{-- Only projects with a real before AND after photo qualify (see
+         HomeController::index) - meta badges (service/area) render only
+         when that data actually exists on the project. Placed right after
+         Services, ahead of the text-only trust sections, so visual proof
+         reinforces the claims that follow rather than the reverse (see the
+         Conversion Review report). --}}
     <x-public.section id="projects">
         <x-public.section-header eyebrow="أعمالنا" title="نتائج حقيقية من مشاريعنا" align="center" class="mb-10" />
 
@@ -119,6 +94,34 @@
         @endif
     </x-public.section>
 
+    {{-- Real, structural reasons only - no invented figures or unverified
+         review counts (see the Phase 3 report). --}}
+    <x-public.section id="why-us" tone="surface">
+        <x-public.section-header eyebrow="لماذا نحن" title="لماذا يختارنا العملاء؟" align="center" class="mb-10" />
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 max-w-5xl mx-auto">
+            <x-public.trust-card icon="users" title="فريق مدرّب ومتخصص"
+                description="أفراد فريقنا مؤهلون ومدربون على معايير عمل واضحة." />
+            <x-public.trust-card icon="sparkles" title="معدات ومواد احترافية"
+                description="أدوات وتقنيات تنظيف مناسبة لكل نوع مساحة." />
+            <x-public.trust-card icon="check-circle" title="إجراءات عمل واضحة"
+                description="خطوات محددة لكل خدمة من البداية حتى التسليم." />
+            <x-public.trust-card icon="shield-check" title="متابعة الجودة"
+                description="نراجع نتيجة العمل قبل اعتماد أي خدمة." />
+            <x-public.trust-card icon="clock" title="خدمة منظمة وموثوقة"
+                description="مواعيد واضحة والتزام بما تم الاتفاق عليه." />
+        </div>
+    </x-public.section>
+
+    <x-public.section id="how-we-work">
+        <x-public.section-header title="كيف نعمل؟" align="center" class="mb-12" />
+        <ol class="grid sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6">
+            <x-public.step-card :number="1" title="تقييم الاحتياج" description="نفهم طبيعة المساحة ومتطلبات الخدمة." />
+            <x-public.step-card :number="2" title="تحديد خطة الخدمة" description="نحدد نطاق العمل والجدول الزمني المناسب." />
+            <x-public.step-card :number="3" title="التنفيذ الاحترافي" description="فريقنا ينفذ العمل وفق معايير واضحة." />
+            <x-public.step-card :number="4" title="مراجعة الجودة" description="نراجع النتيجة معك قبل الاعتماد النهائي." />
+        </ol>
+    </x-public.section>
+
     <x-public.section id="areas" tone="surface">
         <x-public.section-header eyebrow="مناطق التغطية" title="نخدم هذه المناطق في الرياض" align="center" class="mb-10" />
 
@@ -138,9 +141,9 @@
         @endif
     </x-public.section>
 
-    {{-- Section 8: only currently-active/scheduled CMS offers - no fake
-         discounts or countdowns (see OfferAvailability). Hidden entirely
-         when there is nothing genuine to show. --}}
+    {{-- Only currently-active/scheduled CMS offers - no fake discounts or
+         countdowns (see OfferAvailability). Hidden entirely when there is
+         nothing genuine to show. --}}
     @if ($offers->isNotEmpty())
         <x-public.section id="offers">
             <x-public.section-header eyebrow="عروضنا" title="عروض حالية" align="center" class="mb-10" />
@@ -157,9 +160,9 @@
         </x-public.section>
     @endif
 
-    {{-- Section 9: sitewide, page-less FAQs (see FaqResource) - content
-         itself (ideally objection-handling: "هل تخدمون الشركات؟", "كم
-         تستغرق الخدمة؟"...) is managed entirely from the CMS, not authored
+    {{-- Sitewide, page-less FAQs (see FaqResource) - content itself
+         (ideally objection-handling: "هل تخدمون الشركات؟", "كم تستغرق
+         الخدمة؟"...) is managed entirely from the CMS, not authored
          here. --}}
     @if ($faqs->isNotEmpty())
         <x-public.section id="faq" tone="surface">

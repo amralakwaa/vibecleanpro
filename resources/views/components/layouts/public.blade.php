@@ -76,6 +76,6 @@
 
     <x-public.footer :business-profile="$businessProfile" :nav-items="$navItems" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
 
-    <x-public.mobile-cta-bar :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
+    <x-public.mobile-cta-bar :quote-url="route('public.quote')" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
 </body>
 </html>

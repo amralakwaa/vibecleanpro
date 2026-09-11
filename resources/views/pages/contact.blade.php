@@ -6,8 +6,14 @@
 <x-layouts.public :seo="$seo" :business-profile="$businessProfile">
     <x-public.section width="wide" class="!pb-6">
         <x-public.breadcrumb :items="$seo->breadcrumbs" class="mb-5" />
-        <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900">تواصل معنا</h1>
-        <p class="mt-3 text-neutral-600 max-w-2xl">يسعدنا تواصلك معنا لأي استفسار.</p>
+        @if ($isBusinessContext)
+            <x-public.badge tone="primary" class="mb-3">حلول الشركات والمنشآت</x-public.badge>
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900">تواصل بخصوص حلول النظافة لمنشأتك</h1>
+            <p class="mt-3 text-neutral-600 max-w-2xl">أخبرنا عن احتياج منشأتك أو شركتك - تنظيف دوري، عقود تشغيل، أو إدارة مرافق - وسيتواصل معك فريقنا لتحديد خطة مناسبة.</p>
+        @else
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900">تواصل معنا</h1>
+            <p class="mt-3 text-neutral-600 max-w-2xl">يسعدنا تواصلك معنا لأي استفسار.</p>
+        @endif
     </x-public.section>
 
     <x-public.section width="wide" class="!pt-0">
@@ -102,10 +108,14 @@
                             <input type="text" id="website_url" name="website_url" tabindex="-1" autocomplete="off">
                         </div>
 
+                        @if ($isBusinessContext)
+                            <input type="hidden" name="context" value="business">
+                        @endif
+
                         <x-public.field.input name="name" label="الاسم الكامل" required :error="$errors->first('name')" value="{{ old('name') }}" />
                         <x-public.field.input name="phone" type="tel" label="رقم الجوال" required :error="$errors->first('phone')" value="{{ old('phone') }}" />
                         <x-public.field.input name="email" type="email" label="البريد الإلكتروني (اختياري)" :error="$errors->first('email')" value="{{ old('email') }}" />
-                        <x-public.field.textarea name="message" label="رسالتك" :error="$errors->first('message')">{{ old('message') }}</x-public.field.textarea>
+                        <x-public.field.textarea name="message" :label="$isBusinessContext ? 'أخبرنا عن احتياجات منشأتك' : 'رسالتك'" :error="$errors->first('message')">{{ old('message') }}</x-public.field.textarea>
 
                         <x-public.button type="submit" variant="primary" size="lg" class="w-full">إرسال الرسالة</x-public.button>
                     </form>
