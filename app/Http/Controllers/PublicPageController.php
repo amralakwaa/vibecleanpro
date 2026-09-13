@@ -141,7 +141,17 @@ class PublicPageController extends Controller
         $service->load(['featuredMedia', 'category']);
 
         $areas = $service->areas()->whereHas('page', fn ($query) => $query->published())->get();
-        $projects = $service->projects()->whereHas('page', fn ($query) => $query->published())->with('area')->limit(6)->get();
+
+        // 'area' and 'media' both eager-loaded here so the view never
+        // triggers a query per project to decide before/after vs. after-only
+        // rendering (see pages/service.blade.php).
+        $projects = $service->projects()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->with(['area', 'media'])
+            ->orderByDesc('is_featured')
+            ->orderByDesc('completed_at')
+            ->limit(6)
+            ->get();
 
         $related = Service::query()
             ->whereKeyNot($service->id)
@@ -150,6 +160,38 @@ class PublicPageController extends Controller
             ->with('page')
             ->limit(3)
             ->get();
+
+        // Only offers that are Active right now (never Scheduled, never
+        // Expired) - unlike /offers and the homepage, which also surface
+        // Scheduled ones, a Service page only ever promises what a visitor
+        // can actually act on today. This mirrors Offer::availability()'s
+        // Active branch exactly (is_active, starts_at not in the future,
+        // ends_at not in the past) so the two can never disagree, and it is
+        // applied in SQL - not fetch-then-filter in PHP - so the row scan
+        // is never unbounded and a later-sorted Active offer can never be
+        // pushed out by an earlier take().
+        $offers = $service->offers()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->where('is_active', true)
+            ->where(fn ($query) => $query->whereNull('starts_at')->orWhere('starts_at', '<=', now()))
+            ->where(fn ($query) => $query->whereNull('ends_at')->orWhere('ends_at', '>=', now()))
+            ->with('featuredMedia')
+            ->orderBy('sort_order')
+            ->limit(3)
+            ->get();
+
+        $testimonials = $service->testimonials()
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit(6)
+            ->get();
+
+        // When an editor has already placed a manual related_content block
+        // (see blocks.blade.php), the automatic "خدمات ذات صلة" fallback
+        // below must not render a second, duplicate related-services
+        // section on the same page.
+        $hasManualRelatedBlock = $page->contentBlocks
+            ->contains(fn ($block) => $block->type === 'related_content' && $block->is_active);
 
         return response()->view('pages.service', [
             'page' => $page,
@@ -160,6 +202,9 @@ class PublicPageController extends Controller
             'areas' => $areas,
             'projects' => $projects,
             'related' => $related,
+            'offers' => $offers,
+            'testimonials' => $testimonials,
+            'hasManualRelatedBlock' => $hasManualRelatedBlock,
         ], 200);
     }
 

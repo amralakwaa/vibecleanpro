@@ -2,14 +2,19 @@
 
 namespace Tests\Feature;
 
+use App\Enums\MediaStage;
 use App\Enums\PageStatus;
 use App\Enums\PageType;
 use App\Models\Area;
 use App\Models\ContentBlock;
 use App\Models\Faq;
+use App\Models\Media;
+use App\Models\Offer;
 use App\Models\Page;
+use App\Models\Project;
 use App\Models\SeoMetadata;
 use App\Models\Service;
+use App\Models\Testimonial;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Seo\Concerns\BuildsSeoFixtures;
 use Tests\TestCase;
@@ -111,5 +116,206 @@ class ServiceDetailTest extends TestCase
         $response->assertSee('باقة أساسية');
         $response->assertSee('150');
         $response->assertSee('غرفتين');
+    }
+
+    public function test_an_active_offer_linked_to_the_service_is_shown(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-with-active-offer');
+        $service = $page->pageable;
+
+        $offer = $this->createPublishedOffer('نظّف الآن واحصل على خصم', slug: 'active-offer', isActive: true, startsAt: now()->subDay(), endsAt: now()->addWeek());
+        $offer->services()->attach($service);
+
+        $response = $this->get('/services/service-with-active-offer');
+
+        $response->assertSee('نظّف الآن واحصل على خصم');
+    }
+
+    public function test_an_expired_offer_is_never_shown_as_a_current_offer(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-with-expired-offer');
+        $service = $page->pageable;
+
+        $offer = $this->createPublishedOffer('عرض منتهي فعليًا', slug: 'expired-offer', isActive: true, startsAt: now()->subMonth(), endsAt: now()->subWeek());
+        $offer->services()->attach($service);
+
+        $response = $this->get('/services/service-with-expired-offer');
+
+        $response->assertDontSee('عرض منتهي فعليًا');
+    }
+
+    public function test_an_offer_linked_to_a_different_service_is_not_shown(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-without-this-offer');
+        $otherService = Service::factory()->create();
+
+        $offer = $this->createPublishedOffer('عرض خدمة أخرى', slug: 'other-service-offer', isActive: true, startsAt: now()->subDay(), endsAt: now()->addWeek());
+        $offer->services()->attach($otherService);
+
+        $response = $this->get('/services/service-without-this-offer');
+
+        $response->assertDontSee('عرض خدمة أخرى');
+    }
+
+    public function test_a_scheduled_offer_is_never_shown_as_a_current_offer(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-with-scheduled-offer');
+        $service = $page->pageable;
+
+        $offer = $this->createPublishedOffer('عرض قادم قريبًا', slug: 'scheduled-offer', isActive: true, startsAt: now()->addWeek(), endsAt: now()->addMonth());
+        $offer->services()->attach($service);
+
+        $response = $this->get('/services/service-with-scheduled-offer');
+
+        $response->assertDontSee('عرض قادم قريبًا');
+    }
+
+    public function test_an_active_offer_still_shows_even_when_an_expired_offer_sorts_before_it(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-expired-before-active');
+        $service = $page->pageable;
+
+        // The expired offer is given the lower sort_order (and is created
+        // first) so it would be attempted first by any naive "take N then
+        // filter" approach - the Active offer must still make it through.
+        $expired = $this->createPublishedOffer('عرض منتهي يسبق النشط', slug: 'expired-sorts-first', isActive: true, startsAt: now()->subMonth(), endsAt: now()->subWeek());
+        $expired->update(['sort_order' => 0]);
+        $expired->services()->attach($service);
+
+        $active = $this->createPublishedOffer('عرض نشط يظهر رغم الترتيب', slug: 'active-sorts-second', isActive: true, startsAt: now()->subDay(), endsAt: now()->addWeek());
+        $active->update(['sort_order' => 1]);
+        $active->services()->attach($service);
+
+        $response = $this->get('/services/service-expired-before-active');
+
+        $response->assertDontSee('عرض منتهي يسبق النشط');
+        $response->assertSee('عرض نشط يظهر رغم الترتيب');
+    }
+
+    public function test_a_testimonial_linked_to_the_service_is_shown(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-with-testimonial');
+        $service = $page->pageable;
+
+        Testimonial::factory()->create(['service_id' => $service->id, 'author_name' => 'سارة العتيبي', 'content' => 'خدمة ممتازة والتزام بالوقت.']);
+
+        $response = $this->get('/services/service-with-testimonial');
+
+        $response->assertSee('سارة العتيبي');
+        $response->assertSee('خدمة ممتازة والتزام بالوقت.');
+    }
+
+    public function test_a_testimonial_linked_to_a_different_service_is_not_shown(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-without-this-testimonial');
+        $otherService = Service::factory()->create();
+
+        Testimonial::factory()->create(['service_id' => $otherService->id, 'author_name' => 'عميل خدمة أخرى']);
+
+        $response = $this->get('/services/service-without-this-testimonial');
+
+        $response->assertDontSee('عميل خدمة أخرى');
+    }
+
+    public function test_related_services_fallback_shows_automatically_when_no_manual_related_content_block_exists(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-fallback-related');
+        $this->createCompliantServicePage(slug: 'another-real-service');
+        $otherService = Service::where('id', '!=', $page->pageable->id)->first();
+
+        $response = $this->get('/services/service-fallback-related');
+
+        $response->assertSee('خدمات ذات صلة');
+        $response->assertSee($otherService->name);
+    }
+
+    public function test_related_services_fallback_is_suppressed_when_the_editor_already_placed_a_manual_related_content_block(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-manual-related');
+        $this->createCompliantServicePage(slug: 'another-real-service-2');
+
+        ContentBlock::factory()->for($page)->create(['type' => 'related_content', 'data' => []]);
+
+        $response = $this->get('/services/service-manual-related');
+
+        $response->assertDontSee('خدمات ذات صلة');
+    }
+
+    public function test_a_project_with_real_before_and_after_photos_renders_the_before_after_showcase(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-with-before-after');
+        $service = $page->pageable;
+
+        $project = $this->createPublishedProject('تنظيف شقة بالكامل', slug: 'project-before-after');
+        $before = Media::factory()->create();
+        $after = Media::factory()->create();
+        $project->media()->attach($before->id, ['stage' => MediaStage::Before->value, 'sort_order' => 0]);
+        $project->media()->attach($after->id, ['stage' => MediaStage::After->value, 'sort_order' => 0]);
+        $service->projects()->attach($project);
+
+        $response = $this->get('/services/service-with-before-after');
+
+        $response->assertSee('تنظيف شقة بالكامل');
+        $response->assertSee('قبل');
+        $response->assertSee('بعد');
+    }
+
+    public function test_a_project_with_only_an_after_photo_renders_as_a_plain_project_card(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-with-after-only');
+        $service = $page->pageable;
+
+        $project = $this->createPublishedProject('تنظيف مكتب', slug: 'project-after-only');
+        $after = Media::factory()->create();
+        $project->media()->attach($after->id, ['stage' => MediaStage::After->value, 'sort_order' => 0]);
+        $service->projects()->attach($project);
+
+        $response = $this->get('/services/service-with-after-only');
+
+        $response->assertSee('تنظيف مكتب');
+        $response->assertDontSee('قبل');
+    }
+
+    private function createPublishedOffer(string $title, string $slug, bool $isActive, $startsAt, $endsAt): Offer
+    {
+        $offer = Offer::factory()->create([
+            'title' => $title,
+            'is_active' => $isActive,
+            'starts_at' => $startsAt,
+            'ends_at' => $endsAt,
+        ]);
+
+        $offerPage = Page::factory()->create([
+            'type' => PageType::Offer,
+            'title' => $title,
+            'slug' => $slug,
+            'status' => PageStatus::Draft,
+        ]);
+        $offer->page()->save($offerPage);
+
+        ContentBlock::factory()->for($offerPage)->create(['type' => 'rich_text', 'data' => ['content' => 'تفاصيل العرض.']]);
+
+        $offerPage->update(['status' => PageStatus::Published]);
+
+        return $offer;
+    }
+
+    private function createPublishedProject(string $title, string $slug): Project
+    {
+        $project = Project::factory()->create(['title' => $title]);
+
+        $projectPage = Page::factory()->create([
+            'type' => PageType::Project,
+            'title' => $title,
+            'slug' => $slug,
+            'status' => PageStatus::Draft,
+        ]);
+        $project->page()->save($projectPage);
+
+        ContentBlock::factory()->for($projectPage)->create(['type' => 'rich_text', 'data' => ['content' => 'تفاصيل المشروع.']]);
+
+        $projectPage->update(['status' => PageStatus::Published]);
+
+        return $project;
     }
 }
