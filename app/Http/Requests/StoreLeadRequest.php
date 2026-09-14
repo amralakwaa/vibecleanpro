@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Area;
+use App\Models\Service;
+use App\Rules\HasPublishedPage;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -26,8 +29,11 @@ class StoreLeadRequest extends FormRequest
             'name' => ['required', 'string', 'max:150'],
             'phone' => ['required', 'string', 'max:30', 'regex:/^[0-9+\-\s()]{6,30}$/'],
             'email' => ['nullable', 'email', 'max:255'],
-            'service_id' => ['nullable', 'integer', 'exists:services,id'],
-            'area_id' => ['nullable', 'integer', 'exists:areas,id'],
+            // Public publication semantics, not mere row existence: an id
+            // the Quote page would never offer (draft, scheduled, deleted)
+            // is a validation failure, never a silently-attached lead.
+            'service_id' => ['nullable', 'integer', new HasPublishedPage(Service::class, 'الخدمة المختارة غير متاحة حاليًا.')],
+            'area_id' => ['nullable', 'integer', new HasPublishedPage(Area::class, 'المنطقة المختارة غير متاحة حاليًا.')],
             'message' => ['nullable', 'string', 'max:2000'],
         ];
     }

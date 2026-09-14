@@ -12,6 +12,11 @@
     // $headerOverlay - only correct over a full-bleed dark hero image.
     $headerOverlay ??= false;
 
+    // Pages whose whole purpose is a form (Quote, Contact) opt out of the
+    // sticky mobile bar with :mobile-bar="false" - a fixed "طلب خدمة"
+    // button under the quote form itself is a competing CTA, not help.
+    $mobileBar ??= true;
+
     // "للشركات" points at the existing business-context contact route
     // (see ContactController) - the B2B half of the business was
     // previously unreachable from the main navigation entirely.
@@ -87,12 +92,14 @@
         :overlay="$headerOverlay"
     />
 
-    <main id="main-content" class="pb-24 lg:pb-0">
+    <main id="main-content" @class(['pb-24 lg:pb-0' => $mobileBar])>
         {{ $slot }}
     </main>
 
     <x-public.footer :business-profile="$businessProfile" :nav-items="$navItems" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
 
-    <x-public.mobile-cta-bar :quote-url="route('public.quote')" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
+    @if ($mobileBar)
+        <x-public.mobile-cta-bar :quote-url="route('public.quote')" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
+    @endif
 </body>
 </html>
