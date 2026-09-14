@@ -23,10 +23,13 @@ class OffersIndexController extends Controller
     {
         $businessProfile = BusinessProfile::query()->first();
 
+        // 'page' is eager-loaded because the view resolves each offer's
+        // URL through UrlResolver::urlForPage() - without it every listed
+        // offer costs its own pages query.
         $offers = Offer::query()
             ->whereHas('page', fn ($query) => $query->published())
             ->where('is_active', true)
-            ->with('featuredMedia')
+            ->with(['featuredMedia', 'page'])
             ->orderBy('sort_order')
             ->get()
             ->filter(fn (Offer $offer) => $offer->availability() !== OfferAvailability::Expired)

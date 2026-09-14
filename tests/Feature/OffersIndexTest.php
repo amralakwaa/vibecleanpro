@@ -8,6 +8,7 @@ use App\Models\ContentBlock;
 use App\Models\Offer;
 use App\Models\Page;
 use App\Models\SeoMetadata;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -66,7 +67,9 @@ class OffersIndexTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('انتهى هذا العرض');
-        $response->assertSee('انتهى العرض');
+        // The active-offer conversion label must never appear on an
+        // expired offer's page.
+        $response->assertDontSee('اطلب هذا العرض');
     }
 
     public function test_the_index_shows_an_empty_state_when_nothing_is_currently_available(): void
@@ -77,5 +80,57 @@ class OffersIndexTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('لا توجد عروض متاحة حاليًا');
+    }
+
+    public function test_active_offers_lead_and_scheduled_offers_sit_below_them(): void
+    {
+        // Scheduled offer is given the LOWER sort_order so that only the
+        // status partition - not sort_order - can put it below the active one.
+        $this->createPublishedOffer('later-scheduled', ['is_active' => true, 'sort_order' => 0, 'starts_at' => now()->addWeek(), 'ends_at' => now()->addMonth()]);
+        $this->createPublishedOffer('first-active', ['is_active' => true, 'sort_order' => 5, 'starts_at' => now()->subDay(), 'ends_at' => now()->addWeek()]);
+
+        $html = $this->get('/offers')->assertOk()->getContent();
+
+        $this->assertStringContainsString('متاح الآن', $html);
+        $this->assertStringContainsString('قريبًا', $html);
+        $this->assertLessThan(mb_strpos($html, 'later-scheduled'), mb_strpos($html, 'first-active'));
+        $this->assertLessThan(mb_strpos($html, 'قريبًا'), mb_strpos($html, 'متاح الآن'));
+    }
+
+    public function test_the_lead_offer_is_not_repeated_in_the_rows_below(): void
+    {
+        $this->createPublishedOffer('lead-only-once', ['is_active' => true, 'starts_at' => now()->subDay(), 'ends_at' => now()->addWeek()]);
+        $this->createPublishedOffer('second-active', ['is_active' => true, 'sort_order' => 2, 'starts_at' => now()->subDay(), 'ends_at' => now()->addWeek()]);
+
+        $html = $this->get('/offers')->assertOk()->getContent();
+
+        // Count the title as rendered text (between tags, whitespace
+        // tolerant) - the slug also appears once inside the href, which
+        // must not be counted as a second listing.
+        $this->assertSame(1, preg_match_all('/>\s*lead-only-once\s*</u', $html));
+        $this->assertStringContainsString('عروض أخرى متاحة', $html);
+        $this->assertStringContainsString('second-active', $html);
+    }
+
+    public function test_the_index_triggers_no_lazy_loading(): void
+    {
+        foreach (range(1, 3) as $i) {
+            $this->createPublishedOffer("lazy-$i", ['is_active' => true, 'sort_order' => $i, 'starts_at' => now()->subDay(), 'ends_at' => now()->addWeek()]);
+        }
+        $this->createPublishedOffer('lazy-scheduled', ['is_active' => true, 'sort_order' => 9, 'starts_at' => now()->addWeek(), 'ends_at' => now()->addMonth()]);
+
+        $violations = [];
+        Model::preventLazyLoading(true);
+        Model::handleLazyLoadingViolationUsing(function ($model, $relation) use (&$violations) {
+            $violations[] = $model::class.'::'.$relation;
+        });
+
+        try {
+            $this->get('/offers')->assertOk();
+        } finally {
+            Model::preventLazyLoading(false);
+        }
+
+        $this->assertSame([], $violations);
     }
 }
