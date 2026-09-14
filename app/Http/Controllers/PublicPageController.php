@@ -224,10 +224,12 @@ class PublicPageController extends Controller
         // The service_area pivot's is_active flag is a separate "is this
         // link currently on" switch from the Service's own Page status -
         // both must hold for the pairing to be real right now.
+        // 'page' is eager-loaded on every list below because the view
+        // resolves each item's URL through UrlResolver::urlForPage().
         $services = $area->services()
             ->wherePivot('is_active', true)
             ->whereHas('page', fn ($query) => $query->published())
-            ->with('featuredMedia')
+            ->with(['featuredMedia', 'page'])
             ->get();
 
         // 'media' eager-loaded so the view never triggers a query per
@@ -235,7 +237,7 @@ class PublicPageController extends Controller
         // pages/area.blade.php and the identical rule in renderService()).
         $projects = $area->projects()
             ->whereHas('page', fn ($query) => $query->published())
-            ->with('media')
+            ->with(['media', 'page'])
             ->orderByDesc('is_featured')
             ->orderByDesc('completed_at')
             ->limit(6)
@@ -245,6 +247,7 @@ class PublicPageController extends Controller
             ->whereKeyNot($area->id)
             ->whereHas('page', fn ($query) => $query->published())
             ->when($area->area_group_id, fn ($query) => $query->where('area_group_id', $area->area_group_id))
+            ->with('page')
             ->withCount('services')
             ->limit(6)
             ->get();
@@ -258,7 +261,7 @@ class PublicPageController extends Controller
             ->where('is_active', true)
             ->where(fn ($query) => $query->whereNull('starts_at')->orWhere('starts_at', '<=', now()))
             ->where(fn ($query) => $query->whereNull('ends_at')->orWhere('ends_at', '>=', now()))
-            ->with('featuredMedia')
+            ->with(['featuredMedia', 'page'])
             ->orderBy('sort_order')
             ->limit(3)
             ->get();
@@ -271,7 +274,7 @@ class PublicPageController extends Controller
 
         $articles = $area->articles()
             ->whereHas('page', fn ($query) => $query->published())
-            ->with(['featuredMedia', 'category'])
+            ->with(['featuredMedia', 'category', 'page'])
             ->limit(3)
             ->get();
 

@@ -9,6 +9,7 @@ use App\Models\Area;
 use App\Models\AreaGroup;
 use App\Models\Article;
 use App\Models\ContentBlock;
+use App\Models\Faq;
 use App\Models\Media;
 use App\Models\Offer;
 use App\Models\Page;
@@ -94,7 +95,8 @@ class AreaDetailTest extends TestCase
 
         $response = $this->get('/areas/area-no-projects');
 
-        $response->assertDontSee('نتائج حقيقية في هذه المنطقة');
+        $response->assertDontSee('أعمالنا في هذه المنطقة');
+        $response->assertDontSee('الدليل أننا نعمل هنا فعلًا');
     }
 
     public function test_a_project_with_real_before_and_after_photos_renders_the_before_after_showcase(): void
@@ -136,7 +138,7 @@ class AreaDetailTest extends TestCase
 
         $response = $this->get('/areas/area-no-offers');
 
-        $response->assertDontSee('عروض حالية في هذه المنطقة');
+        $response->assertDontSee('عروض في هذه المنطقة');
     }
 
     public function test_only_the_active_offer_shows_when_scheduled_and_expired_offers_also_exist(): void
@@ -166,7 +168,7 @@ class AreaDetailTest extends TestCase
 
         $response = $this->get('/areas/area-no-testimonials');
 
-        $response->assertDontSee('آراء العملاء في هذه المنطقة', false);
+        $response->assertDontSee('من عملائنا هنا');
     }
 
     public function test_a_testimonial_linked_to_the_area_is_shown(): void
@@ -200,7 +202,7 @@ class AreaDetailTest extends TestCase
 
         $response = $this->get('/areas/area-no-articles');
 
-        $response->assertDontSee('مقالات مرتبطة بهذه المنطقة');
+        $response->assertDontSee('مقالات مرتبطة');
     }
 
     public function test_a_published_article_linked_to_the_area_is_shown(): void
@@ -266,6 +268,74 @@ class AreaDetailTest extends TestCase
         $response->assertOk();
         $response->assertDontSee('wa.me');
         $response->assertDontSee('tel:');
+    }
+
+    public function test_the_template_never_composes_a_local_sentence_from_the_area_name(): void
+    {
+        // The area's own name is deliberately distinctive so any template
+        // that interpolated it into generated copy would be caught here.
+        $page = $this->createCompliantAreaPage(slug: 'area-no-generated-copy', title: 'خدمات التنظيف في حي الورود');
+        $area = $page->pageable;
+        $area->update(['name' => 'زززفريدة']);
+
+        $content = $this->get('/areas/area-no-generated-copy')->assertOk()->getContent();
+
+        // The H1 comes from the CMS title verbatim...
+        $this->assertStringContainsString('خدمات التنظيف في حي الورود', $content);
+
+        // ...and the raw area name must never be rendered into page copy
+        // by this template. It may only appear inside the prefilled
+        // WhatsApp message, which is a chat draft and not page content.
+        $withoutWhatsapp = preg_replace('/https:\/\/wa\.me\/[^"\']*/u', '', $content);
+        $this->assertStringNotContainsString('زززفريدة', $withoutWhatsapp);
+    }
+
+    public function test_the_faq_renders_once_and_sits_before_the_final_cta(): void
+    {
+        $page = $this->createCompliantAreaPage(slug: 'area-faq-placement');
+        ContentBlock::factory()->for($page)->create(['type' => 'faq', 'position' => 1, 'data' => ['heading' => 'أسئلة عن هذا الحي']]);
+        Faq::factory()->for($page)->create(['question' => 'هل تخدمون يوميًا؟', 'answer' => 'نعم طوال الأسبوع.']);
+
+        $content = $this->get('/areas/area-faq-placement')->assertOk()->getContent();
+
+        $this->assertSame(1, substr_count($content, 'أسئلة عن هذا الحي'));
+        $this->assertSame(1, substr_count($content, 'هل تخدمون يوميًا؟'));
+        $this->assertStringContainsString('نعم طوال الأسبوع.', $content);
+        $this->assertLessThan(
+            mb_strpos($content, 'اطلب الخدمة في منطقتك'),
+            mb_strpos($content, 'أسئلة عن هذا الحي'),
+            'FAQ must render before the final CTA.',
+        );
+    }
+
+    public function test_a_project_from_another_area_is_never_used_as_local_proof(): void
+    {
+        $page = $this->createCompliantAreaPage(slug: 'area-only-local-proof');
+        $area = $page->pageable;
+
+        $localProject = $this->createPublishedProjectForArea('مشروع في نفس الحي', slug: 'local-proof-project', area: $area);
+        $after = Media::factory()->create();
+        $localProject->media()->attach($after->id, ['stage' => MediaStage::After->value, 'sort_order' => 0]);
+
+        $foreignArea = Area::factory()->create(['name' => 'حي آخر تمامًا']);
+        $this->createPublishedProjectForArea('مشروع في حي مختلف', slug: 'foreign-proof-project', area: $foreignArea);
+
+        $response = $this->get('/areas/area-only-local-proof');
+
+        $response->assertSee('مشروع في نفس الحي');
+        $response->assertDontSee('مشروع في حي مختلف');
+    }
+
+    public function test_the_cta_links_point_at_a_quote_prefilled_with_this_area(): void
+    {
+        $page = $this->createCompliantAreaPage(slug: 'area-cta-links');
+        $expected = route('public.quote').'?area='.$page->pageable->id;
+
+        $content = $this->get('/areas/area-cta-links')->assertOk()->getContent();
+
+        // Hero CTA and the closing decision band - two conversion points,
+        // not one per section.
+        $this->assertSame(2, substr_count($content, $expected));
     }
 
     private function createPublishedService(string $name, string $slug): Service
