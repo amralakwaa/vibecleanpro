@@ -30,9 +30,11 @@ class ProjectsIndexController extends Controller
         $serviceFilter = Service::query()->whereKey($request->query('service'))->first();
         $areaFilter = Area::query()->whereKey($request->query('area'))->first();
 
+        // 'page' resolves each entry's URL, 'services' is the real
+        // metadata shown beside the area and completion date.
         $projects = Project::query()
             ->whereHas('page', fn ($query) => $query->published())
-            ->with(['area', 'media'])
+            ->with(['area', 'media', 'page', 'services'])
             ->when($serviceFilter, fn ($query) => $query->whereHas('services', fn ($q) => $q->whereKey($serviceFilter->id)))
             ->when($areaFilter, fn ($query) => $query->where('area_id', $areaFilter->id))
             ->orderByDesc('is_featured')

@@ -22,7 +22,7 @@
 
     <div class="p-6 flex flex-col grow">
         @if ($service->is_featured)
-            <x-public.badge tone="accent" class="mb-3 self-start">الأكثر طلبًا</x-public.badge>
+            <x-public.badge tone="accent" class="mb-3 self-start">خدمة مميزة</x-public.badge>
         @endif
 
         <h3 class="font-semibold text-ink-950">

@@ -24,8 +24,11 @@ class AreasIndexController extends Controller
     {
         $businessProfile = BusinessProfile::query()->first();
 
+        // 'page' is eager-loaded because every directory entry resolves
+        // its URL through UrlResolver::urlForPage().
         $areas = Area::query()
             ->whereHas('page', fn ($query) => $query->published())
+            ->with('page')
             ->withCount('services')
             ->orderBy('sort_order')
             ->get();

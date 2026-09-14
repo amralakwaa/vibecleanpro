@@ -70,6 +70,35 @@ class ServiceDetailTest extends TestCase
      * the page itself cannot reproduce (it only hands $faqs to the second
      * pass), so without this the type filtering would be untested.
      */
+    /**
+     * The related_content block is the one real path that renders
+     * service-card. is_featured is an editor toggle ("خدمة مميزة" in the
+     * admin), not demand data - so the card must say exactly that and
+     * never dress it up as popularity.
+     */
+    public function test_related_service_cards_label_a_featured_service_honestly(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-related-cards');
+        ContentBlock::factory()->for($page)->create(['type' => 'related_content', 'position' => 1, 'data' => ['heading' => 'خدمات ذات صلة']]);
+        $featured = $this->createCompliantServicePage(slug: 'featured-related')->pageable;
+        $featured->update(['name' => 'خدمة-مميزة-فعلًا', 'is_featured' => true]);
+        $plain = $this->createCompliantServicePage(slug: 'plain-related')->pageable;
+        $plain->update(['name' => 'خدمة-عادية-تمامًا', 'is_featured' => false]);
+
+        $html = Blade::render(
+            '<x-public.blocks :blocks="$blocks" :related="$related" related-item-type="service" />',
+            ['blocks' => $page->fresh(['contentBlocks'])->contentBlocks, 'related' => collect([$featured->fresh(['page', 'featuredMedia']), $plain->fresh(['page', 'featuredMedia'])])],
+        );
+
+        $this->assertStringContainsString('خدمة-مميزة-فعلًا', $html);
+        $this->assertStringContainsString('خدمة-عادية-تمامًا', $html);
+        $this->assertSame(1, substr_count($html, 'خدمة مميزة'));
+        $this->assertStringNotContainsString('الأكثر طلبًا', $html);
+        // The badge belongs to the featured card only: it must appear
+        // before the plain card's name, never after it.
+        $this->assertLessThan(mb_strpos($html, 'خدمة-عادية-تمامًا'), mb_strpos($html, 'خدمة مميزة'));
+    }
+
     public function test_blocks_renderer_filters_by_type_so_two_passes_never_overlap(): void
     {
         $page = $this->createCompliantServicePage(slug: 'service-blocks-filter');

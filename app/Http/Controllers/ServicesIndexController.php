@@ -23,9 +23,12 @@ class ServicesIndexController extends Controller
     {
         $businessProfile = BusinessProfile::query()->first();
 
+        // 'page' feeds UrlResolver::urlForPage() for every row and
+        // 'category' drives the index's grouping - both eager-loaded so a
+        // page of services never costs one query per service.
         $services = Service::query()
             ->whereHas('page', fn ($query) => $query->published())
-            ->with('featuredMedia')
+            ->with(['featuredMedia', 'page', 'category'])
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->paginate(12)
