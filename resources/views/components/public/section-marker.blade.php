@@ -10,12 +10,19 @@
     numbering becomes the same decoration it was meant to replace. Pass
     no :number at all for an unnumbered marker.
 
-    Presentational only - the rule is aria-hidden and the label is a plain
-    <p>, so this never competes with the real heading that follows it.
+    The rule is aria-hidden. By default the label is a plain <p>, so this
+    never competes with the real heading that follows it.
+
+    Set :heading="true" when this marker is the section's ONLY label - the
+    label then renders as a real <h2> so the section is reachable by
+    heading navigation, instead of being a section a screen-reader user
+    cannot find. Leave it false wherever a separate <h2> follows, so the
+    same text is never announced twice.
 --}}
 @props([
     'number' => null,
     'label',
+    'heading' => false,
 ])
 
 <div {{ $attributes->class(['flex items-center gap-4']) }}>
@@ -23,7 +30,7 @@
         <span class="font-display text-sm font-medium text-primary-600 tabular-nums">{{ $number }}</span>
     @endif
 
-    <p class="text-sm font-medium tracking-wide text-neutral-500 shrink-0">{{ $label }}</p>
+    <{{ $heading ? 'h2' : 'p' }} class="text-sm font-medium tracking-wide text-neutral-500 shrink-0">{{ $label }}</{{ $heading ? 'h2' : 'p' }}>
 
     <span class="h-px grow bg-neutral-200" aria-hidden="true"></span>
 </div>

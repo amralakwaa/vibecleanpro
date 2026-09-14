@@ -140,14 +140,19 @@ class PublicPageController extends Controller
         $service = $page->pageable;
         $service->load(['featuredMedia', 'category']);
 
-        $areas = $service->areas()->whereHas('page', fn ($query) => $query->published())->get();
+        // 'page' is eager-loaded on every list on this page because the
+        // view resolves each item's URL through UrlResolver::urlForPage().
+        $areas = $service->areas()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->with('page')
+            ->get();
 
         // 'area' and 'media' both eager-loaded here so the view never
         // triggers a query per project to decide before/after vs. after-only
         // rendering (see pages/service.blade.php).
         $projects = $service->projects()
             ->whereHas('page', fn ($query) => $query->published())
-            ->with(['area', 'media'])
+            ->with(['area', 'media', 'page'])
             ->orderByDesc('is_featured')
             ->orderByDesc('completed_at')
             ->limit(6)
@@ -175,12 +180,15 @@ class PublicPageController extends Controller
             ->where('is_active', true)
             ->where(fn ($query) => $query->whereNull('starts_at')->orWhere('starts_at', '<=', now()))
             ->where(fn ($query) => $query->whereNull('ends_at')->orWhere('ends_at', '>=', now()))
-            ->with('featuredMedia')
+            ->with(['featuredMedia', 'page'])
             ->orderBy('sort_order')
             ->limit(3)
             ->get();
 
+        // 'area' eager-loaded because the pull quote prints the customer's
+        // area next to their name when the relation exists.
         $testimonials = $service->testimonials()
+            ->with('area')
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->limit(6)

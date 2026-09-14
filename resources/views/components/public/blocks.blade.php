@@ -8,24 +8,55 @@
     of their own - see ContentBlocks.php's docblock), so the real data for
     them is passed in here rather than re-derived.
 
+    A page that needs one block type somewhere other than its place in the
+    editorial flow does NOT hand-render it. It calls this component twice
+    and filters by TYPE, which keeps all block-data interpretation here:
+
+        <x-public.blocks :blocks="$blocks" :except="['faq']" ... />
+        ...other page sections...
+        <x-public.blocks :blocks="$blocks" :only="['faq']" ... />
+
+    `only` and `except` accept a block type or an array of them. Relative
+    order within each pass is untouched, and because the two passes are
+    disjoint no block can render twice.
+
     @param \Illuminate\Support\Collection<int, \App\Models\ContentBlock> $blocks
     @param \Illuminate\Support\Collection<int, \App\Models\Faq>|null $faqs
     @param \Illuminate\Support\Collection|null $related
     @param string|null $relatedItemType service|area
+    @param string|array|null $only render ONLY these block types
+    @param string|array|null $except render everything but these types
 --}}
-@props(['blocks', 'faqs' => null, 'related' => null, 'relatedItemType' => null])
+@props([
+    'blocks',
+    'faqs' => null,
+    'related' => null,
+    'relatedItemType' => null,
+    'only' => null,
+    'except' => null,
+])
 
 @php
+    $visibleBlocks = $blocks->where('is_active', true)
+        ->when($only !== null, fn ($blocks) => $blocks->whereIn('type', (array) $only))
+        ->when($except !== null, fn ($blocks) => $blocks->whereNotIn('type', (array) $except));
+
+    // Media is preloaded for the blocks this pass will actually render,
+    // so a filtered pass never fetches images for blocks it skips - and a
+    // pass whose blocks reference none skips the query entirely.
     $mediaIds = collect();
-    foreach ($blocks as $block) {
+    foreach ($visibleBlocks as $block) {
         $mediaIds->push($block->data['media_id'] ?? null);
         $mediaIds->push($block->data['background_media_id'] ?? null);
         $mediaIds = $mediaIds->merge($block->data['media_ids'] ?? []);
     }
-    $media = \App\Models\Media::query()->whereIn('id', $mediaIds->filter()->unique())->get()->keyBy('id');
+    $mediaIds = $mediaIds->filter()->unique();
+    $media = $mediaIds->isEmpty()
+        ? collect()
+        : \App\Models\Media::query()->whereIn('id', $mediaIds)->get()->keyBy('id');
 @endphp
 
-@foreach ($blocks->where('is_active', true) as $block)
+@foreach ($visibleBlocks as $block)
     @switch($block->type)
         @case('rich_text')
             <x-public.section>
@@ -67,25 +98,29 @@
         @case('features')
             @php($items = $block->data['items'] ?? [])
             @if (! empty($items))
+                {{-- "What's included" reads as a checklist, not as three
+                     feature cards: a ruled two-column list with one small
+                     check per row - the only icon that earns its place
+                     here, because it is what signals "included". --}}
                 <x-public.section tone="surface">
                     @if (! empty($block->data['heading']))
-                        <x-public.section-header :title="$block->data['heading']" align="center" class="mb-10" />
+                        <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-8">
+                            {{ $block->data['heading'] }}
+                        </h2>
                     @endif
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <ul class="grid md:grid-cols-2 gap-x-12">
                         @foreach ($items as $item)
-                            <div class="flex gap-3">
-                                <span class="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center shrink-0">
-                                    <x-public.icon name="check-circle" class="w-5 h-5" />
-                                </span>
+                            <li class="flex gap-3 border-b border-neutral-200 py-4">
+                                <x-public.icon name="check" class="w-4 h-4 mt-1 text-primary-600 shrink-0" />
                                 <div>
-                                    <p class="font-semibold text-neutral-900">{{ $item['title'] ?? '' }}</p>
+                                    <p class="font-medium text-ink-950">{{ $item['title'] ?? '' }}</p>
                                     @if (! empty($item['description']))
                                         <p class="mt-1 text-sm text-neutral-600 leading-relaxed">{{ $item['description'] }}</p>
                                     @endif
                                 </div>
-                            </div>
+                            </li>
                         @endforeach
-                    </div>
+                    </ul>
                 </x-public.section>
             @endif
             @break
@@ -95,9 +130,11 @@
             @if (! empty($items))
                 <x-public.section>
                     @if (! empty($block->data['heading']))
-                        <x-public.section-header :title="$block->data['heading']" align="center" class="mb-10" />
+                        <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-10">
+                            {{ $block->data['heading'] }}
+                        </h2>
                     @endif
-                    <ol class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <ol class="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-10">
                         @foreach ($items as $index => $item)
                             <x-public.step-card :number="$index + 1" :title="$item['title'] ?? ''" :description="$item['description'] ?? null" />
                         @endforeach
@@ -111,7 +148,9 @@
             @if (! empty($items))
                 <x-public.section tone="surface">
                     @if (! empty($block->data['heading']))
-                        <x-public.section-header :title="$block->data['heading']" align="center" class="mb-10" />
+                        <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-10">
+                            {{ $block->data['heading'] }}
+                        </h2>
                     @endif
                     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                         @foreach ($items as $item)
@@ -140,9 +179,11 @@
             @if ($faqs && $faqs->isNotEmpty())
                 <x-public.section tone="surface">
                     @if (! empty($block->data['heading']))
-                        <x-public.section-header :title="$block->data['heading']" align="center" class="mb-8" />
+                        <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-6">
+                            {{ $block->data['heading'] }}
+                        </h2>
                     @endif
-                    <div class="max-w-2xl mx-auto divide-y divide-neutral-200">
+                    <div class="max-w-2xl divide-y divide-neutral-200 border-t border-neutral-200">
                         @foreach ($faqs as $faq)
                             <x-public.faq-item :question="$faq->question" :answer="$faq->answer" />
                         @endforeach

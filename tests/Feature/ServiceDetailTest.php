@@ -16,6 +16,7 @@ use App\Models\SeoMetadata;
 use App\Models\Service;
 use App\Models\Testimonial;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Blade;
 use Tests\Feature\Seo\Concerns\BuildsSeoFixtures;
 use Tests\TestCase;
 
@@ -61,6 +62,116 @@ class ServiceDetailTest extends TestCase
 
         $response->assertSee('منطقة-منشورة-فعليًا');
         $response->assertDontSee('منطقة-غير-منشورة');
+    }
+
+    /**
+     * Exercises the blocks renderer's own only/except contract, with the
+     * FAQ data deliberately supplied to BOTH passes - that is the case
+     * the page itself cannot reproduce (it only hands $faqs to the second
+     * pass), so without this the type filtering would be untested.
+     */
+    public function test_blocks_renderer_filters_by_type_so_two_passes_never_overlap(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-blocks-filter');
+        ContentBlock::factory()->for($page)->create(['type' => 'features', 'position' => 1, 'data' => ['heading' => 'عنوان المزايا', 'items' => [['title' => 'بند ظاهر']]]]);
+        ContentBlock::factory()->for($page)->create(['type' => 'faq', 'position' => 2, 'data' => ['heading' => 'عنوان الأسئلة']]);
+        Faq::factory()->for($page)->create(['question' => 'سؤال مفلتر؟', 'answer' => 'إجابة مفلترة.']);
+
+        $page = $page->fresh(['contentBlocks']);
+        $faqs = $page->faqs()->where('is_active', true)->get();
+
+        $exceptPass = Blade::render(
+            '<x-public.blocks :blocks="$blocks" :faqs="$faqs" :except="[\'faq\']" />',
+            ['blocks' => $page->contentBlocks, 'faqs' => $faqs],
+        );
+
+        $onlyPass = Blade::render(
+            '<x-public.blocks :blocks="$blocks" :faqs="$faqs" :only="[\'faq\']" />',
+            ['blocks' => $page->contentBlocks, 'faqs' => $faqs],
+        );
+
+        // except: keeps the other blocks, drops the FAQ entirely - even
+        // though the FAQ data was handed to it.
+        $this->assertStringContainsString('عنوان المزايا', $exceptPass);
+        $this->assertStringNotContainsString('عنوان الأسئلة', $exceptPass);
+        $this->assertStringNotContainsString('سؤال مفلتر؟', $exceptPass);
+
+        // only: the mirror image - the FAQ and nothing else.
+        $this->assertSame(1, substr_count($onlyPass, 'عنوان الأسئلة'));
+        $this->assertSame(1, substr_count($onlyPass, 'سؤال مفلتر؟'));
+        $this->assertStringContainsString('إجابة مفلترة.', $onlyPass);
+        $this->assertStringNotContainsString('عنوان المزايا', $onlyPass);
+    }
+
+    public function test_the_faq_block_renders_exactly_once_and_never_in_the_main_block_pass(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-faq-single-pass');
+        ContentBlock::factory()->for($page)->create(['type' => 'faq', 'data' => ['heading' => 'أسئلة تظهر مرة واحدة فقط']]);
+        Faq::factory()->for($page)->create(['question' => 'هل يوجد ضمان؟', 'answer' => 'نلتزم بمراجعة النتيجة معك.']);
+
+        $content = $this->get('/services/service-faq-single-pass')->assertOk()->getContent();
+
+        // The page renders <x-public.blocks> twice (except=faq, then
+        // only=faq); the two passes must be disjoint, so neither the FAQ
+        // heading nor a question may appear more than once.
+        $this->assertSame(1, substr_count($content, 'أسئلة تظهر مرة واحدة فقط'));
+        $this->assertSame(1, substr_count($content, 'هل يوجد ضمان؟'));
+        $this->assertStringContainsString('نلتزم بمراجعة النتيجة معك.', $content);
+    }
+
+    public function test_non_faq_blocks_still_render_in_the_editor_order(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-block-order');
+        ContentBlock::factory()->for($page)->create(['type' => 'features', 'position' => 1, 'data' => ['heading' => 'ماذا تشمل الخدمة', 'items' => [['title' => 'بند أول']]]]);
+        ContentBlock::factory()->for($page)->create(['type' => 'steps', 'position' => 2, 'data' => ['heading' => 'خطوات التنفيذ', 'items' => [['title' => 'المعاينة']]]]);
+        ContentBlock::factory()->for($page)->create(['type' => 'faq', 'position' => 3, 'data' => ['heading' => 'أسئلة شائعة هنا']]);
+        Faq::factory()->for($page)->create(['question' => 'سؤال حقيقي؟', 'answer' => 'إجابة حقيقية.']);
+
+        $content = $this->get('/services/service-block-order')->assertOk()->getContent();
+
+        // Filtering must not reorder what is left in the first pass.
+        $this->assertLessThan(
+            mb_strpos($content, 'خطوات التنفيذ'),
+            mb_strpos($content, 'ماذا تشمل الخدمة'),
+            'Non-FAQ blocks must keep the editor order inside the filtered pass.',
+        );
+
+        // ...and the FAQ must be lifted out of that flow to sit after the
+        // related services and before the closing CTA.
+        $this->assertLessThan(
+            mb_strpos($content, 'أسئلة شائعة هنا'),
+            mb_strpos($content, 'خطوات التنفيذ'),
+            'FAQ must render after the other content blocks, not inside them.',
+        );
+        $this->assertLessThan(
+            mb_strpos($content, 'هل تحتاج'),
+            mb_strpos($content, 'أسئلة شائعة هنا'),
+            'FAQ must render before the final CTA.',
+        );
+    }
+
+    public function test_faq_renders_after_related_services_and_before_the_final_cta(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-faq-after-related');
+        ContentBlock::factory()->for($page)->create(['type' => 'faq', 'data' => ['heading' => 'أسئلة قبل القرار']]);
+        Faq::factory()->for($page)->create(['question' => 'كيف أطلب؟', 'answer' => 'عبر نموذج عرض السعر.']);
+
+        // A sibling service in the same category feeds the related list.
+        $this->createCompliantServicePage(slug: 'sibling-service-for-order');
+        $sibling = Service::where('id', '!=', $page->pageable->id)->first();
+
+        $content = $this->get('/services/service-faq-after-related')->assertOk()->getContent();
+
+        $this->assertLessThan(
+            mb_strpos($content, 'أسئلة قبل القرار'),
+            mb_strpos($content, $sibling->name),
+            'Related services must come before the FAQ.',
+        );
+        $this->assertLessThan(
+            mb_strpos($content, 'هل تحتاج'),
+            mb_strpos($content, 'أسئلة قبل القرار'),
+            'FAQ must come before the final CTA.',
+        );
     }
 
     public function test_the_faq_block_only_renders_when_real_faqs_exist(): void
