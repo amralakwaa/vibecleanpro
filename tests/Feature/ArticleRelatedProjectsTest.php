@@ -18,7 +18,7 @@ use Tests\TestCase;
  * "Related projects" on an Article has no direct schema relation (see the
  * Phase 6 report, item 25) - it is purely inferred at render time from the
  * Service/Area relations the Article already has, never stored. Labeled
- * "مشاريع مرتبطة بالموضوع" (topically related), never "مشاريع المقال"
+ * "مثال من أعمالنا" (an example from our work), never "مشاريع المقال"
  * (the article's own projects), since the relation is inferred, not real.
  */
 class ArticleRelatedProjectsTest extends TestCase
@@ -59,7 +59,7 @@ class ArticleRelatedProjectsTest extends TestCase
         $response = $this->get('/blog/article-area-inference');
 
         $response->assertOk();
-        $response->assertSee('مشاريع مرتبطة بالموضوع');
+        $response->assertSee('مثال من أعمالنا');
         $response->assertSee('project-same-area');
         $response->assertDontSee('مشاريع المقال');
     }
@@ -98,7 +98,7 @@ class ArticleRelatedProjectsTest extends TestCase
         $response = $this->get('/blog/article-with-no-topics');
 
         $response->assertOk();
-        $response->assertDontSee('مشاريع مرتبطة بالموضوع');
+        $response->assertDontSee('مثال من أعمالنا');
     }
 
     public function test_an_unpublished_project_is_never_shown_even_if_topically_related(): void

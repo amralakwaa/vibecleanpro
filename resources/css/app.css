@@ -181,3 +181,184 @@
         }
     }
 }
+
+/*
+ * Prose: styling for editor-authored HTML (the rich_text content block).
+ *
+ * Hand-written on purpose - @tailwindcss/typography is not installed, and
+ * its defaults are tuned for English. Arabic needs a taller line-height,
+ * a slightly larger body, and no italics (Arabic has none). Headings use
+ * the display face at the site's quiet 500 weight, never bold, so a long
+ * article reads as considered rather than shouted. Links are told apart
+ * by colour AND underline, so colour alone never carries meaning.
+ *
+ * `.prose-reading` is added on pages whose job is reading (Article): it
+ * steps the body up one size and loosens the measure a touch.
+ */
+@layer components {
+    .prose {
+        color: var(--color-neutral-700);
+        font-size: 1.0625rem;
+        line-height: 1.9;
+    }
+
+    .prose-reading {
+        font-size: 1.125rem;
+        line-height: 1.95;
+    }
+
+    .prose > :first-child {
+        margin-top: 0;
+    }
+
+    .prose > :last-child {
+        margin-bottom: 0;
+    }
+
+    .prose p {
+        margin-block: 1.25em;
+    }
+
+    .prose h2,
+    .prose h3,
+    .prose h4 {
+        font-family: var(--font-display);
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        color: var(--color-ink-950);
+        text-wrap: balance;
+    }
+
+    .prose h2 {
+        font-size: 1.5rem;
+        line-height: 1.3;
+        margin-block: 2.5em 0.75em;
+    }
+
+    .prose h3 {
+        font-size: 1.25rem;
+        line-height: 1.35;
+        margin-block: 2em 0.6em;
+    }
+
+    .prose h4 {
+        font-size: 1.0625rem;
+        margin-block: 1.6em 0.5em;
+    }
+
+    @media (min-width: 768px) {
+        .prose h2 {
+            font-size: 1.875rem;
+        }
+
+        .prose h3 {
+            font-size: 1.5rem;
+        }
+    }
+
+    .prose ul,
+    .prose ol {
+        margin-block: 1.25em;
+        padding-inline-start: 1.5em;
+    }
+
+    .prose ul {
+        list-style: disc;
+    }
+
+    .prose ol {
+        list-style: decimal;
+    }
+
+    .prose li {
+        margin-block: 0.4em;
+        line-height: 1.8;
+    }
+
+    .prose li::marker {
+        color: var(--color-primary-600);
+    }
+
+    .prose a {
+        color: var(--color-primary-700);
+        text-decoration: underline;
+        text-underline-offset: 0.25em;
+        text-decoration-color: var(--color-primary-300);
+        transition: text-decoration-color 150ms;
+    }
+
+    .prose a:hover {
+        text-decoration-color: var(--color-primary-700);
+    }
+
+    .prose strong {
+        color: var(--color-ink-950);
+        font-weight: 600;
+    }
+
+    .prose blockquote {
+        margin-block: 2em;
+        padding-inline-start: 1.25em;
+        border-inline-start: 2px solid var(--color-primary-600);
+        font-family: var(--font-display);
+        font-weight: 300;
+        font-size: 1.25em;
+        line-height: 1.6;
+        color: var(--color-ink-950);
+        font-style: normal;
+    }
+
+    .prose blockquote p {
+        margin-block: 0;
+    }
+
+    .prose img {
+        display: block;
+        width: 100%;
+        height: auto;
+        margin-block: 2em;
+        border-radius: 0;
+    }
+
+    .prose figure {
+        margin-block: 2em;
+    }
+
+    .prose figcaption {
+        margin-top: 0.5em;
+        font-size: 0.875rem;
+        color: var(--color-neutral-500);
+    }
+
+    .prose hr {
+        margin-block: 3em;
+        border: 0;
+        border-top: 1px solid var(--color-neutral-200);
+    }
+
+    /* display:block lets a wide table scroll inside its own box on a
+       phone instead of widening the whole page. */
+    .prose table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+        margin-block: 2em;
+        border-collapse: collapse;
+        font-size: 0.9375rem;
+        line-height: 1.6;
+    }
+
+    .prose th,
+    .prose td {
+        padding: 0.75em 0.5em;
+        text-align: start;
+        vertical-align: top;
+        border-bottom: 1px solid var(--color-neutral-200);
+    }
+
+    .prose th {
+        font-weight: 500;
+        color: var(--color-ink-950);
+        border-bottom-color: var(--color-neutral-300);
+    }
+}

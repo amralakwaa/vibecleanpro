@@ -26,6 +26,13 @@
     @param string|null $relatedItemType service|area
     @param string|array|null $only render ONLY these block types
     @param string|array|null $except render everything but these types
+    @param string $width container width for the READING blocks
+           (rich_text, image, gallery, faq, cta). Pass "narrow" on a page
+           whose job is reading, so long prose sits in a comfortable
+           Arabic measure instead of spanning the full container; the
+           grid-shaped blocks (features, steps, packages, related_content)
+           keep the default width regardless, because a four-column grid
+           has no business inside a reading column.
 --}}
 @props([
     'blocks',
@@ -34,6 +41,7 @@
     'relatedItemType' => null,
     'only' => null,
     'except' => null,
+    'width' => 'default',
 ])
 
 @php
@@ -59,8 +67,12 @@
 @foreach ($visibleBlocks as $block)
     @switch($block->type)
         @case('rich_text')
-            <x-public.section>
-                <div class="prose prose-neutral max-w-none prose-headings:font-bold prose-a:text-primary-600">
+            {{-- Editor HTML is styled by the `.prose` system in app.css
+                 (a hand-written, Arabic-tuned set - NOT the Tailwind
+                 typography plugin, which is not installed). `prose-reading`
+                 steps the body up a size for a page whose job is reading. --}}
+            <x-public.section :width="$width">
+                <div @class(['prose', 'prose-reading' => $width === 'narrow'])>
                     {!! $block->data['content'] ?? '' !!}
                 </div>
             </x-public.section>
@@ -69,10 +81,10 @@
         @case('image')
             @php($img = $media->get($block->data['media_id'] ?? null))
             @if ($img)
-                <x-public.section>
+                <x-public.section :width="$width">
                     <figure>
                         <img src="{{ $img->url() }}" alt="{{ $img->alt_text ?? '' }}" loading="lazy"
-                            class="w-full rounded-2xl" width="{{ $img->width }}" height="{{ $img->height }}">
+                            class="w-full" width="{{ $img->width }}" height="{{ $img->height }}">
                         @if (! empty($block->data['caption']))
                             <figcaption class="mt-2 text-sm text-neutral-500 text-center">{{ $block->data['caption'] }}</figcaption>
                         @endif
@@ -84,11 +96,11 @@
         @case('gallery')
             @php($images = collect($block->data['media_ids'] ?? [])->map(fn ($id) => $media->get($id))->filter())
             @if ($images->isNotEmpty())
-                <x-public.section>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <x-public.section :width="$width">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-px bg-neutral-200">
                         @foreach ($images as $img)
                             <img src="{{ $img->url() }}" alt="{{ $img->alt_text ?? '' }}" loading="lazy"
-                                class="w-full aspect-square object-cover rounded-xl">
+                                class="w-full aspect-square object-cover bg-neutral-50">
                         @endforeach
                     </div>
                 </x-public.section>
@@ -170,14 +182,14 @@
             @break
 
         @case('cta')
-            <x-public.section>
+            <x-public.section :width="$width">
                 <x-public.cta :title="$block->data['heading'] ?? ''" :whatsapp-url="$block->data['button_url'] ?? null" />
             </x-public.section>
             @break
 
         @case('faq')
             @if ($faqs && $faqs->isNotEmpty())
-                <x-public.section tone="surface">
+                <x-public.section tone="surface" :width="$width">
                     @if (! empty($block->data['heading']))
                         <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-6">
                             {{ $block->data['heading'] }}
