@@ -213,8 +213,25 @@ class PublicPageController extends Controller
         /** @var Area $area */
         $area = $page->pageable;
 
-        $services = $area->services()->whereHas('page', fn ($query) => $query->published())->with('featuredMedia')->get();
-        $projects = $area->projects()->whereHas('page', fn ($query) => $query->published())->with('media')->limit(6)->get();
+        // The service_area pivot's is_active flag is a separate "is this
+        // link currently on" switch from the Service's own Page status -
+        // both must hold for the pairing to be real right now.
+        $services = $area->services()
+            ->wherePivot('is_active', true)
+            ->whereHas('page', fn ($query) => $query->published())
+            ->with('featuredMedia')
+            ->get();
+
+        // 'media' eager-loaded so the view never triggers a query per
+        // project to decide before/after vs. after-only rendering (see
+        // pages/area.blade.php and the identical rule in renderService()).
+        $projects = $area->projects()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->with('media')
+            ->orderByDesc('is_featured')
+            ->orderByDesc('completed_at')
+            ->limit(6)
+            ->get();
 
         $nearbyAreas = Area::query()
             ->whereKeyNot($area->id)
@@ -222,6 +239,32 @@ class PublicPageController extends Controller
             ->when($area->area_group_id, fn ($query) => $query->where('area_group_id', $area->area_group_id))
             ->withCount('services')
             ->limit(6)
+            ->get();
+
+        // Only offers that are Active right now - same SQL-level rule as
+        // renderService() (never Scheduled, never Expired; see that
+        // method's comment for why this is done in SQL, not fetch-then-
+        // filter in PHP).
+        $offers = $area->offers()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->where('is_active', true)
+            ->where(fn ($query) => $query->whereNull('starts_at')->orWhere('starts_at', '<=', now()))
+            ->where(fn ($query) => $query->whereNull('ends_at')->orWhere('ends_at', '>=', now()))
+            ->with('featuredMedia')
+            ->orderBy('sort_order')
+            ->limit(3)
+            ->get();
+
+        $testimonials = $area->testimonials()
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit(6)
+            ->get();
+
+        $articles = $area->articles()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->with(['featuredMedia', 'category'])
+            ->limit(3)
             ->get();
 
         return response()->view('pages.area', [
@@ -233,6 +276,9 @@ class PublicPageController extends Controller
             'services' => $services,
             'projects' => $projects,
             'nearbyAreas' => $nearbyAreas,
+            'offers' => $offers,
+            'testimonials' => $testimonials,
+            'articles' => $articles,
         ], 200);
     }
 
