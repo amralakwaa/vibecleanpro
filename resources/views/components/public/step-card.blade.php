@@ -16,7 +16,7 @@
     <span class="relative mx-auto w-12 h-12 rounded-full bg-primary-700 text-white flex items-center justify-center font-semibold">
         {{ $number }}
     </span>
-    <p class="mt-4 font-semibold text-primary-900">{{ $title }}</p>
+    <p class="mt-4 font-semibold text-ink-950">{{ $title }}</p>
     @if ($description)
         <p class="mt-1 text-sm text-neutral-600 leading-relaxed">{{ $description }}</p>
     @endif

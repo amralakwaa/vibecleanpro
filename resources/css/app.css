@@ -10,86 +10,102 @@
  * asset pipeline (see app/Providers/Filament/AdminPanelProvider.php - it
  * never references this file), so nothing here touches /admin.
  *
- * Brand direction: "Deep Petrol Ink" - Premium Professional Space Care,
- * light-first. The site's canvas is warm ivory and white; Deep Petrol is
- * an IDENTITY color (headings, icons, borders, small fills, and two
- * deliberate dark bands - the CTA band and the footer, used the way a
- * premium site bookends a light page, not because the site is dark) -
- * never a full-page background. Terracotta is reserved for the CTA
- * action alone, replacing the earlier gold entirely. One typeface, IBM
- * Plex Sans Arabic, covers both Arabic and Latin glyphs (the brand name
- * "Vibe Clean Pro" included); this phase reduces how much of the site
- * leans on its boldest weight so the system reads as quiet-premium
- * rather than SaaS-bold - see the base layer below and
- * section-header.blade.php.
+ * Brand direction: "Blue / Deep Navy / White" - a clear, strong, clean
+ * color language, light-first. Roles are separated deliberately so the
+ * conversion action never loses its exclusivity:
+ *
+ *   - `ink` (Deep Navy #071228) is the IDENTITY color: headings, the
+ *     wordmark, and every dark surface (the CTA band, the footer, and
+ *     the B2B register). Dark surfaces must always use `ink`, never a
+ *     dark shade of `primary` - a dark BLUE band is not this brand.
+ *   - `primary` (Blue #2563EB) is the ACTION color. A SOLID blue fill
+ *     means "this converts" (request a quote, submit) and nothing else.
+ *     Blue as TEXT (links, eyebrows, small labels) and as a light tint
+ *     (`primary-50` chips) is fine - those are not fills, so they do not
+ *     dilute the button.
+ *   - `success` (#10B981) covers WhatsApp and positive/success states
+ *     only, and never competes with blue as the main CTA. Filled green
+ *     uses `success-700` (#047857), not `success-500`: white text on
+ *     #10B981 is only 2.6:1 and fails WCAG AA, while #047857 reaches
+ *     4.8:1.
+ *   - White + `#F9FAFB` carry 90%+ of the site's surface area.
+ *
+ * Retired in this migration: the Terracotta `accent` ramp and the unused
+ * Sage Teal `secondary` ramp. Neutrals moved from warm stone to a cool
+ * gray, because warm neutrals read muddy against a cool #F9FAFB canvas.
+ *
+ * One typeface, IBM Plex Sans Arabic, covers both Arabic and Latin glyphs
+ * (the brand name "Vibe Clean Pro" included); the base layer below keeps
+ * headings at 500 so the system reads considered rather than SaaS-bold.
  */
 @theme {
     --font-sans: 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 
-    /* Primary - Deep Petrol Ink. An identity color: text, icon badges,
-       borders, links, and two deliberate dark bands (CTA + footer) -
-       never the page's own background. */
-    --color-primary-50: #eff5f3;
-    --color-primary-100: #dbeae6;
-    --color-primary-200: #b8d5cc;
-    --color-primary-300: #8fb8ac;
-    --color-primary-400: #63988a;
-    --color-primary-500: #457a6c;
-    --color-primary-600: #305f53;
-    --color-primary-700: #234a41;
-    --color-primary-800: #1a3931;
-    --color-primary-900: #132a24;
-    --color-primary-950: #0a1815;
+    /* Display face, for editorial headlines only (hero H1, moment titles,
+       the pull quote) - never for body, labels, or UI. Readex Pro carries
+       Arabic and Latin and sits at a lower stroke contrast than Plex at
+       large sizes, which is what gives a big Arabic headline presence
+       without shouting.
+       SINGLE POINT OF CONTROL: to fall back to a Plex-only site, change
+       this one value to match --font-sans; every `font-display` usage
+       follows automatically and no markup needs touching. */
+    --font-display: 'Readex Pro', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif;
 
-    /* Secondary - Quiet Sage Teal, for soft backgrounds/badges/secondary
-       states only, never a competing second identity color. */
-    --color-secondary-50: #f4f7f5;
-    --color-secondary-100: #e6ede9;
-    --color-secondary-200: #ccdbd3;
-    --color-secondary-300: #abc2b7;
-    --color-secondary-400: #86a398;
-    --color-secondary-500: #67857a;
-    --color-secondary-600: #506b61;
-    --color-secondary-700: #40564e;
-    --color-secondary-800: #34453f;
-    --color-secondary-900: #2c3934;
-    --color-secondary-950: #171f1c;
+    /* Primary - Action Blue. A SOLID fill means "this converts" and is
+       reserved for conversion actions; blue as text (links, eyebrows) or
+       as a light tint (primary-50 icon chips) is not a fill and is free
+       to use. Never use a dark shade of this ramp as a dark surface -
+       that is `ink`'s job. */
+    --color-primary-50: #eff5ff;
+    --color-primary-100: #dbe8fe;
+    --color-primary-200: #bfd7fe;
+    --color-primary-300: #93bbfd;
+    --color-primary-400: #609afa;
+    --color-primary-500: #3b7cf6;
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4fd8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+    --color-primary-950: #172554;
 
-    /* Accent - Terracotta. Reserved for the CTA action alone (WhatsApp /
-       Call / Request Quote) - never decorative, never a second brand
-       color. Replaces the earlier gold entirely. */
-    --color-accent-50: #fbf2ee;
-    --color-accent-100: #f5dfd5;
-    --color-accent-200: #eac0ae;
-    --color-accent-300: #dc9c82;
-    --color-accent-400: #ca7a5b;
-    --color-accent-500: #b5603d;
-    --color-accent-600: #954c2f;
-    --color-accent-700: #783d26;
-    --color-accent-800: #613224;
-    --color-accent-900: #4f2a20;
-    --color-accent-950: #2b1611;
+    /* Ink - Deep Navy. The identity color: headings, the wordmark, and
+       every dark surface on the site (CTA band, footer, B2B register). */
+    --color-ink-50: #f4f6f9;
+    --color-ink-100: #e4e9f0;
+    --color-ink-200: #c8d2e0;
+    --color-ink-300: #9faec5;
+    --color-ink-400: #6d80a0;
+    --color-ink-500: #4a5c7c;
+    --color-ink-600: #344563;
+    --color-ink-700: #243350;
+    --color-ink-800: #16233d;
+    --color-ink-900: #0c1830;
+    --color-ink-950: #071228;
 
-    /* Neutral - warm graphite (not cold/clinical gray), used for nearly
-       all text, borders, and surface distinctions. */
-    --color-neutral-50: #fafaf9;
-    --color-neutral-100: #f5f5f4;
-    --color-neutral-200: #e7e5e4;
-    --color-neutral-300: #d6d3d1;
-    --color-neutral-400: #a8a29e;
-    --color-neutral-500: #78716c;
-    --color-neutral-600: #57534e;
-    --color-neutral-700: #44403c;
-    --color-neutral-800: #292524;
-    --color-neutral-900: #1c1917;
-    --color-neutral-950: #0f0e0d;
+    /* Neutral - cool gray. Deliberately cool (not the previous warm
+       stone): warm neutrals read muddy against the cool #F9FAFB canvas.
+       neutral-50 is that canvas value exactly. */
+    --color-neutral-50: #f9fafb;
+    --color-neutral-100: #f3f4f6;
+    --color-neutral-200: #e5e7eb;
+    --color-neutral-300: #d1d5db;
+    --color-neutral-400: #9ca3af;
+    --color-neutral-500: #6b7280;
+    --color-neutral-600: #4b5563;
+    --color-neutral-700: #374151;
+    --color-neutral-800: #1f2937;
+    --color-neutral-900: #111827;
+    --color-neutral-950: #030712;
 
-    /* Semantic status colors - kept separate from the brand accent so a
-       form error/success is never confused with a marketing CTA. */
-    --color-success-50: #f0fdf4;
-    --color-success-500: #22a35a;
-    --color-success-600: #178048;
+    /* Semantic status colors. success doubles as the WhatsApp color -
+       success-500 for icons/indicators, success-700 for any FILLED
+       surface that carries white text (see the contrast note above). */
+    --color-success-50: #ecfdf5;
+    --color-success-100: #d1fae5;
+    --color-success-500: #10b981;
+    --color-success-600: #059669;
+    --color-success-700: #047857;
     --color-warning-50: #fffbeb;
     --color-warning-500: #d97706;
     --color-warning-600: #b45309;
@@ -99,12 +115,11 @@
 
     /* Semantic aliases: every component should reach for these, not a raw
        palette shade, so the whole site can be retinted from this file
-       alone. Background is a distinct warm ivory, not neutral-50 - this
-       is the literal "light-first, ivory + white" canvas the brand
-       direction calls for. */
-    --color-background: #faf6ef;
+       alone. */
+    --color-background: #f9fafb;
     --color-surface: #ffffff;
-    --color-text-primary: var(--color-neutral-900);
+    --color-surface-deep: var(--color-ink-950);
+    --color-text-primary: var(--color-ink-950);
     --color-text-secondary: var(--color-neutral-600);
     --color-text-inverted: #ffffff;
     --color-border: var(--color-neutral-200);

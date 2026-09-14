@@ -18,7 +18,7 @@
                 @if ($whatsappUrl || $phoneUrl)
                     <div class="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
                         @if ($whatsappUrl)
-                            <x-public.button :href="$whatsappUrl" external variant="cta" icon="whatsapp">تواصل الآن عبر واتساب</x-public.button>
+                            <x-public.button :href="$whatsappUrl" external variant="whatsapp" icon="whatsapp">تواصل الآن عبر واتساب</x-public.button>
                         @endif
                         @if ($phoneUrl)
                             <x-public.button :href="$phoneUrl" variant="secondary" icon="phone">اتصل بنا الآن</x-public.button>

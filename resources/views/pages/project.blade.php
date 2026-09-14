@@ -9,12 +9,12 @@
 
 <x-layouts.public :seo="$seo" :business-profile="$businessProfile">
     <x-public.hero :heading="$page->title" :image="$afterImage" :breadcrumbs="$seo->breadcrumbs">
-        <div class="mt-5 flex flex-wrap items-center gap-3 text-sm text-primary-100">
+        <div class="mt-5 flex flex-wrap items-center gap-3 text-sm text-neutral-600">
             @if ($project->area)
                 <span class="inline-flex items-center gap-1.5">
                     <x-public.icon name="map-pin" class="w-4 h-4" />
                     @if ($linkedArea)
-                        <a href="{{ $urlResolver->urlForPage($linkedArea->page) }}" class="hover:text-white underline-offset-2 hover:underline">{{ $project->area->name }}</a>
+                        <a href="{{ $urlResolver->urlForPage($linkedArea->page) }}" class="hover:text-primary-700 underline-offset-2 hover:underline">{{ $project->area->name }}</a>
                     @else
                         {{ $project->area->name }}
                     @endif

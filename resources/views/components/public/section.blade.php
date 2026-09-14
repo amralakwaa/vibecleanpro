@@ -7,6 +7,7 @@
     'tone' => 'default', // default | surface | primary | muted
     'width' => 'default',
     'as' => 'section',
+    'density' => 'normal', // tight | normal | feature
 ])
 
 @php
@@ -14,11 +15,21 @@
         'default' => '',
         'surface' => 'bg-white',
         'muted' => 'bg-neutral-100',
-        'primary' => 'bg-primary-900 text-white',
+        'primary' => 'bg-ink-950 text-white',
+    ];
+
+    // `normal` is deliberately the previous site-wide value, so every
+    // page that does not opt in keeps its exact current rhythm. `tight`
+    // is for a supporting strip that belongs to the block above it;
+    // `feature` is for a moment that should be allowed to breathe.
+    $densities = [
+        'tight' => 'py-8 md:py-12',
+        'normal' => 'py-14 md:py-20',
+        'feature' => 'py-20 md:py-32',
     ];
 @endphp
 
-<{{ $as }} {{ $attributes->class(['py-14 md:py-20', $tones[$tone]]) }}>
+<{{ $as }} {{ $attributes->class([$densities[$density], $tones[$tone]]) }}>
     <x-public.container :width="$width">
         {{ $slot }}
     </x-public.container>

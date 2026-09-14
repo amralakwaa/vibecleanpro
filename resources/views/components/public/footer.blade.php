@@ -11,7 +11,7 @@
     'phoneUrl' => null,
 ])
 
-<footer class="bg-primary-950 text-primary-100">
+<footer class="bg-ink-950 text-ink-200">
     <x-public.container width="wide" class="py-14">
         <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
             <div>
@@ -86,7 +86,7 @@
             </div>
         </div>
 
-        <div class="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-primary-200/80">
+        <div class="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-300/80">
             <p>&copy; {{ now()->year }} {{ $businessProfile->name ?? config('app.name') }}. جميع الحقوق محفوظة.</p>
 
             @if ($legalLinks)

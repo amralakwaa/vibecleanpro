@@ -33,8 +33,7 @@
         <div class="mt-7 flex flex-col sm:flex-row items-center gap-3">
             <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle">اطلب عرض سعر</x-public.button>
             @if ($whatsappUrl)
-                <x-public.button :href="$whatsappUrl" external variant="secondary" size="lg" icon="whatsapp"
-                    class="!bg-white/10 !text-white !border-white/20 hover:!bg-white/20">
+                <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp">
                     واتساب
                 </x-public.button>
             @endif

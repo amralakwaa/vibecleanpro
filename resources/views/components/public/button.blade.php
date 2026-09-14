@@ -19,10 +19,15 @@
     ];
 
     $variants = [
-        // Reserved for the site's three conversion actions: WhatsApp,
-        // Call, Request Quote - keep it exclusive so it stays meaningful.
-        'cta' => 'bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700 shadow-sm shadow-accent-900/10',
-        'primary' => 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm shadow-primary-900/10',
+        // The one conversion fill. Solid blue means "this converts" -
+        // keep it exclusive (request a quote, submit) so it stays
+        // meaningful. WhatsApp has its own green variant below so the
+        // two channels never compete as identical blue buttons.
+        'cta' => 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm shadow-ink-950/10',
+        // WhatsApp. Filled green uses success-700, not success-500:
+        // white on #10B981 is 2.6:1 and fails WCAG AA, #047857 is 4.8:1.
+        'whatsapp' => 'bg-success-700 text-white hover:bg-success-600 active:bg-success-700 shadow-sm shadow-ink-950/10',
+        'primary' => 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm shadow-ink-950/10',
         'secondary' => 'bg-white text-primary-700 border border-neutral-300 hover:border-primary-400 hover:bg-primary-50 active:bg-primary-100',
         'ghost' => 'bg-transparent text-primary-700 hover:bg-primary-50 active:bg-primary-100',
         'text' => 'bg-transparent text-primary-700 hover:text-primary-800 px-0 py-0 underline-offset-4 hover:underline',

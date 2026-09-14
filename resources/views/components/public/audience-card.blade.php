@@ -12,7 +12,7 @@
     </span>
 
     <div>
-        <h3 class="text-lg font-semibold text-primary-900">
+        <h3 class="text-lg font-semibold text-ink-950">
             <a href="{{ $url }}" class="hover:text-primary-700 transition-colors">
                 <span class="absolute inset-0"></span>
                 {{ $title }}

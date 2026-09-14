@@ -4,7 +4,7 @@
     $tones = [
         'primary' => 'bg-primary-50 text-primary-700',
         'neutral' => 'bg-neutral-100 text-neutral-700',
-        'accent' => 'bg-accent-50 text-accent-700',
+        'accent' => 'bg-ink-100 text-ink-900',
         'success' => 'bg-success-50 text-success-600',
     ];
 @endphp

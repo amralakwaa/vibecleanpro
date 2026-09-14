@@ -6,7 +6,7 @@
 
 <x-layouts.public :seo="$seo" :business-profile="$businessProfile">
     <x-public.hero :heading="$page->title" :subheading="$article->excerpt" :image="$article->featuredMedia" :breadcrumbs="$seo->breadcrumbs">
-        <div class="mt-5 flex flex-wrap items-center gap-3 text-sm text-primary-100">
+        <div class="mt-5 flex flex-wrap items-center gap-3 text-sm text-neutral-600">
             @if ($article->category)
                 <x-public.badge tone="accent">{{ $article->category->name }}</x-public.badge>
             @endif

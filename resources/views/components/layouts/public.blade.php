@@ -6,11 +6,20 @@
 
     $whatsappUrl = $businessProfile?->whatsappUrl();
     $phoneUrl = $businessProfile?->phoneUrl();
+    $quoteUrl = route('public.quote');
 
+    // Pages opt into a transparent-until-scrolled header by setting
+    // $headerOverlay - only correct over a full-bleed dark hero image.
+    $headerOverlay ??= false;
+
+    // "للشركات" points at the existing business-context contact route
+    // (see ContactController) - the B2B half of the business was
+    // previously unreachable from the main navigation entirely.
     $navItems = [
         'خدماتنا' => route('public.services.index'),
-        'مناطق التغطية' => route('public.areas.index'),
         'أعمالنا' => route('public.projects.index'),
+        'مناطق التغطية' => route('public.areas.index'),
+        'للشركات' => route('public.contact', ['for' => 'business']),
         'المدونة' => route('public.blog.index'),
         'العروض' => route('public.offers.index'),
         'تواصل معنا' => route('public.contact'),
@@ -60,7 +69,7 @@
     @endforeach
 
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
-    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=ibm-plex-sans-arabic:400,500,600,700&display=swap">
+    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=ibm-plex-sans-arabic:400,500,600,700|readex-pro:300,400,500&display=swap">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-background text-text-primary font-sans antialiased">
@@ -68,7 +77,15 @@
         تخطَّ إلى المحتوى
     </a>
 
-    <x-public.header :business-profile="$businessProfile" :nav-items="$navItems" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
+    <x-public.header
+        :business-profile="$businessProfile"
+        :nav-items="$navItems"
+        :primary-nav="collect($navItems)->except(['المدونة', 'العروض'])->all()"
+        :quote-url="$quoteUrl"
+        :whatsapp-url="$whatsappUrl"
+        :phone-url="$phoneUrl"
+        :overlay="$headerOverlay"
+    />
 
     <main id="main-content" class="pb-24 lg:pb-0">
         {{ $slot }}

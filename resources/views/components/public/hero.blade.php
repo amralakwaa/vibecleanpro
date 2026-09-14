@@ -31,12 +31,12 @@
 
                 @if ($eyebrow)
                     <p class="flex items-center gap-2 text-sm font-medium tracking-wide text-primary-700 mb-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-accent-500"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-primary-600"></span>
                         {{ $eyebrow }}
                     </p>
                 @endif
 
-                <h1 class="text-3xl md:text-5xl font-semibold tracking-tight text-primary-900 text-balance">
+                <h1 class="text-3xl md:text-5xl font-semibold tracking-tight text-ink-950 text-balance">
                     {{ $heading }}
                 </h1>
 
@@ -56,7 +56,7 @@
             @if ($imageUrl)
                 <div class="relative">
                     <img src="{{ $imageUrl }}" alt="{{ $imageAlt }}"
-                        class="w-full aspect-[4/3] object-cover rounded-3xl shadow-sm shadow-primary-900/10"
+                        class="w-full aspect-[4/3] object-cover rounded-3xl shadow-sm shadow-ink-950/10"
                         loading="eager" width="900" height="675">
                 </div>
             @endif

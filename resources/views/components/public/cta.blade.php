@@ -12,20 +12,19 @@
 ])
 
 @php
-    // Only one terracotta ("cta" variant) button per screen (see the
-    // design-system rules): when a quoteUrl is given it takes the accent
-    // slot as the primary action, and WhatsApp steps down to the same
-    // muted secondary style phone already uses. Without a quoteUrl (every
-    // pre-existing caller), WhatsApp keeps its original accent styling -
-    // fully backward compatible.
+    // Three distinct roles on this dark navy band, so nothing competes:
+    // the blue "cta" fill is the conversion action (request a quote),
+    // WhatsApp is always its own green channel, and phone stays a muted
+    // ghost. $secondaryClass is the ghost treatment and is only ever
+    // correct ON a dark surface - never reuse it over a light one.
     $secondaryClass = '!bg-white/10 !text-white !border-white/20 hover:!bg-white/20';
 @endphp
 
-<div {{ $attributes->class(['rounded-3xl bg-primary-900 text-white px-6 py-10 md:px-12 md:py-14 text-center']) }}>
+<div {{ $attributes->class(['rounded-3xl bg-ink-950 text-white px-6 py-10 md:px-12 md:py-14 text-center']) }}>
     <h2 class="text-2xl md:text-3xl font-bold">{{ $title }}</h2>
 
     @if ($description)
-        <p class="mt-3 text-primary-100 max-w-xl mx-auto">{{ $description }}</p>
+        <p class="mt-3 text-ink-200 max-w-xl mx-auto">{{ $description }}</p>
     @endif
 
     @if ($quoteUrl || $whatsappUrl || $phoneUrl)
@@ -37,8 +36,7 @@
             @endif
 
             @if ($whatsappUrl)
-                <x-public.button href="{{ $whatsappUrl }}" external :variant="$quoteUrl ? 'secondary' : 'cta'" size="lg" icon="whatsapp"
-                    :class="$quoteUrl ? $secondaryClass : ''">
+                <x-public.button href="{{ $whatsappUrl }}" external variant="whatsapp" size="lg" icon="whatsapp">
                     تواصل عبر واتساب
                 </x-public.button>
             @endif

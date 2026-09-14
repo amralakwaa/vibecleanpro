@@ -14,7 +14,7 @@
             <img src="{{ $service->featuredMedia->url() }}" alt="{{ $service->featuredMedia->alt_text }}"
                 loading="lazy" class="w-full h-full object-cover" width="480" height="360">
         @else
-            <div class="w-full h-full flex items-center justify-center text-primary-200">
+            <div class="w-full h-full flex items-center justify-center text-primary-300">
                 <x-public.icon name="sparkles" class="w-10 h-10" />
             </div>
         @endif
@@ -25,7 +25,7 @@
             <x-public.badge tone="accent" class="mb-3 self-start">الأكثر طلبًا</x-public.badge>
         @endif
 
-        <h3 class="font-semibold text-primary-900">
+        <h3 class="font-semibold text-ink-950">
             <a href="{{ $url }}" class="hover:text-primary-700 transition-colors">
                 <span class="absolute inset-0"></span>
                 {{ $service->name }}

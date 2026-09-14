@@ -22,7 +22,7 @@
 
     <x-public.before-after :before="$before" :after="$after" />
 
-    <h3 class="mt-4 font-semibold text-primary-900">
+    <h3 class="mt-4 font-semibold text-ink-950">
         <a href="{{ $url }}" class="hover:text-primary-700 transition-colors">{{ $project->title }}</a>
     </h3>
 </x-public.card>

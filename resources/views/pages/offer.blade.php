@@ -11,17 +11,17 @@
     <x-public.hero :heading="$page->title" :image="$offer->featuredMedia" :breadcrumbs="$seo->breadcrumbs">
         <div class="mt-5 flex flex-wrap items-center gap-3">
             @if ($offer->discount_label)
-                <x-public.badge tone="accent" class="!bg-accent-500 !text-white text-sm px-4 py-1.5">{{ $offer->discount_label }}</x-public.badge>
+                <x-public.badge tone="accent" class="!bg-ink-950 !text-white text-sm px-4 py-1.5">{{ $offer->discount_label }}</x-public.badge>
             @endif
 
             @if ($availability === OfferAvailability::Expired)
-                <x-public.badge tone="neutral" class="!bg-white/10 !text-white">انتهى العرض</x-public.badge>
+                <x-public.badge tone="neutral">انتهى العرض</x-public.badge>
             @elseif ($availability === OfferAvailability::Scheduled)
-                <x-public.badge tone="neutral" class="!bg-white/10 !text-white">
+                <x-public.badge tone="neutral">
                     يبدأ في {{ $offer->starts_at->translatedFormat('j F Y') }}
                 </x-public.badge>
             @elseif ($offer->ends_at)
-                <span class="text-sm text-primary-100">ساري حتى {{ $offer->ends_at->translatedFormat('j F Y') }}</span>
+                <span class="text-sm text-neutral-600">ساري حتى {{ $offer->ends_at->translatedFormat('j F Y') }}</span>
             @endif
         </div>
     </x-public.hero>

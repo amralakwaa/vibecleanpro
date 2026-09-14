@@ -16,7 +16,7 @@
         <p class="text-sm font-semibold text-primary-600 mb-2">{{ $eyebrow }}</p>
     @endif
 
-    <{{ $tag }} class="text-2xl md:text-3xl font-semibold tracking-tight text-primary-900">
+    <{{ $tag }} class="text-2xl md:text-3xl font-semibold tracking-tight text-ink-950">
         {{ $title }}
     </{{ $tag }}>
 

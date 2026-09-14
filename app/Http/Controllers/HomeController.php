@@ -33,9 +33,12 @@ class HomeController extends Controller
     {
         $profile = BusinessProfile::query()->first();
 
+        // 'page' is eager-loaded on every list below purely because the
+        // view resolves each item's URL through UrlResolver::urlForPage()
+        // - without it each card/row costs its own pages query.
         $services = Service::query()
             ->whereHas('page', fn ($query) => $query->published())
-            ->with('featuredMedia')
+            ->with(['featuredMedia', 'page'])
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->limit(6)
@@ -43,6 +46,7 @@ class HomeController extends Controller
 
         $areas = Area::query()
             ->whereHas('page', fn ($query) => $query->published())
+            ->with('page')
             ->withCount('services')
             ->orderBy('sort_order')
             ->limit(8)
@@ -56,7 +60,7 @@ class HomeController extends Controller
             ->whereHas('page', fn ($query) => $query->published())
             ->whereHas('media', fn ($query) => $query->where('project_media.stage', 'before'))
             ->whereHas('media', fn ($query) => $query->where('project_media.stage', 'after'))
-            ->with(['area', 'services', 'media'])
+            ->with(['area', 'services', 'media', 'page'])
             ->orderByDesc('is_featured')
             ->orderByDesc('completed_at')
             ->limit(3)
@@ -74,7 +78,10 @@ class HomeController extends Controller
             ->first();
         $heroImage = $heroProject?->media->firstWhere('pivot.stage', 'after');
 
+        // 'area' is eager-loaded because the homepage pull quote prints
+        // the customer's area alongside their name when it exists.
         $testimonials = Testimonial::query()
+            ->with('area')
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->limit(6)
@@ -85,7 +92,7 @@ class HomeController extends Controller
         $offers = Offer::query()
             ->whereHas('page', fn ($query) => $query->published())
             ->where('is_active', true)
-            ->with('featuredMedia')
+            ->with(['featuredMedia', 'page'])
             ->orderBy('sort_order')
             ->get()
             ->filter(fn (Offer $offer) => $offer->availability() !== OfferAvailability::Expired)

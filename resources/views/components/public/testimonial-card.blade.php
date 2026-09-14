@@ -9,7 +9,7 @@
         <span class="font-medium text-neutral-900 text-sm">{{ $testimonial->author_name }}</span>
 
         @if ($testimonial->rating)
-            <span class="flex items-center gap-0.5 text-accent-500" aria-label="{{ $testimonial->rating }} من 5">
+            <span class="flex items-center gap-0.5 text-ink-800" aria-label="{{ $testimonial->rating }} من 5">
                 @for ($i = 1; $i <= 5; $i++)
                     <x-public.icon :name="$i <= $testimonial->rating ? 'star' : 'star-outline'" class="w-4 h-4" />
                 @endfor
