@@ -137,6 +137,17 @@ class StructuredDataGenerator
             $data['sameAs'] = $socialLinks;
         }
 
+        // Only what the About page itself shows: the founder is emitted
+        // when the editor entered a name and kept the section visible, and
+        // nothing else about the person is asserted (no awards, no dates).
+        if ($profile->hasVisibleFounder()) {
+            $data['founder'] = array_filter([
+                '@type' => 'Person',
+                'name' => $profile->founder_name,
+                'jobTitle' => $profile->founder_title,
+            ]);
+        }
+
         return $data;
     }
 

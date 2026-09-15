@@ -20,15 +20,22 @@
     // "للشركات" points at the existing business-context contact route
     // (see ContactController) - the B2B half of the business was
     // previously unreachable from the main navigation entirely.
-    $navItems = [
+    // The About page is an editor-created Page (type About); it joins the
+    // navigation only once one is actually published, so the menu never
+    // links to a 404. One indexed lookup per request.
+    $aboutPage = \App\Models\Page::query()->where('type', \App\Enums\PageType::About)->published()->first();
+    $aboutUrl = $aboutPage ? app(\App\Seo\UrlResolver::class)->urlForPage($aboutPage) : null;
+
+    $navItems = array_filter([
         'خدماتنا' => route('public.services.index'),
         'أعمالنا' => route('public.projects.index'),
         'مناطق التغطية' => route('public.areas.index'),
+        'من نحن' => $aboutUrl,
         'للشركات' => route('public.contact', ['for' => 'business']),
         'المدونة' => route('public.blog.index'),
         'العروض' => route('public.offers.index'),
         'تواصل معنا' => route('public.contact'),
-    ];
+    ]);
 
     // Empty on purpose: no Legal-type page exists yet (see item 15/16 of
     // the Phase 6 spec) - a fabricated Privacy/Terms link would be worse

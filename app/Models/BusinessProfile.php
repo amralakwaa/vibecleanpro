@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'name', 'phone', 'whatsapp_number', 'email', 'address', 'city',
     'latitude', 'longitude', 'working_hours', 'social_links', 'logo_media_id',
+    'tagline', 'identity_statement', 'story', 'mission', 'vision', 'values',
+    'founder_name', 'founder_title', 'founder_photo_media_id', 'founder_bio', 'founder_long_bio',
+    'show_founder', 'show_team',
 ])]
 class BusinessProfile extends Model
 {
@@ -19,12 +22,29 @@ class BusinessProfile extends Model
             'longitude' => 'decimal:7',
             'working_hours' => 'array',
             'social_links' => 'array',
+            'values' => 'array',
+            'show_founder' => 'boolean',
+            'show_team' => 'boolean',
         ];
     }
 
     public function logo(): BelongsTo
     {
         return $this->belongsTo(Media::class, 'logo_media_id');
+    }
+
+    public function founderPhoto(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'founder_photo_media_id');
+    }
+
+    /**
+     * The founder section exists on the public site only when the editor
+     * both entered a name and left the section switched on.
+     */
+    public function hasVisibleFounder(): bool
+    {
+        return $this->show_founder && filled($this->founder_name);
     }
 
     /**

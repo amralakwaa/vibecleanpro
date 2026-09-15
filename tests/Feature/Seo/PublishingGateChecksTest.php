@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Seo;
 
+use App\Enums\PageStatus;
 use App\Enums\PageType;
 use App\Models\Article;
+use App\Models\BusinessProfile;
 use App\Models\ContentBlock;
 use App\Models\Media;
 use App\Models\Page;
@@ -152,6 +154,46 @@ class PublishingGateChecksTest extends TestCase
 
         $this->assertSame(CheckSeverity::Error, $this->severityOf($result, 'content_empty'));
         $this->assertFalse($result->canPublish());
+    }
+
+    public function test_an_about_page_counts_the_company_identity_as_content(): void
+    {
+        $page = Page::factory()->create(['type' => PageType::About, 'slug' => 'about', 'title' => 'من نحن']);
+        SeoMetadata::factory()->for($page)->create();
+
+        // No blocks and no identity data: still an error.
+        $result = $this->gate->evaluate($page->fresh(['contentBlocks', 'seoMetadata', 'pageable']));
+        $this->assertSame(CheckSeverity::Error, $this->severityOf($result, 'content_empty'));
+
+        // Identity entered on the business profile: the page has content.
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'identity_statement' => 'شركة سعودية محلية تخدم الرياض.']);
+        $result = $this->gate->evaluate($page->fresh(['contentBlocks', 'seoMetadata', 'pageable']));
+        $this->assertSame(CheckSeverity::Pass, $this->severityOf($result, 'content_empty'));
+        $this->assertTrue($result->canPublish());
+
+        // The exemption is About-only: a Trust page with the same profile still needs blocks.
+        $trust = Page::factory()->create(['type' => PageType::Trust, 'slug' => 'trust-empty', 'title' => 'ثقة']);
+        $this->assertSame(CheckSeverity::Error, $this->severityOf($this->gate->evaluate($trust->fresh(['contentBlocks', 'seoMetadata', 'pageable'])), 'content_empty'));
+    }
+
+    public function test_a_second_about_page_is_blocked_while_another_is_published(): void
+    {
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'tagline' => 'وصف']);
+        $live = Page::factory()->create(['type' => PageType::About, 'slug' => 'about', 'title' => 'من نحن', 'status' => PageStatus::Published]);
+        $second = Page::factory()->create(['type' => PageType::About, 'slug' => 'about-2', 'title' => 'ثانية']);
+
+        $result = $this->gate->evaluate($second->fresh(['contentBlocks', 'seoMetadata', 'pageable']));
+        $this->assertSame(CheckSeverity::Error, $this->severityOf($result, 'about_singleton'));
+        $this->assertFalse($result->canPublish());
+
+        // The live page itself is not in conflict with itself, and a
+        // Trust page is never subject to the rule.
+        $this->assertSame(CheckSeverity::Pass, $this->severityOf($this->gate->evaluate($live->fresh(['contentBlocks', 'seoMetadata', 'pageable'])), 'about_singleton'));
+        $trust = Page::factory()->create(['type' => PageType::Trust, 'slug' => 'trust-x', 'title' => 'ثقة']);
+        $this->assertNull($this->severityOf($this->gate->evaluate($trust->fresh(['contentBlocks', 'seoMetadata', 'pageable'])), 'about_singleton'));
+
+        $live->update(['status' => PageStatus::Draft]);
+        $this->assertSame(CheckSeverity::Pass, $this->severityOf($this->gate->evaluate($second->fresh(['contentBlocks', 'seoMetadata', 'pageable'])), 'about_singleton'));
     }
 
     public function test_missing_seo_title_is_a_warning_not_an_error(): void

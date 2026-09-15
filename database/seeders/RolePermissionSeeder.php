@@ -22,7 +22,7 @@ class RolePermissionSeeder extends Seeder
      * Resources with plain CRUD only, no Trash.
      */
     private const PLAIN_RESOURCES = [
-        'user', 'role', 'service_category', 'area_group', 'article_category', 'faq', 'media', 'redirect', 'internal_link',
+        'user', 'role', 'service_category', 'area_group', 'article_category', 'faq', 'media', 'redirect', 'internal_link', 'team_member',
     ];
 
     /**
@@ -44,7 +44,7 @@ class RolePermissionSeeder extends Seeder
      */
     private const CONTENT_RESOURCES = [
         'page', 'service', 'service_category', 'area', 'area_group',
-        'project', 'article', 'article_category', 'offer', 'faq', 'testimonial', 'media',
+        'project', 'article', 'article_category', 'offer', 'faq', 'testimonial', 'media', 'team_member',
     ];
 
     public function run(): void

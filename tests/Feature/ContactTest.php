@@ -2,8 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Enums\PageStatus;
+use App\Enums\PageType;
 use App\Models\BusinessProfile;
+use App\Models\ContentBlock;
 use App\Models\Lead;
+use App\Models\Page;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -148,5 +152,21 @@ class ContactTest extends TestCase
         }
 
         $this->assertSame([], $violations);
+    }
+
+    public function test_the_privacy_link_appears_near_the_form_only_while_a_privacy_page_is_published(): void
+    {
+        $this->assertStringNotContainsString('سياسة الخصوصية', $this->get('/contact')->getContent());
+
+        $page = Page::factory()->create(['type' => PageType::Legal, 'slug' => 'privacy', 'title' => 'سياسة الخصوصية']);
+        ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => '<p>نص السياسة كما يقره مالك الشركة.</p>']]);
+        $this->assertStringNotContainsString('href="'.url('/privacy').'"', $this->get('/contact')->getContent());
+
+        $page->update(['status' => PageStatus::Published]);
+        $html = $this->get('/contact')->getContent();
+
+        $this->assertStringContainsString('href="'.url('/privacy').'"', $html);
+        // A quiet link, never a mandatory consent box.
+        $this->assertDoesNotMatchRegularExpression('/type="checkbox"[^>]*(consent|privacy|agree)/u', $html);
     }
 }

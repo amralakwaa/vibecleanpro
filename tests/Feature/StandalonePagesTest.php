@@ -69,4 +69,79 @@ class StandalonePagesTest extends TestCase
 
         $this->get('/about')->assertNotFound(); // still draft, correctly not public yet.
     }
+
+    public function test_the_faq_hub_renders_the_sitewide_pool_only_when_its_block_says_so(): void
+    {
+        Faq::factory()->create(['page_id' => null, 'question' => 'سؤال-عام-من-المخزون؟', 'answer' => 'إجابة.', 'sort_order' => 2]);
+        Faq::factory()->create(['page_id' => null, 'question' => 'سؤال-عام-أول؟', 'answer' => 'إجابة.', 'sort_order' => 1]);
+        Faq::factory()->create(['page_id' => null, 'question' => 'سؤال-عام-معطل؟', 'answer' => 'إجابة.', 'is_active' => false]);
+
+        $hub = $this->publishedStandalone('faq', PageType::Trust, ['type' => 'faq', 'data' => ['heading' => 'أسئلة عامة', 'source' => 'sitewide']]);
+
+        $html = $this->get('/faq')->assertOk()->getContent();
+
+        $this->assertStringContainsString('سؤال-عام-من-المخزون؟', $html);
+        $this->assertStringNotContainsString('سؤال-عام-معطل؟', $html);
+        $this->assertLessThan(mb_strpos($html, 'سؤال-عام-من-المخزون؟'), mb_strpos($html, 'سؤال-عام-أول؟'));
+        $this->assertSame(1, substr_count($html, 'سؤال-عام-أول؟'));
+
+        // A page-specific FAQ on the hub itself does not get merged in:
+        // the block's source decides, one set at a time.
+        Faq::factory()->for($hub)->create(['question' => 'سؤال-خاص-بالمركز؟', 'answer' => 'إجابة.']);
+        $again = $this->get('/faq')->getContent();
+        $this->assertStringContainsString('سؤال-عام-من-المخزون؟', $again);
+        $this->assertStringNotContainsString('سؤال-خاص-بالمركز؟', $again);
+    }
+
+    public function test_a_faq_block_left_on_page_source_never_pulls_the_pool_in_even_with_no_page_faqs(): void
+    {
+        Faq::factory()->create(['page_id' => null, 'question' => 'سؤال-عام-لا-يتسرب؟', 'answer' => 'إجابة.']);
+
+        // Default source (omitted, as older blocks are stored) and an
+        // explicit "page": both stay silent without their own FAQs.
+        $this->publishedStandalone('service-guarantee', PageType::Trust, ['type' => 'faq', 'data' => ['heading' => 'أسئلة الضمان']]);
+        $this->publishedStandalone('terms', PageType::Legal, ['type' => 'faq', 'data' => ['heading' => 'أسئلة الشروط', 'source' => 'page']]);
+
+        foreach (['/service-guarantee', '/terms'] as $url) {
+            $html = $this->get($url)->assertOk()->getContent();
+            $this->assertStringNotContainsString('سؤال-عام-لا-يتسرب؟', $html);
+        }
+    }
+
+    public function test_a_standalone_page_with_its_own_faqs_renders_only_those(): void
+    {
+        Faq::factory()->create(['page_id' => null, 'question' => 'سؤال-عام-لا-يظهر؟', 'answer' => 'إجابة.']);
+        $page = $this->publishedStandalone('service-guarantee', PageType::Trust, ['type' => 'faq', 'data' => ['heading' => 'أسئلة الضمان']]);
+        Faq::factory()->for($page)->create(['question' => 'سؤال-خاص-بالضمان؟', 'answer' => 'إجابة.']);
+
+        $html = $this->get('/service-guarantee')->assertOk()->getContent();
+
+        $this->assertSame(1, substr_count($html, 'سؤال-خاص-بالضمان؟'));
+        $this->assertStringNotContainsString('سؤال-عام-لا-يظهر؟', $html);
+    }
+
+    public function test_a_standalone_page_without_a_faq_block_never_pulls_the_pool_in(): void
+    {
+        $page = Page::factory()->create(['type' => PageType::Legal, 'slug' => 'privacy', 'title' => 'الخصوصية']);
+        ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => '<p>نص السياسة.</p>']]);
+        SeoMetadata::factory()->for($page)->create();
+        $page->update(['status' => PageStatus::Published]);
+        Faq::factory()->create(['page_id' => null, 'question' => 'سؤال-لا-ينتمي-هنا؟', 'answer' => 'إجابة.']);
+
+        $html = $this->get('/privacy')->assertOk()->getContent();
+
+        $this->assertStringContainsString('نص السياسة.', $html);
+        $this->assertStringNotContainsString('سؤال-لا-ينتمي-هنا؟', $html);
+        $this->assertSame(1, substr_count($html, '<h1'));
+    }
+
+    private function publishedStandalone(string $slug, PageType $type, array $block): Page
+    {
+        $page = Page::factory()->create(['type' => $type, 'slug' => $slug, 'title' => 'صفحة '.$slug]);
+        ContentBlock::factory()->for($page)->create($block);
+        SeoMetadata::factory()->for($page)->create();
+        $page->update(['status' => PageStatus::Published]);
+
+        return $page;
+    }
 }

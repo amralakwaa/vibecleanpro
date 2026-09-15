@@ -16,6 +16,7 @@ use App\Models\Project;
 use App\Models\Redirect;
 use App\Models\Service;
 use App\Models\ServiceCategory;
+use App\Models\TeamMember;
 use App\Models\Testimonial;
 use App\Models\User;
 use App\Policies\AreaGroupPolicy;
@@ -33,6 +34,7 @@ use App\Policies\RedirectPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoryPolicy;
 use App\Policies\ServicePolicy;
+use App\Policies\TeamMemberPolicy;
 use App\Policies\TestimonialPolicy;
 use App\Policies\UserPolicy;
 use App\Seo\DuplicateSimilarityAnalyzer;
@@ -61,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
         Faq::class => FaqPolicy::class,
         InternalLink::class => InternalLinkPolicy::class,
         Testimonial::class => TestimonialPolicy::class,
+        TeamMember::class => TeamMemberPolicy::class,
         Media::class => MediaPolicy::class,
         Lead::class => LeadPolicy::class,
         Redirect::class => RedirectPolicy::class,

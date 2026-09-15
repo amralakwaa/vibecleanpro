@@ -45,6 +45,13 @@
         'نتواصل معك على رقم الجوال لتأكيد التفاصيل.',
     ];
 
+    // The privacy policy is an editor-created Legal page at the reserved
+    // slug "privacy" (see PageResource). The link exists only while that
+    // page is published - never a dead link, never a consent checkbox
+    // (no legal basis has been decided yet).
+    $privacyPage = \App\Models\Page::query()->where('type', \App\Enums\PageType::Legal)->where('slug', 'privacy')->published()->first();
+    $privacyUrl = $privacyPage ? app(\App\Seo\UrlResolver::class)->urlForPage($privacyPage) : null;
+
     $fieldLabels = [
         'name' => 'الاسم',
         'phone' => 'رقم الجوال',
@@ -178,7 +185,12 @@
                                 <span x-show="! submitting">إرسال الطلب</span>
                                 <span x-show="submitting" x-cloak>جارٍ الإرسال…</span>
                             </x-public.button>
-                            <p class="mt-3 text-center text-sm text-neutral-500">لا يوجد دفع عبر الموقع — تطلب عرض السعر ونتواصل معك.</p>
+                            <p class="mt-3 text-center text-sm text-neutral-500">
+                                لا يوجد دفع عبر الموقع — تطلب عرض السعر ونتواصل معك.
+                                @if ($privacyUrl)
+                                    <a href="{{ $privacyUrl }}" class="inline-flex items-center min-h-11 underline underline-offset-4 hover:text-primary-700">سياسة الخصوصية</a>
+                                @endif
+                            </p>
                         </div>
                     </form>
 

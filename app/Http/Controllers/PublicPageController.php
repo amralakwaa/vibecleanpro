@@ -7,10 +7,12 @@ use App\Enums\PageType;
 use App\Models\Area;
 use App\Models\Article;
 use App\Models\BusinessProfile;
+use App\Models\Faq;
 use App\Models\Offer;
 use App\Models\Page;
 use App\Models\Project;
 use App\Models\Service;
+use App\Models\TeamMember;
 use App\Seo\RedirectResolver;
 use App\Seo\SeoHeadResolver;
 use App\Seo\ValueObjects\SeoHeadData;
@@ -69,7 +71,7 @@ class PublicPageController extends Controller
     public function standalone(Request $request, string $slug): Response
     {
         $page = Page::query()
-            ->whereIn('type', [PageType::Trust, PageType::Legal, PageType::Landing])
+            ->whereIn('type', [PageType::About, PageType::Trust, PageType::Legal, PageType::Landing])
             ->where('slug', $slug)
             ->first();
 
@@ -125,13 +127,63 @@ class PublicPageController extends Controller
             PageType::Project => $this->renderProject($page, $seo, $businessProfile, $faqs),
             PageType::Article => $this->renderArticle($page, $seo, $businessProfile, $faqs),
             PageType::Offer => $this->renderOffer($page, $seo, $businessProfile, $faqs),
+            PageType::About => $this->renderAbout($page, $seo, $businessProfile, $faqs),
             default => response()->view('pages.standalone', [
                 'page' => $page,
                 'seo' => $seo,
                 'businessProfile' => $businessProfile,
-                'faqs' => $faqs,
+                'faqs' => $this->faqsForStandalone($page, $faqs),
             ], 200),
         };
+    }
+
+    /**
+     * The sitewide FAQ pool (page_id = null - the set FaqResource manages
+     * and the homepage shows) reaches a standalone page only when its
+     * editor explicitly set the faq block's source to "sitewide" (the FAQ
+     * hub). Every other page renders its own FAQs, or nothing - a guarantee
+     * or legal page never inherits general questions by accident.
+     */
+    private function faqsForStandalone(Page $page, $faqs)
+    {
+        $usesSitewidePool = $page->contentBlocks->contains(
+            fn ($block) => $block->type === 'faq' && $block->is_active && ($block->data['source'] ?? 'page') === 'sitewide'
+        );
+
+        if (! $usesSitewidePool) {
+            return $faqs;
+        }
+
+        return Faq::query()->whereNull('page_id')->where('is_active', true)->orderBy('sort_order')->get();
+    }
+
+    /**
+     * About = company identity page. Every fact comes from the business
+     * profile (identity, founder) and the team_members table; the Page
+     * itself contributes title, SEO, optional extra blocks and FAQs.
+     * Counts are the same published sets the /areas and /projects indexes
+     * list, so the page can only claim what those pages can show.
+     */
+    private function renderAbout(Page $page, SeoHeadData $seo, ?BusinessProfile $businessProfile, $faqs): Response
+    {
+        $businessProfile?->load('founderPhoto');
+
+        $team = $businessProfile?->show_team
+            ? TeamMember::query()->visible()->with('photo')->get()
+            : collect();
+
+        $publishedAreas = Area::query()->whereHas('page', fn ($query) => $query->published())->count();
+        $publishedProjects = Project::query()->whereHas('page', fn ($query) => $query->published())->count();
+
+        return response()->view('pages.about', [
+            'page' => $page,
+            'seo' => $seo,
+            'businessProfile' => $businessProfile,
+            'faqs' => $faqs,
+            'team' => $team,
+            'publishedAreas' => $publishedAreas,
+            'publishedProjects' => $publishedProjects,
+        ], 200);
     }
 
     private function renderService(Page $page, SeoHeadData $seo, ?BusinessProfile $businessProfile, $faqs): Response

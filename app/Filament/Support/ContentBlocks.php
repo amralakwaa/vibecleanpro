@@ -6,6 +6,7 @@ use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 
@@ -120,11 +121,22 @@ class ContentBlocks
                     ])
                     ->columns(1),
 
+                // `source` is the editor's explicit choice: a page renders
+                // its own FAQs by default; only a block set to "sitewide"
+                // (the FAQ hub) pulls the global page_id = null pool in.
                 Block::make('faq')
                     ->label('الأسئلة الشائعة')
                     ->icon('heroicon-o-question-mark-circle')
                     ->schema([
                         TextInput::make('heading')->label('عنوان القسم'),
+                        Select::make('source')
+                            ->label('مصدر الأسئلة')
+                            ->options([
+                                'page' => 'أسئلة هذه الصفحة فقط (من تبويب الأسئلة الشائعة)',
+                                'sitewide' => 'الأسئلة العامة للموقع (لصفحة الأسئلة الشائعة الرئيسية)',
+                            ])
+                            ->default('page')
+                            ->native(false),
                     ])
                     ->columns(1),
 

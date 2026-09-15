@@ -5,6 +5,7 @@ namespace App\Seo;
 use App\Enums\PageType;
 use App\Models\Area;
 use App\Models\Article;
+use App\Models\BusinessProfile;
 use App\Models\Offer;
 use App\Models\Page;
 use App\Models\Project;
@@ -45,6 +46,7 @@ class PublishingGate
             $this->checkCanonicalValid($page),
             $this->checkRobotsConsistency($page),
             $this->checkRedirectConflict($page),
+            $this->checkAboutSingleton($page),
             $this->checkContentNotEmpty($page),
             $this->checkSeoTitle($page),
             $this->checkMetaDescription($page),
@@ -125,11 +127,53 @@ class PublishingGate
             : $this->pass('redirect_conflict', 'لا يوجد تعارض مع أي Redirect.');
     }
 
+    /**
+     * Exactly one published About page represents the company: a second
+     * one would be a second identity competing for the same navigation
+     * slot and the same entity signals. Drafts are fine (a replacement
+     * can be prepared); publishing while another is live is an ERROR,
+     * which PageObserver turns back into Draft on every save path.
+     */
+    private function checkAboutSingleton(Page $page): ?SeoCheckResult
+    {
+        if ($page->type !== PageType::About) {
+            return null;
+        }
+
+        $other = Page::query()
+            ->where('type', PageType::About)
+            ->whereKeyNot($page->getKey())
+            ->published()
+            ->first();
+
+        return $other
+            ? $this->error('about_singleton', "توجد صفحة \"من نحن\" منشورة بالفعل ({$other->title}). لا يمكن نشر أكثر من صفحة هوية واحدة - أرجع الأخرى إلى مسودة أولًا.")
+            : $this->pass('about_singleton', 'لا توجد صفحة "من نحن" منشورة أخرى.');
+    }
+
     private function checkContentNotEmpty(Page $page): SeoCheckResult
     {
-        return $page->contentBlocks->isEmpty()
-            ? $this->error('content_empty', 'الصفحة لا تحتوي على أي محتوى (أقسام فارغة).')
-            : $this->pass('content_empty', 'يوجد محتوى فعلي في الصفحة.');
+        if ($page->contentBlocks->isNotEmpty()) {
+            return $this->pass('content_empty', 'يوجد محتوى فعلي في الصفحة.');
+        }
+
+        // The About page's body is the company identity entered on the
+        // business profile (see pages/about.blade.php), so for that type
+        // identity data counts as content - blocks are optional extras.
+        if ($page->type === PageType::About && $this->hasCompanyIdentityContent()) {
+            return $this->pass('content_empty', 'محتوى صفحة من نحن يأتي من هوية الشركة في بيانات المنشأة.');
+        }
+
+        return $page->type === PageType::About
+            ? $this->error('content_empty', 'صفحة من نحن بلا محتوى: أضف بيان الهوية أو قصة الشركة في "بيانات المنشأة"، أو أضف أقسامًا للصفحة.')
+            : $this->error('content_empty', 'الصفحة لا تحتوي على أي محتوى (أقسام فارغة).');
+    }
+
+    private function hasCompanyIdentityContent(): bool
+    {
+        $profile = BusinessProfile::query()->first();
+
+        return $profile !== null && (filled($profile->identity_statement) || filled(trim(strip_tags((string) $profile->story))) || filled($profile->tagline));
     }
 
     private function checkSeoTitle(Page $page): SeoCheckResult

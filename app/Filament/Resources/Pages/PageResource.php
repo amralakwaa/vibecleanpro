@@ -62,6 +62,7 @@ class PageResource extends Resource
      * record with no business data behind it.
      */
     private const STANDALONE_TYPES = [
+        PageType::About,
         PageType::Trust,
         PageType::Legal,
         PageType::Landing,
@@ -287,8 +288,9 @@ class PageResource extends Resource
             PageType::Project => 'مشروع',
             PageType::Article => 'مقال',
             PageType::Offer => 'عرض',
+            PageType::About => 'من نحن (هوية الشركة)',
             PageType::Trust => 'صفحة ثقة',
-            PageType::Legal => 'صفحة قانونية',
+            PageType::Legal => 'صفحة قانونية (سياسة الخصوصية: الرابط privacy)',
             PageType::Landing => 'صفحة هبوط',
         };
     }

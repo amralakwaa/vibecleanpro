@@ -22,6 +22,13 @@
     $phoneUrl = $businessProfile?->phoneUrl();
     $hasChannels = ($phoneUrl && $businessProfile?->phone) || $whatsappUrl || $businessProfile?->email;
 
+    // The privacy policy is an editor-created Legal page at the reserved
+    // slug "privacy" (see PageResource). The link exists only while that
+    // page is published - never a dead link, never a consent checkbox
+    // (no legal basis has been decided yet).
+    $privacyPage = \App\Models\Page::query()->where('type', \App\Enums\PageType::Legal)->where('slug', 'privacy')->published()->first();
+    $privacyUrl = $privacyPage ? app(\App\Seo\UrlResolver::class)->urlForPage($privacyPage) : null;
+
     $fieldLabels = [
         'name' => 'الاسم',
         'phone' => 'رقم الجوال',
@@ -178,11 +185,16 @@
                             :help="$isBusinessContext ? 'نوع المنشأة، حجمها التقريبي، ونوع الخدمة المطلوبة.' : null"
                             :error="$errors->first('message')">{{ old('message') }}</x-public.field.textarea>
 
-                        <x-public.button type="submit" variant="primary" size="lg" class="w-full sm:w-auto"
-                            x-bind:disabled="submitting" x-bind:aria-busy="submitting">
-                            <span x-show="! submitting">إرسال الرسالة</span>
-                            <span x-show="submitting" x-cloak>جارٍ الإرسال…</span>
-                        </x-public.button>
+                        <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                            <x-public.button type="submit" variant="primary" size="lg" class="w-full sm:w-auto"
+                                x-bind:disabled="submitting" x-bind:aria-busy="submitting">
+                                <span x-show="! submitting">إرسال الرسالة</span>
+                                <span x-show="submitting" x-cloak>جارٍ الإرسال…</span>
+                            </x-public.button>
+                            @if ($privacyUrl)
+                                <a href="{{ $privacyUrl }}" class="inline-flex items-center min-h-11 text-sm text-neutral-500 underline underline-offset-4 hover:text-primary-700">سياسة الخصوصية</a>
+                            @endif
+                        </div>
                     </form>
                 @endif
             </div>

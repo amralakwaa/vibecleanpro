@@ -3,9 +3,12 @@
 namespace Tests\Feature;
 
 use App\Enums\PageStatus;
+use App\Enums\PageType;
 use App\Models\Area;
 use App\Models\BusinessProfile;
+use App\Models\ContentBlock;
 use App\Models\Lead;
+use App\Models\Page;
 use App\Models\Service;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -303,5 +306,23 @@ class QuoteTest extends TestCase
         }
 
         $this->assertSame([], $violations);
+    }
+
+    public function test_the_privacy_link_appears_near_the_submit_only_while_a_privacy_page_is_published(): void
+    {
+        $this->assertStringNotContainsString('سياسة الخصوصية', $this->get('/quote')->getContent());
+
+        $page = Page::factory()->create(['type' => PageType::Legal, 'slug' => 'privacy', 'title' => 'سياسة الخصوصية']);
+        ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => '<p>نص السياسة.</p>']]);
+        $page->update(['status' => PageStatus::Published]);
+
+        $html = $this->get('/quote')->getContent();
+        $this->assertStringContainsString('href="'.url('/privacy').'"', $html);
+        $this->assertLessThan(mb_strpos($html, 'href="'.url('/privacy').'"'), mb_strpos($html, 'إرسال الطلب'));
+        $this->assertDoesNotMatchRegularExpression('/type="checkbox"[^>]*(consent|privacy|agree)/u', $html);
+
+        // A Trust page at the same slug is not the privacy policy.
+        $page->update(['type' => PageType::Trust]);
+        $this->assertStringNotContainsString('href="'.url('/privacy').'"', $this->get('/quote')->getContent());
     }
 }
