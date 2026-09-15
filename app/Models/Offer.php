@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['featured_media_id', 'title', 'discount_label', 'starts_at', 'ends_at', 'is_active', 'sort_order'])]
+#[Fillable(['featured_media_id', 'title', 'discount_label', 'offer_price', 'starts_at', 'ends_at', 'is_active', 'sort_order'])]
 class Offer extends Model
 {
     /** @use HasFactory<OfferFactory> */
@@ -24,6 +24,7 @@ class Offer extends Model
             'starts_at' => 'date',
             'ends_at' => 'date',
             'is_active' => 'boolean',
+            'offer_price' => 'decimal:2',
         ];
     }
 

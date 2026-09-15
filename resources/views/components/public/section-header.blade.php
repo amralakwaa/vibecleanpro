@@ -13,10 +13,10 @@
 
 <div {{ $attributes->class(['max-w-2xl', $alignClass]) }}>
     @if ($eyebrow)
-        <p class="text-sm font-semibold text-primary-600 mb-2">{{ $eyebrow }}</p>
+        <p class="text-sm font-medium tracking-wide text-primary-700 mb-2">{{ $eyebrow }}</p>
     @endif
 
-    <{{ $tag }} class="text-2xl md:text-3xl font-semibold tracking-tight text-ink-950">
+    <{{ $tag }} class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950">
         {{ $title }}
     </{{ $tag }}>
 

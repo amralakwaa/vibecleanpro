@@ -1,7 +1,10 @@
 {{--
-    The recurring bottom-of-template conversion band. Presentation only -
-    the caller passes real WhatsApp/phone links (built from BusinessProfile
-    by the page template), this component never fetches data itself.
+    The closing conversion band an editor can place with a `cta` block
+    (and any template may reuse). Presentation only - the caller passes
+    real quote / WhatsApp / phone links. Blue fill = the one conversion
+    action, green = WhatsApp, phone stays a quiet text link; the same
+    band the redesigned pages end with, so an editor-placed CTA never
+    looks like a different site.
 --}}
 @props([
     'title',
@@ -11,41 +14,32 @@
     'phoneUrl' => null,
 ])
 
-@php
-    // Three distinct roles on this dark navy band, so nothing competes:
-    // the blue "cta" fill is the conversion action (request a quote),
-    // WhatsApp is always its own green channel, and phone stays a muted
-    // ghost. $secondaryClass is the ghost treatment and is only ever
-    // correct ON a dark surface - never reuse it over a light one.
-    $secondaryClass = '!bg-white/10 !text-white !border-white/20 hover:!bg-white/20';
-@endphp
+<section {{ $attributes->class(['bg-ink-950 text-white']) }}>
+    <x-public.container width="wide" class="py-16 md:py-24">
+        <div class="max-w-2xl">
+            <h2 class="font-display text-2xl md:text-4xl font-medium tracking-tight text-white text-balance">{{ $title }}</h2>
 
-<div {{ $attributes->class(['rounded-3xl bg-ink-950 text-white px-6 py-10 md:px-12 md:py-14 text-center']) }}>
-    <h2 class="text-2xl md:text-3xl font-bold">{{ $title }}</h2>
-
-    @if ($description)
-        <p class="mt-3 text-ink-200 max-w-xl mx-auto">{{ $description }}</p>
-    @endif
-
-    @if ($quoteUrl || $whatsappUrl || $phoneUrl)
-        <div class="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
-            @if ($quoteUrl)
-                <x-public.button href="{{ $quoteUrl }}" variant="cta" size="lg" icon="check-circle">
-                    طلب خدمة
-                </x-public.button>
+            @if ($description)
+                <p class="mt-4 text-ink-200 leading-relaxed">{{ $description }}</p>
             @endif
 
-            @if ($whatsappUrl)
-                <x-public.button href="{{ $whatsappUrl }}" external variant="whatsapp" size="lg" icon="whatsapp">
-                    تواصل عبر واتساب
-                </x-public.button>
-            @endif
+            @if ($quoteUrl || $whatsappUrl || $phoneUrl)
+                <div class="mt-8 flex flex-wrap items-center gap-4">
+                    @if ($quoteUrl)
+                        <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle">اطلب عرض سعر</x-public.button>
+                    @endif
 
-            @if ($phoneUrl)
-                <x-public.button href="{{ $phoneUrl }}" variant="secondary" size="lg" icon="phone" :class="$secondaryClass">
-                    اتصل بنا الآن
-                </x-public.button>
+                    @if ($whatsappUrl)
+                        <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp">تواصل عبر واتساب</x-public.button>
+                    @endif
+
+                    @if ($phoneUrl)
+                        <a href="{{ $phoneUrl }}" class="inline-flex items-center gap-2 min-h-11 text-sm font-medium text-ink-200 hover:text-white transition-colors">
+                            <x-public.icon name="phone" class="w-4 h-4" /> أو اتصل بنا
+                        </a>
+                    @endif
+                </div>
             @endif
         </div>
-    @endif
-</div>
+    </x-public.container>
+</section>

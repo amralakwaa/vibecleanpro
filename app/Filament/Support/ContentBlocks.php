@@ -92,6 +92,41 @@ class ContentBlocks
                             ->defaultItems(1),
                     ]),
 
+                Block::make('inclusions')
+                    ->label('ما تشمله الخدمة / ما لا تشمله')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->schema([
+                        TextInput::make('heading')->label('عنوان القسم')->placeholder('ماذا تشمل الخدمة؟'),
+                        Repeater::make('included')
+                            ->label('مشمول')
+                            ->simple(TextInput::make('item')->label('عنصر')->required()->maxLength(160))
+                            ->addActionLabel('إضافة عنصر')
+                            ->defaultItems(0),
+                        Repeater::make('excluded')
+                            ->label('غير مشمول')
+                            ->simple(TextInput::make('item')->label('عنصر')->required()->maxLength(160))
+                            ->addActionLabel('إضافة عنصر')
+                            ->defaultItems(0),
+                    ])
+                    ->columns(1),
+
+                Block::make('price_factors')
+                    ->label('ما الذي يحدد السعر؟')
+                    ->icon('heroicon-o-calculator')
+                    ->schema([
+                        TextInput::make('heading')->label('عنوان القسم')->placeholder('ما الذي يحدد السعر؟'),
+                        Repeater::make('items')
+                            ->label('العوامل')
+                            ->schema([
+                                TextInput::make('title')->label('العامل')->required()->maxLength(120),
+                                Textarea::make('description')->label('كيف يؤثر')->rows(2)->maxLength(300),
+                            ])
+                            ->addActionLabel('إضافة عامل')
+                            ->defaultItems(0),
+                        Textarea::make('note')->label('ملاحظة')->rows(2)->maxLength(300)->helperText('مثل: السعر النهائي بعد المعاينة.'),
+                    ])
+                    ->columns(1),
+
                 Block::make('packages')
                     ->label('باقات الخدمة')
                     ->icon('heroicon-o-tag')

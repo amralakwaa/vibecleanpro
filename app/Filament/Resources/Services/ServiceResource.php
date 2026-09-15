@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Services;
 
 use App\Enums\PageStatus;
 use App\Enums\PageType;
+use App\Enums\ServicePricingMode;
 use App\Filament\Resources\Services\Pages\CreateService;
 use App\Filament\Resources\Services\Pages\EditService;
 use App\Filament\Resources\Services\Pages\ListServices;
@@ -86,6 +87,62 @@ class ServiceResource extends Resource
                                     MediaPicker::make('featured_media_id', 'الصورة الرئيسية'),
                                     Toggle::make('is_featured')->label('خدمة مميزة'),
                                     TextInput::make('sort_order')->label('ترتيب العرض')->numeric()->default(0),
+                                ])
+                                ->columns(2),
+
+                            // Pricing: the mode decides which numbers exist,
+                            // and the form only shows the fields that mode
+                            // needs. Quote-only asks for nothing.
+                            Section::make('التسعير')
+                                ->description('السعر الذي يراه الزائر. اختر "حسب الطلب" إن لم يكن هناك سعر معلن - لا يُخترع سعر أبدًا.')
+                                ->schema([
+                                    Select::make('pricing_mode')
+                                        ->label('طريقة التسعير')
+                                        ->options(collect(ServicePricingMode::cases())->mapWithKeys(fn (ServicePricingMode $mode) => [$mode->value => $mode->label()])->all())
+                                        ->default(ServicePricingMode::QuoteOnly->value)
+                                        ->required()
+                                        ->native(false)
+                                        ->live(),
+                                    Toggle::make('show_price')
+                                        ->label('إظهار السعر على الموقع')
+                                        ->default(true)
+                                        ->helperText('أطفئه لإبقاء السعر مسجلًا دون عرضه للزائر.')
+                                        ->visible(fn (Get $get) => $get('pricing_mode') !== ServicePricingMode::QuoteOnly->value),
+                                    TextInput::make('price_min')
+                                        ->label(fn (Get $get) => match ($get('pricing_mode')) {
+                                            ServicePricingMode::Range->value => 'السعر الأدنى',
+                                            ServicePricingMode::PerUnit->value => 'سعر الوحدة',
+                                            ServicePricingMode::StartingFrom->value => 'يبدأ من',
+                                            default => 'السعر',
+                                        })
+                                        ->numeric()
+                                        ->minValue(1)
+                                        ->suffix(config('pricing.symbol'))
+                                        ->required(fn (Get $get) => $get('pricing_mode') !== ServicePricingMode::QuoteOnly->value)
+                                        ->visible(fn (Get $get) => $get('pricing_mode') !== ServicePricingMode::QuoteOnly->value)
+                                        ->dehydrated(fn (Get $get) => $get('pricing_mode') !== ServicePricingMode::QuoteOnly->value),
+                                    TextInput::make('price_max')
+                                        ->label('السعر الأعلى')
+                                        ->numeric()
+                                        ->minValue(1)
+                                        ->suffix(config('pricing.symbol'))
+                                        ->gte('price_min')
+                                        ->required(fn (Get $get) => $get('pricing_mode') === ServicePricingMode::Range->value)
+                                        ->visible(fn (Get $get) => $get('pricing_mode') === ServicePricingMode::Range->value)
+                                        ->dehydrated(fn (Get $get) => $get('pricing_mode') === ServicePricingMode::Range->value),
+                                    TextInput::make('price_unit')
+                                        ->label('الوحدة')
+                                        ->placeholder('متر، قطعة، زيارة')
+                                        ->maxLength(40)
+                                        ->required(fn (Get $get) => $get('pricing_mode') === ServicePricingMode::PerUnit->value)
+                                        ->visible(fn (Get $get) => $get('pricing_mode') === ServicePricingMode::PerUnit->value)
+                                        ->dehydrated(fn (Get $get) => $get('pricing_mode') === ServicePricingMode::PerUnit->value),
+                                    TextInput::make('price_note')
+                                        ->label('ملاحظة السعر')
+                                        ->placeholder('مثال: يعتمد السعر النهائي على المساحة وحالة المكان.')
+                                        ->maxLength(180)
+                                        ->columnSpanFull()
+                                        ->visible(fn (Get $get) => $get('pricing_mode') !== ServicePricingMode::QuoteOnly->value),
                                 ])
                                 ->columns(2),
                         ]),

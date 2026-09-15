@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\ServicePricingMode;
 use App\Models\Concerns\HasPage;
+use App\Support\Pricing\PublicPrice;
 use Database\Factories\ServiceFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +14,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['service_category_id', 'featured_media_id', 'name', 'short_description', 'icon', 'is_featured', 'sort_order'])]
+#[Fillable([
+    'service_category_id', 'featured_media_id', 'name', 'short_description', 'icon', 'is_featured', 'sort_order',
+    'pricing_mode', 'price_min', 'price_max', 'price_unit', 'price_note', 'show_price',
+])]
 class Service extends Model
 {
     /** @use HasFactory<ServiceFactory> */
@@ -22,7 +27,19 @@ class Service extends Model
     {
         return [
             'is_featured' => 'boolean',
+            'pricing_mode' => ServicePricingMode::class,
+            'price_min' => 'decimal:2',
+            'price_max' => 'decimal:2',
+            'show_price' => 'boolean',
         ];
+    }
+
+    /**
+     * The price the public may see, or null when there is none to show.
+     */
+    public function publicPrice(): ?PublicPrice
+    {
+        return PublicPrice::forService($this);
     }
 
     public function category(): BelongsTo

@@ -55,6 +55,7 @@
         :cta-url="$quoteUrl"
         cta-label="اطلب عرض سعر"
         :whatsapp-url="$whatsappUrl"
+        :price="$service->publicPrice()"
     />
 
     {{-- Coverage/proof reassurance, as a ruled meta bar rather than the
@@ -152,8 +153,11 @@
                             @if ($offer->discount_label)
                                 <span class="text-sm text-primary-700">{{ $offer->discount_label }}</span>
                             @endif
+                            @if ($offer->offer_price !== null)
+                                <span class="text-sm font-medium text-ink-950 tabular-nums">{{ \App\Support\Pricing\PublicPrice::format((float) $offer->offer_price) }}</span>
+                            @endif
                             @if ($offer->ends_at)
-                                <span class="text-xs text-neutral-400">حتى {{ $offer->ends_at->translatedFormat('j F Y') }}</span>
+                                <span class="text-xs text-neutral-500">حتى {{ $offer->ends_at->translatedFormat('j F Y') }}</span>
                             @endif
                         </a>
                     </li>

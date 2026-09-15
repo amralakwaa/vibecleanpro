@@ -3,10 +3,12 @@
 namespace App\Seo;
 
 use App\Enums\PageType;
+use App\Enums\ServicePricingMode;
 use App\Models\Article;
 use App\Models\BusinessProfile;
 use App\Models\Page;
 use App\Models\Service;
+use App\Support\Pricing\PublicPrice;
 
 /**
  * Central JSON-LD builder. Every block is built only from real data
@@ -197,7 +199,75 @@ class StructuredDataGenerator
             ])->all();
         }
 
+        // The same admin-entered price the page shows, expressed with
+        // schema.org's own vocabulary: a single price for fixed, a
+        // PriceSpecification with minPrice (and maxPrice for a range) for
+        // starting-from / range, a UnitPriceSpecification for per-unit.
+        // No rich result is assumed; this only keeps the markup truthful
+        // and consistent with the visible page.
+        if ($price = $service->publicPrice()) {
+            $data['offers'] = $this->serviceOffer($price);
+        }
+
         return $data;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function serviceOffer(PublicPrice $price): array
+    {
+        $currency = config('pricing.currency');
+
+        // Each mode maps to the schema.org term that means exactly what the
+        // visible label says - never a bare Offer.price for anything that
+        // is not one fixed number:
+        //   fixed         -> Offer.price (one real price)
+        //   starting_from -> PriceSpecification.minPrice (a lower bound only)
+        //   range         -> PriceSpecification.minPrice + maxPrice
+        //   per_unit      -> UnitPriceSpecification.price per one unitText
+        //                    (referenceQuantity = 1 of that unit)
+        // No Google rich result is assumed or claimed by any of this.
+        return match ($price->mode) {
+            ServicePricingMode::Fixed => [
+                '@type' => 'Offer',
+                'price' => $price->min,
+                'priceCurrency' => $currency,
+            ],
+            ServicePricingMode::StartingFrom => [
+                '@type' => 'Offer',
+                'priceSpecification' => [
+                    '@type' => 'PriceSpecification',
+                    'priceCurrency' => $currency,
+                    'minPrice' => $price->min,
+                ],
+            ],
+            ServicePricingMode::Range => [
+                '@type' => 'Offer',
+                'priceSpecification' => [
+                    '@type' => 'PriceSpecification',
+                    'priceCurrency' => $currency,
+                    'minPrice' => $price->min,
+                    'maxPrice' => $price->max,
+                ],
+            ],
+            ServicePricingMode::PerUnit => [
+                '@type' => 'Offer',
+                'priceSpecification' => [
+                    '@type' => 'UnitPriceSpecification',
+                    'priceCurrency' => $currency,
+                    'price' => $price->min,
+                    'unitText' => $price->unit,
+                    'referenceQuantity' => [
+                        '@type' => 'QuantitativeValue',
+                        'value' => 1,
+                        'unitText' => $price->unit,
+                    ],
+                ],
+            ],
+            // PublicPrice never carries this mode, but the match must be total.
+            ServicePricingMode::QuoteOnly => [],
+        };
     }
 
     /**

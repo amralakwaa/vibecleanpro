@@ -31,6 +31,7 @@
 
     $urlResolver = app(\App\Seo\UrlResolver::class);
     $quoteUrl = route('public.quote', array_filter(['service' => $offerServices->first()?->id]));
+    $offerPrice = \App\Support\Pricing\OfferPrice::forOffer($offer, $offerServices);
     $whatsappUrl = $businessProfile?->whatsappUrl('مرحبًا، أرغب في الاستفسار عن عرض: '.$offer->title);
     $offersIndexUrl = route('public.offers.index');
 @endphp
@@ -68,6 +69,19 @@
                     {{-- The one value statement, from the editor, shown once. --}}
                     @if ($offer->discount_label)
                         <p class="mt-4 font-display text-xl md:text-2xl font-light text-ink-950">{{ $offer->discount_label }}</p>
+                    @endif
+
+                    {{-- A number only when the admin entered one; "بدلًا من"
+                         only when the single covered service has a real,
+                         higher public price (see OfferPrice). --}}
+                    @if ($offerPrice)
+                        <p class="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1" data-offer-price>
+                            <span class="text-sm text-neutral-500">سعر العرض</span>
+                            <span class="font-display text-2xl md:text-3xl font-medium text-ink-950 tabular-nums">{{ $offerPrice->label() }}</span>
+                            @if ($offerPrice->beforeLabel())
+                                <span class="text-sm text-neutral-500">بدلًا من <s class="tabular-nums">{{ $offerPrice->beforeLabel() }}</s></span>
+                            @endif
+                        </p>
                     @endif
 
                     {{-- Validity, stated as dates - never a countdown. --}}

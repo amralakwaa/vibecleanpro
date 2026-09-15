@@ -97,6 +97,9 @@
                                             @if ($service->short_description)
                                                 <p class="mt-2.5 text-neutral-600 leading-relaxed max-w-xl">{{ $service->short_description }}</p>
                                             @endif
+                                            @if ($price = $service->publicPrice())
+                                                <p class="mt-2.5 text-sm text-neutral-500"><span class="font-medium text-ink-950 tabular-nums">{{ $price->label() }}</span></p>
+                                            @endif
                                             <span class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline-offset-4 group-hover:underline">
                                                 تفاصيل الخدمة
                                                 <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />

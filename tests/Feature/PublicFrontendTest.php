@@ -190,11 +190,15 @@ class PublicFrontendTest extends TestCase
         );
 
         $this->assertStringContainsString('تنظيف شقة', $withDiscount);
-        $this->assertStringContainsString('879', $withDiscount);
-        $this->assertStringContainsString('خصم', $withDiscount);
-        // No previousPrice passed at all: never fabricate a "before" price
-        // or a discount badge out of nothing.
-        $this->assertStringNotContainsString('خصم', $noDiscount);
+        $this->assertMatchesRegularExpression('/<s[^>]*>879 ر\.س<\/s>/u', $withDiscount);
+        // The previous price is shown as a fact; no percentage is computed from it.
+        $this->assertStringNotContainsString('%', $withDiscount);
+        // No previousPrice passed at all: never fabricate a "before" price.
+        $this->assertDoesNotMatchRegularExpression('/<s[\s>]/', $noDiscount);
+
+        // A "previous" price that is not higher than the current one is not a discount.
+        $bogus = Blade::render('<x-public.service-package-card name="تنظيف شقة" :price="675" :previous-price="600" />');
+        $this->assertDoesNotMatchRegularExpression('/<s[\s>]/', $bogus);
     }
 
     public function test_the_trust_card_and_certification_card_components_render_without_error(): void

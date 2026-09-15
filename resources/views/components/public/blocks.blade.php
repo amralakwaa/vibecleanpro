@@ -66,6 +66,106 @@
 
 @foreach ($visibleBlocks as $block)
     @switch($block->type)
+        @case('hero')
+            {{-- An editor-placed moment band (standalone/landing pages):
+                 navy field, optional real photograph behind a scrim, one
+                 heading, one optional action. --}}
+            @php($heroMedia = $media->get($block->data['background_media_id'] ?? null))
+            @if (! empty($block->data['heading']))
+                <section class="relative isolate overflow-hidden bg-ink-950 text-white">
+                    @if ($heroMedia)
+                        <img src="{{ $heroMedia->url() }}" alt="{{ $heroMedia->alt_text ?? '' }}" loading="lazy" width="1600" height="900"
+                            class="absolute inset-0 -z-10 w-full h-full object-cover opacity-40">
+                        <div class="absolute inset-0 -z-10 bg-gradient-to-t from-ink-950 via-ink-950/70 to-ink-950/30" aria-hidden="true"></div>
+                    @endif
+                    <x-public.container width="wide" class="py-16 md:py-24">
+                        <div class="max-w-2xl">
+                            <h2 class="font-display text-2xl md:text-4xl font-medium tracking-tight text-white text-balance">{{ $block->data['heading'] }}</h2>
+                            @if (! empty($block->data['subheading']))
+                                <p class="mt-4 text-lg text-ink-200 leading-relaxed">{{ $block->data['subheading'] }}</p>
+                            @endif
+                            @if (! empty($block->data['cta_label']) && ! empty($block->data['cta_url']))
+                                <div class="mt-8">
+                                    <x-public.button :href="$block->data['cta_url']" variant="cta" size="lg" icon="check-circle">{{ $block->data['cta_label'] }}</x-public.button>
+                                </div>
+                            @endif
+                        </div>
+                    </x-public.container>
+                </section>
+            @endif
+            @break
+
+        @case('inclusions')
+            {{-- "What is included / what is not": two ruled lists side by
+                 side. Either list may be empty; the block renders only
+                 when at least one item exists. --}}
+            @php($included = array_values(array_filter(array_map(fn ($item) => trim((string) ($item['item'] ?? '')), $block->data['included'] ?? []))))
+            @php($excluded = array_values(array_filter(array_map(fn ($item) => trim((string) ($item['item'] ?? '')), $block->data['excluded'] ?? []))))
+            @if ($included !== [] || $excluded !== [])
+                <x-public.section>
+                    @if (! empty($block->data['heading']))
+                        <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-8">{{ $block->data['heading'] }}</h2>
+                    @endif
+                    <div class="grid md:grid-cols-2 gap-x-16 gap-y-10">
+                        @if ($included !== [])
+                            <div>
+                                <h3 class="text-sm font-medium tracking-wide text-neutral-500">ما تشمله الخدمة</h3>
+                                <ul class="mt-3">
+                                    @foreach ($included as $item)
+                                        <li class="flex gap-3 border-b border-neutral-200 py-3 text-ink-950">
+                                            <x-public.icon name="check" class="w-4 h-4 mt-1.5 text-primary-600 shrink-0" />
+                                            <span>{{ $item }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        @if ($excluded !== [])
+                            <div>
+                                <h3 class="text-sm font-medium tracking-wide text-neutral-500">ما لا تشمله</h3>
+                                <ul class="mt-3">
+                                    @foreach ($excluded as $item)
+                                        <li class="flex gap-3 border-b border-neutral-200 py-3 text-neutral-600">
+                                            <span class="w-4 h-px mt-3.5 bg-neutral-400 shrink-0" aria-hidden="true"></span>
+                                            <span>{{ $item }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+                </x-public.section>
+            @endif
+            @break
+
+        @case('price_factors')
+            {{-- Why the final price differs: the honest companion to a
+                 "starting from" price. Plain numbered rows, no numbers
+                 invented - every factor is editor-written. --}}
+            @php($factors = array_values(array_filter($block->data['items'] ?? [], fn ($item) => filled($item['title'] ?? null))))
+            @if ($factors !== [])
+                <x-public.section tone="surface">
+                    <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-6">{{ $block->data['heading'] ?? 'ما الذي يحدد السعر؟' }}</h2>
+                    <ol class="grid md:grid-cols-2 gap-x-16">
+                        @foreach ($factors as $factor)
+                            <li class="flex gap-5 py-5 border-b border-neutral-200">
+                                <span class="font-display text-sm text-primary-600 tabular-nums shrink-0 pt-1" aria-hidden="true">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                <div>
+                                    <p class="font-medium text-ink-950">{{ $factor['title'] }}</p>
+                                    @if (! empty($factor['description']))
+                                        <p class="mt-1 text-sm text-neutral-600 leading-relaxed">{{ $factor['description'] }}</p>
+                                    @endif
+                                </div>
+                            </li>
+                        @endforeach
+                    </ol>
+                    @if (! empty($block->data['note']))
+                        <p class="mt-6 text-sm text-neutral-500 max-w-2xl">{{ $block->data['note'] }}</p>
+                    @endif
+                </x-public.section>
+            @endif
+            @break
+
         @case('rich_text')
             {{-- Editor HTML is styled by the `.prose` system in app.css
                  (a hand-written, Arabic-tuned set - NOT the Tailwind
@@ -182,9 +282,9 @@
             @break
 
         @case('cta')
-            <x-public.section :width="$width">
-                <x-public.cta :title="$block->data['heading'] ?? ''" :whatsapp-url="$block->data['button_url'] ?? null" />
-            </x-public.section>
+            @if (! empty($block->data['heading']))
+                <x-public.cta :title="$block->data['heading']" :quote-url="route('public.quote')" :whatsapp-url="$block->data['button_url'] ?? null" />
+            @endif
             @break
 
         @case('faq')
@@ -208,17 +308,26 @@
             @if ($related && $related->isNotEmpty())
                 <x-public.section tone="surface">
                     @if (! empty($block->data['heading']))
-                        <x-public.section-header :title="$block->data['heading']" align="center" class="mb-8" />
+                        <x-public.section-marker :label="$block->data['heading']" heading class="mb-4" />
                     @endif
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <ul class="grid md:grid-cols-2 gap-x-12">
                         @foreach ($related as $item)
-                            @if ($relatedItemType === 'area')
-                                <x-public.area-card :area="$item" :url="app(\App\Seo\UrlResolver::class)->urlForPage($item->page)" />
-                            @else
-                                <x-public.service-card :service="$item" :url="app(\App\Seo\UrlResolver::class)->urlForPage($item->page)" />
-                            @endif
+                            <li class="border-b border-neutral-200">
+                                <a href="{{ app(\App\Seo\UrlResolver::class)->urlForPage($item->page) }}" class="group flex items-center justify-between gap-4 py-4 min-h-14">
+                                    <span class="min-w-0">
+                                        <span class="block font-medium text-ink-950 group-hover:text-primary-700 transition-colors">{{ $item->name }}</span>
+                                        @if ($relatedItemType !== 'area' && $item->short_description)
+                                            <span class="block mt-0.5 text-sm text-neutral-500 line-clamp-1">{{ $item->short_description }}</span>
+                                        @endif
+                                        @if ($relatedItemType !== 'area' && ($price = $item->publicPrice()))
+                                            <span class="block mt-0.5 text-sm text-ink-950 tabular-nums">{{ $price->label() }}</span>
+                                        @endif
+                                    </span>
+                                    <x-public.icon name="arrow-start" class="w-4 h-4 text-neutral-300 group-hover:text-primary-600 rtl:rotate-180 shrink-0 transition-colors" />
+                                </a>
+                            </li>
                         @endforeach
-                    </div>
+                    </ul>
                 </x-public.section>
             @endif
             @break

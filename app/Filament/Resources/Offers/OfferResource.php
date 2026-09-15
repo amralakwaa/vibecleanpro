@@ -70,6 +70,12 @@ class OfferResource extends Resource
                                         ->label('نص الخصم')
                                         ->placeholder('مثال: خصم 20%')
                                         ->helperText('نص وصفي يُعرض للزائر. تفاصيل الشروط تُكتب داخل محتوى الصفحة.'),
+                                    TextInput::make('offer_price')
+                                        ->label('سعر العرض (اختياري)')
+                                        ->numeric()
+                                        ->minValue(1)
+                                        ->suffix(config('pricing.symbol'))
+                                        ->helperText('يُعرض كرقم فقط إن أُدخل. يظهر "بدلًا من" تلقائيًا عندما يغطي العرض خدمة واحدة لها سعر معلن أعلى منه.'),
                                     MediaPicker::make('featured_media_id', 'صورة العرض'),
                                     DatePicker::make('starts_at')->label('تاريخ البداية'),
                                     DatePicker::make('ends_at')->label('تاريخ الانتهاء'),

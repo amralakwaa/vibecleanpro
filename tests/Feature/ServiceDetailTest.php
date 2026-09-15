@@ -76,12 +76,12 @@ class ServiceDetailTest extends TestCase
      * admin), not demand data - so the card must say exactly that and
      * never dress it up as popularity.
      */
-    public function test_related_service_cards_label_a_featured_service_honestly(): void
+    public function test_the_related_block_lists_real_services_as_links_without_invented_labels(): void
     {
         $page = $this->createCompliantServicePage(slug: 'service-related-cards');
         ContentBlock::factory()->for($page)->create(['type' => 'related_content', 'position' => 1, 'data' => ['heading' => 'خدمات ذات صلة']]);
         $featured = $this->createCompliantServicePage(slug: 'featured-related')->pageable;
-        $featured->update(['name' => 'خدمة-مميزة-فعلًا', 'is_featured' => true]);
+        $featured->update(['name' => 'خدمة-مميزة-فعلًا', 'is_featured' => true, 'pricing_mode' => 'starting_from', 'price_min' => 250]);
         $plain = $this->createCompliantServicePage(slug: 'plain-related')->pageable;
         $plain->update(['name' => 'خدمة-عادية-تمامًا', 'is_featured' => false]);
 
@@ -90,13 +90,12 @@ class ServiceDetailTest extends TestCase
             ['blocks' => $page->fresh(['contentBlocks'])->contentBlocks, 'related' => collect([$featured->fresh(['page', 'featuredMedia']), $plain->fresh(['page', 'featuredMedia'])])],
         );
 
-        $this->assertStringContainsString('خدمة-مميزة-فعلًا', $html);
-        $this->assertStringContainsString('خدمة-عادية-تمامًا', $html);
-        $this->assertSame(1, substr_count($html, 'خدمة مميزة'));
+        $this->assertStringContainsString('href="'.route('public.service', 'featured-related').'"', $html);
+        $this->assertStringContainsString('href="'.route('public.service', 'plain-related').'"', $html);
+        $this->assertStringContainsString('خدمات ذات صلة', $html);
+        // The admin's price travels with the link; nothing about popularity is claimed.
+        $this->assertStringContainsString('يبدأ من 250 ر.س', $html);
         $this->assertStringNotContainsString('الأكثر طلبًا', $html);
-        // The badge belongs to the featured card only: it must appear
-        // before the plain card's name, never after it.
-        $this->assertLessThan(mb_strpos($html, 'خدمة-عادية-تمامًا'), mb_strpos($html, 'خدمة مميزة'));
     }
 
     public function test_blocks_renderer_filters_by_type_so_two_passes_never_overlap(): void

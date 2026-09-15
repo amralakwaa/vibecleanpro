@@ -49,6 +49,10 @@
         'sticky top-0 z-40 transition-colors duration-200',
         'border-b' => ! $overlay,
         'bg-white/95 backdrop-blur border-neutral-200' => ! $overlay,
+        // Overlay mode only works if the hero actually sits *behind* the
+        // bar: pull the following section up by the header's own height,
+        // otherwise white nav text lands on the page background.
+        '-mb-16 md:-mb-20' => $overlay,
     ])
 >
     <x-public.container width="wide">

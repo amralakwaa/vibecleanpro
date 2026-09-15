@@ -3,7 +3,11 @@
 namespace Tests\Feature\Seo;
 
 use App\Enums\PageStatus;
+use App\Enums\PageType;
 use App\Models\Area;
+use App\Models\Article;
+use App\Models\ContentBlock;
+use App\Models\Page;
 use App\Seo\SitemapGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Seo\Concerns\BuildsSeoFixtures;
@@ -35,21 +39,21 @@ class SitemapTest extends TestCase
     {
         $this->makeBarePage(['status' => PageStatus::Draft, 'slug' => 'draft-page']);
 
-        $this->assertCount(0, $this->sitemap->entries());
+        $this->assertNotContains(url('/draft-page'), $this->sitemap->entries()->pluck('loc'));
     }
 
     public function test_a_review_page_never_appears_in_the_sitemap(): void
     {
         $this->makeBarePage(['status' => PageStatus::Review, 'slug' => 'review-page']);
 
-        $this->assertCount(0, $this->sitemap->entries());
+        $this->assertNotContains(url('/review-page'), $this->sitemap->entries()->pluck('loc'));
     }
 
     public function test_an_archived_page_never_appears_in_the_sitemap(): void
     {
         $this->makeBarePage(['status' => PageStatus::Archived, 'slug' => 'archived-page']);
 
-        $this->assertCount(0, $this->sitemap->entries());
+        $this->assertNotContains(url('/archived-page'), $this->sitemap->entries()->pluck('loc'));
     }
 
     public function test_a_manually_noindexed_published_page_never_appears_in_the_sitemap(): void
@@ -70,7 +74,7 @@ class SitemapTest extends TestCase
             'slug' => 'scheduled-page',
         ]);
 
-        $this->assertCount(0, $this->sitemap->entries());
+        $this->assertNotContains(url('/scheduled-page'), $this->sitemap->entries()->pluck('loc'));
     }
 
     public function test_a_soft_deleted_page_never_appears_in_the_sitemap(): void
@@ -105,6 +109,59 @@ class SitemapTest extends TestCase
         $locs = $this->sitemap->entries()->pluck('loc');
 
         $this->assertTrue($locs->contains(rtrim(config('app.url'), '/').'/services/self-canonical'));
+    }
+
+    public function test_the_homepage_and_index_routes_lead_the_sitemap_exactly_once(): void
+    {
+        $this->makeBarePage(['status' => PageStatus::Published, 'slug' => 'contact']);
+
+        $locs = $this->sitemap->entries()->pluck('loc');
+        $absolute = fn (string $path) => rtrim(config('app.url'), '/').$path;
+
+        // The same absolute form the homepage's own canonical uses ("/").
+        foreach (['/', '/services', '/areas', '/projects', '/blog', '/offers', '/contact'] as $path) {
+            $this->assertTrue($locs->contains($absolute($path)), $path.' missing from the sitemap');
+        }
+        // A Page at a structural slug never produces a duplicate entry.
+        $this->assertSame($locs->count(), $locs->unique()->count());
+        $this->assertSame($absolute('/'), $locs->first());
+        $this->assertNotContains($absolute('/quote'), $locs);
+    }
+
+    public function test_structural_lastmod_comes_only_from_the_entries_that_route_lists(): void
+    {
+        $absolute = fn (string $path) => rtrim(config('app.url'), '/').$path;
+        $lastmod = fn (string $path) => $this->sitemap->entries()->firstWhere('loc', $absolute($path))['lastmod'] ?? null;
+
+        $service = $this->createCompliantServicePage(slug: 'dated-service');
+        $this->travel(1)->days();
+        $article = Page::factory()->create(['type' => PageType::Article, 'slug' => 'dated-article', 'title' => 'مقال مؤرخ']);
+        Article::factory()->create()->page()->save($article);
+        ContentBlock::factory()->for($article)->create(['type' => 'rich_text', 'data' => ['content' => '<p>نص.</p>']]);
+        $article->update(['status' => PageStatus::Published]);
+
+        // Each index dates itself by its own entries; "/" and "/contact"
+        // have no confident source and carry no lastmod.
+        $this->assertSame($service->fresh()->updated_at->toAtomString(), $lastmod('/services'));
+        $this->assertSame($article->fresh()->updated_at->toAtomString(), $lastmod('/blog'));
+        $this->assertNull($lastmod('/'));
+        $this->assertNull($lastmod('/contact'));
+        $this->assertNull($lastmod('/projects'), 'no published project -> no date');
+
+        // Editing the article moves /blog only - never /contact or /services.
+        $servicesBefore = $lastmod('/services');
+        $this->travel(2)->days();
+        $article->update(['title' => 'عنوان معدل']);
+
+        $this->assertSame($article->fresh()->updated_at->toAtomString(), $lastmod('/blog'));
+        $this->assertSame($servicesBefore, $lastmod('/services'));
+        $this->assertNull($lastmod('/contact'));
+
+        // A price edit touches the service row, not its page - /services still moves.
+        $this->travel(1)->days();
+        $service->pageable->update(['pricing_mode' => 'fixed', 'price_min' => 250]);
+        $this->assertSame($service->pageable->fresh()->updated_at->toAtomString(), $lastmod('/services'));
+        $this->assertGreaterThan($servicesBefore, $lastmod('/services'));
     }
 
     public function test_each_entry_carries_a_meaningful_lastmod(): void

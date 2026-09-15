@@ -48,6 +48,9 @@
                         @if ($lead->discount_label)
                             <p class="mt-3 font-display text-lg md:text-xl font-light text-ink-950">{{ $lead->discount_label }}</p>
                         @endif
+                        @if ($lead->offer_price !== null)
+                            <p class="mt-3 text-sm text-neutral-500">سعر العرض <span class="font-display text-lg font-medium text-ink-950 tabular-nums">{{ \App\Support\Pricing\PublicPrice::format((float) $lead->offer_price) }}</span></p>
+                        @endif
                         @if ($lead->ends_at)
                             <p class="mt-4 text-sm text-neutral-500">ساري حتى <time datetime="{{ $lead->ends_at->toDateString() }}">{{ $lead->ends_at->translatedFormat('j F Y') }}</time></p>
                         @endif
@@ -72,6 +75,9 @@
                                     <span class="font-display text-lg md:text-xl font-medium text-ink-950 group-hover:text-primary-700 transition-colors">{{ $offer->title }}</span>
                                     @if ($offer->discount_label)
                                         <span class="text-sm text-primary-700">{{ $offer->discount_label }}</span>
+                                    @endif
+                                    @if ($offer->offer_price !== null)
+                                        <span class="text-sm font-medium text-ink-950 tabular-nums">{{ \App\Support\Pricing\PublicPrice::format((float) $offer->offer_price) }}</span>
                                     @endif
                                     @if ($offer->ends_at)
                                         <span class="text-sm text-neutral-500">حتى <time datetime="{{ $offer->ends_at->toDateString() }}">{{ $offer->ends_at->translatedFormat('j F Y') }}</time></span>

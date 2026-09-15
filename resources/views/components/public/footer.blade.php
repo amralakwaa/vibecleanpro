@@ -34,16 +34,21 @@
                 @endif
 
                 @if ($businessProfile?->social_links)
-                    <div class="mt-5 flex items-center gap-3">
-                        @foreach ($businessProfile->social_links as $social)
+                    {{-- The platform name the editor typed is the link
+                         text: every social link is named, and no brand
+                         icon is faked with a generic arrow. --}}
+                    <ul class="mt-5 flex flex-wrap items-center gap-2">
+                        @foreach ($businessProfile->social_links as $platform => $social)
                             @if (! empty($social))
-                                <a href="{{ $social }}" target="_blank" rel="noopener noreferrer"
-                                    class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
-                                    <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />
-                                </a>
+                                <li>
+                                    <a href="{{ $social }}" target="_blank" rel="noopener noreferrer"
+                                        class="inline-flex items-center min-h-11 px-3.5 rounded-full bg-white/10 text-sm text-ink-100 hover:bg-white/20 hover:text-white transition-colors">
+                                        {{ is_string($platform) ? $platform : $social }}
+                                    </a>
+                                </li>
                             @endif
                         @endforeach
-                    </div>
+                    </ul>
                 @endif
             </div>
 

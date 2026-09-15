@@ -25,6 +25,7 @@
     'ctaLabel',
     'whatsappUrl' => null,
     'whatsappLabel' => 'واتساب',
+    'price' => null, // \App\Support\Pricing\PublicPrice|null - rendered only when real
 ])
 
 <section class="bg-white border-b border-neutral-200">
@@ -52,6 +53,21 @@
 
                 @if ($description)
                     <p class="mt-4 text-neutral-600 leading-relaxed max-w-xl">{{ $description }}</p>
+                @endif
+
+                {{-- The admin-entered price, stated once, with its own
+                     caveat when the editor wrote one. Nothing renders for
+                     a quote-only or hidden price. --}}
+                @if ($price)
+                    <dl class="mt-5 max-w-xl" data-price>
+                        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                            <dt class="text-sm text-neutral-500">السعر</dt>
+                            <dd class="font-display text-xl md:text-2xl font-medium text-ink-950 tabular-nums">{{ $price->label() }}</dd>
+                        </div>
+                        @if ($price->note)
+                            <dd class="mt-1 text-sm text-neutral-500">{{ $price->note }}</dd>
+                        @endif
+                    </dl>
                 @endif
 
                 <div class="mt-7 flex flex-wrap items-center gap-3">

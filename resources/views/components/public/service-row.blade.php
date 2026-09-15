@@ -40,6 +40,10 @@
             <p class="mt-3 text-neutral-600 leading-relaxed">{{ $service->short_description }}</p>
         @endif
 
+        @if ($price = $service->publicPrice())
+            <p class="mt-3 text-sm text-neutral-500"><span class="font-medium text-ink-950 tabular-nums">{{ $price->label() }}</span></p>
+        @endif
+
         <a href="{{ $url }}" class="mt-5 inline-flex items-center gap-2 text-primary-700 font-medium underline-offset-4 hover:underline">
             تفاصيل الخدمة
             <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />
