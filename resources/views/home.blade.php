@@ -147,11 +147,13 @@
                                     <p class="text-xs font-medium tracking-wide text-primary-200">{{ $service->category->name }}</p>
                                 @endif
                                 <h3 class="mt-1 font-display text-xl md:text-2xl font-medium tracking-tight text-white text-balance">{{ $service->name }}</h3>
+                                {{-- The price slot shows PublicPrice or nothing: a
+                                     quote-only service gets no stand-in label here. --}}
                                 <div class="mt-3 flex items-center justify-between gap-3">
                                     @if ($price = $service->publicPrice())
                                         <span class="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-sm font-medium text-white backdrop-blur-sm tabular-nums">{{ $price->label() }}</span>
                                     @else
-                                        <span class="text-sm text-white/80">اطلب عرض سعر</span>
+                                        <span class="text-sm font-medium text-white/90">تفاصيل الخدمة</span>
                                     @endif
                                     <x-public.icon name="arrow-start" class="w-4 h-4 text-white rtl:rotate-180 transition-transform duration-300 group-hover:-translate-x-1" />
                                 </div>

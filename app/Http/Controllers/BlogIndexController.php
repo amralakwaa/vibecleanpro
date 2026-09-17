@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\ArticleCategory;
 use App\Models\BusinessProfile;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
@@ -32,6 +33,16 @@ class BlogIndexController extends Controller
             ->paginate(9)
             ->withQueryString();
 
+        // Categories are organising labels only (no category route exists):
+        // listed with the real count of published articles in each, so the
+        // legend never names an empty topic.
+        $categories = ArticleCategory::query()
+            ->withCount(['articles' => fn ($query) => $query->whereHas('page', fn ($q) => $q->published())])
+            ->orderBy('sort_order')
+            ->get()
+            ->filter(fn (ArticleCategory $category) => $category->articles_count > 0)
+            ->values();
+
         $seo = new SeoHeadData(
             title: 'المدونة | '.($businessProfile?->name ?? config('app.name')),
             metaDescription: 'مقالات ونصائح حول التنظيف المنزلي والتجاري في الرياض.',
@@ -56,6 +67,7 @@ class BlogIndexController extends Controller
             'businessProfile' => $businessProfile,
             'featured' => $featured,
             'articles' => $articles,
+            'categories' => $categories,
         ], 200);
     }
 }

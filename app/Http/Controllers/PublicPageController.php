@@ -426,6 +426,14 @@ class PublicPageController extends Controller
                 ->limit(3)
                 ->get();
 
+        // Reading time is computed from the article's own active rich_text
+        // blocks (tags stripped, ~200 words a minute) - never a stored guess.
+        // Short pieces get no figure at all rather than a meaningless "1".
+        $words = $page->contentBlocks
+            ->filter(fn ($block) => $block->is_active && $block->type === 'rich_text')
+            ->sum(fn ($block) => preg_match_all('/[\p{L}\p{N}]+/u', strip_tags((string) ($block->data['content'] ?? ''))));
+        $readingMinutes = $words >= 150 ? (int) max(1, ceil($words / 200)) : null;
+
         return response()->view('pages.article', [
             'page' => $page,
             'seo' => $seo,
@@ -436,6 +444,7 @@ class PublicPageController extends Controller
             'relatedAreas' => $relatedAreas,
             'relatedArticles' => $relatedArticles,
             'relatedProjects' => $relatedProjects,
+            'readingMinutes' => $readingMinutes,
         ], 200);
     }
 

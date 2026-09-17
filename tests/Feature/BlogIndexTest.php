@@ -54,7 +54,9 @@ class BlogIndexTest extends TestCase
         $response = $this->get('/blog');
 
         $response->assertOk();
-        $response->assertSee('لا توجد مقالات منشورة حاليًا');
+        // Customer-facing pre-launch copy, never an administrative "nothing published".
+        $response->assertSee('نجهّز أول مقالاتنا');
+        $response->assertDontSee('لا توجد مقالات منشورة');
     }
 
     public function test_newest_first_ordering_is_preserved_across_the_featured_spot_and_the_rows(): void
