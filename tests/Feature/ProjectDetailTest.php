@@ -13,6 +13,7 @@ use App\Models\Page;
 use App\Models\Project;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Feature\Concerns\AssertsNoEmptyState;
 use Tests\Feature\Seo\Concerns\BuildsSeoFixtures;
 use Tests\TestCase;
 
@@ -24,7 +25,7 @@ use Tests\TestCase;
  */
 class ProjectDetailTest extends TestCase
 {
-    use BuildsSeoFixtures, RefreshDatabase;
+    use AssertsNoEmptyState, BuildsSeoFixtures, RefreshDatabase;
 
     public function test_before_and_after_photos_render_as_a_genuine_pair(): void
     {
@@ -113,7 +114,7 @@ class ProjectDetailTest extends TestCase
         $this->assertStringNotContainsString('الدليل', $content);
         $this->assertStringNotContainsString('أثناء العمل', $content);
         $this->assertStringNotContainsString('قبل وبعد', $content);
-        $this->assertDoesNotMatchRegularExpression('/لم ت|لا توجد|لا يوجد/u', $content);
+        $this->assertNoCustomerFacingEmptyState($content);
     }
 
     public function test_the_context_rail_links_the_service_and_a_published_area_but_never_an_unpublished_one(): void

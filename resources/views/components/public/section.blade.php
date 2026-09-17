@@ -4,7 +4,7 @@
     never drifts page to page (see the Phase 5 report's Spacing System).
 --}}
 @props([
-    'tone' => 'default', // default | surface | primary | muted
+    'tone' => 'default', // default | surface | tint | primary | muted
     'width' => 'default',
     'as' => 'section',
     'density' => 'normal', // tight | normal | feature
@@ -14,6 +14,7 @@
     $tones = [
         'default' => '',
         'surface' => 'bg-white',
+        'tint' => 'surface-tint',
         'muted' => 'bg-neutral-100',
         'primary' => 'bg-ink-950 text-white',
     ];

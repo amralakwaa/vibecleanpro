@@ -26,6 +26,10 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 5.25-7.5 10.5-7.5 10.5S4.5 15.75 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
             @break
 
+        @case('minus')
+            <path stroke-linecap="round" d="M6 12h12" />
+            @break
+
         @case('check')
             <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
             @break

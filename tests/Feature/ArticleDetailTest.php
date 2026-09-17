@@ -12,6 +12,7 @@ use App\Models\Page;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Feature\Concerns\AssertsNoEmptyState;
 use Tests\Feature\Seo\Concerns\BuildsSeoFixtures;
 use Tests\TestCase;
 
@@ -24,7 +25,7 @@ use Tests\TestCase;
  */
 class ArticleDetailTest extends TestCase
 {
-    use BuildsSeoFixtures, RefreshDatabase;
+    use AssertsNoEmptyState, BuildsSeoFixtures, RefreshDatabase;
 
     public function test_a_published_article_renders_with_one_h1_from_the_cms_title(): void
     {
@@ -84,7 +85,7 @@ class ArticleDetailTest extends TestCase
         $bare = $this->get('/blog/no-links')->assertOk()->getContent();
         $this->assertStringNotContainsString('خدمات ذات صلة', $bare);
         $this->assertStringNotContainsString('مناطق ذات صلة', $bare);
-        $this->assertDoesNotMatchRegularExpression('/لم ت|لا توجد|لا يوجد/u', $bare);
+        $this->assertNoCustomerFacingEmptyState($bare);
     }
 
     public function test_the_faq_renders_once_and_before_the_closing_prompt(): void

@@ -25,11 +25,13 @@ class OffersIndexController extends Controller
 
         // 'page' is eager-loaded because the view resolves each offer's
         // URL through UrlResolver::urlForPage() - without it every listed
-        // offer costs its own pages query.
+        // offer costs its own pages query. 'services.featuredMedia' feeds
+        // OfferPrice (the honest "before" price) and the covered service's
+        // photograph, which an offer without its own picture borrows.
         $offers = Offer::query()
             ->whereHas('page', fn ($query) => $query->published())
             ->where('is_active', true)
-            ->with(['featuredMedia', 'page'])
+            ->with(['featuredMedia', 'page', 'services.featuredMedia'])
             ->orderBy('sort_order')
             ->get()
             ->filter(fn (Offer $offer) => $offer->availability() !== OfferAvailability::Expired)

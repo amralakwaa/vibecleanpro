@@ -10,6 +10,7 @@ use App\Models\Offer;
 use App\Models\Page;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Feature\Concerns\AssertsNoEmptyState;
 use Tests\Feature\Seo\Concerns\BuildsSeoFixtures;
 use Tests\TestCase;
 
@@ -21,7 +22,7 @@ use Tests\TestCase;
  */
 class OfferDetailTest extends TestCase
 {
-    use BuildsSeoFixtures, RefreshDatabase;
+    use AssertsNoEmptyState, BuildsSeoFixtures, RefreshDatabase;
 
     public function test_an_active_offer_shows_the_conversion_cta_and_its_end_date(): void
     {
@@ -88,7 +89,7 @@ class OfferDetailTest extends TestCase
         $bare = $this->get('/offers/bare-offer')->assertOk()->getContent();
         $this->assertStringNotContainsString('يشمل العرض', $bare);
         $this->assertStringNotContainsString('متاح في', $bare);
-        $this->assertDoesNotMatchRegularExpression('/لم ت|لا توجد|لا يوجد/u', $bare);
+        $this->assertNoCustomerFacingEmptyState($bare);
     }
 
     public function test_the_conversion_cta_prefills_the_quote_with_the_first_included_service(): void

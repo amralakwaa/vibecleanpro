@@ -96,38 +96,47 @@
             @break
 
         @case('inclusions')
-            {{-- "What is included / what is not": two ruled lists side by
-                 side. Either list may be empty; the block renders only
-                 when at least one item exists. --}}
+            {{-- "What is included / what is not" as a split: the included
+                 list on a tinted panel with check cues, the excluded list
+                 on a white panel with minus cues - two surfaces, read at a
+                 glance, no card grid. Either list may be empty; the block
+                 renders only when at least one item exists. --}}
             @php($included = array_values(array_filter(array_map(fn ($item) => trim((string) ($item['item'] ?? '')), $block->data['included'] ?? []))))
             @php($excluded = array_values(array_filter(array_map(fn ($item) => trim((string) ($item['item'] ?? '')), $block->data['excluded'] ?? []))))
             @if ($included !== [] || $excluded !== [])
-                <x-public.section>
+                <x-public.section tone="surface">
                     @if (! empty($block->data['heading']))
-                        <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-8">{{ $block->data['heading'] }}</h2>
+                        <h2 class="font-display text-2xl md:text-4xl md:leading-[1.15] font-medium tracking-tight text-ink-950 mb-8 md:mb-10 text-balance reveal">{{ $block->data['heading'] }}</h2>
                     @endif
-                    <div class="grid md:grid-cols-2 gap-x-16 gap-y-10">
+                    <div @class(['grid gap-5 md:gap-6 reveal', 'md:grid-cols-2' => $included !== [] && $excluded !== []])>
                         @if ($included !== [])
-                            <div>
-                                <h3 class="text-sm font-medium tracking-wide text-neutral-500">ما تشمله الخدمة</h3>
-                                <ul class="mt-3">
+                            <div class="surface-tint relative overflow-hidden rounded-3xl p-6 md:p-8 ring-1 ring-primary-200/60">
+                                <div class="glow-primary absolute -top-16 -end-16 w-48 h-48 opacity-60" aria-hidden="true"></div>
+                                <h3 class="relative flex items-center gap-2.5 font-display text-lg font-medium text-ink-950">
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-600 text-white" aria-hidden="true"><x-public.icon name="check" class="w-4 h-4" /></span>
+                                    ما تشمله الخدمة
+                                </h3>
+                                <ul class="relative mt-5 space-y-2.5">
                                     @foreach ($included as $item)
-                                        <li class="flex gap-3 border-b border-neutral-200 py-3 text-ink-950">
+                                        <li class="flex gap-3 text-ink-950">
                                             <x-public.icon name="check" class="w-4 h-4 mt-1.5 text-primary-600 shrink-0" />
-                                            <span>{{ $item }}</span>
+                                            <span class="leading-relaxed">{{ $item }}</span>
                                         </li>
                                     @endforeach
                                 </ul>
                             </div>
                         @endif
                         @if ($excluded !== [])
-                            <div>
-                                <h3 class="text-sm font-medium tracking-wide text-neutral-500">ما لا تشمله</h3>
-                                <ul class="mt-3">
+                            <div class="rounded-3xl bg-white p-6 md:p-8 ring-1 ring-ink-950/10">
+                                <h3 class="flex items-center gap-2.5 font-display text-lg font-medium text-ink-950">
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-neutral-200 text-neutral-700" aria-hidden="true"><x-public.icon name="minus" class="w-4 h-4" /></span>
+                                    ما لا تشمله
+                                </h3>
+                                <ul class="mt-5 space-y-2.5">
                                     @foreach ($excluded as $item)
-                                        <li class="flex gap-3 border-b border-neutral-200 py-3 text-neutral-600">
-                                            <span class="w-4 h-px mt-3.5 bg-neutral-400 shrink-0" aria-hidden="true"></span>
-                                            <span>{{ $item }}</span>
+                                        <li class="flex gap-3 text-neutral-600">
+                                            <x-public.icon name="minus" class="w-4 h-4 mt-1.5 text-neutral-400 shrink-0" />
+                                            <span class="leading-relaxed">{{ $item }}</span>
                                         </li>
                                     @endforeach
                                 </ul>
@@ -140,27 +149,34 @@
 
         @case('price_factors')
             {{-- Why the final price differs: the honest companion to a
-                 "starting from" price. Plain numbered rows, no numbers
-                 invented - every factor is editor-written. --}}
+                 "starting from" price, laid out to be scanned in seconds -
+                 one white tile per factor with a large numeral, on the
+                 tinted field. Every factor is editor-written; nothing is
+                 invented here. --}}
             @php($factors = array_values(array_filter($block->data['items'] ?? [], fn ($item) => filled($item['title'] ?? null))))
             @if ($factors !== [])
-                <x-public.section tone="surface">
-                    <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-6">{{ $block->data['heading'] ?? 'ما الذي يحدد السعر؟' }}</h2>
-                    <ol class="grid md:grid-cols-2 gap-x-16">
+                <x-public.section tone="tint">
+                    <div class="max-w-2xl reveal">
+                        <p class="text-sm font-medium tracking-wide text-primary-700">قبل أن تطلب</p>
+                        <h2 class="mt-2 font-display text-2xl md:text-4xl md:leading-[1.15] font-medium tracking-tight text-ink-950 text-balance">{{ $block->data['heading'] ?? 'ما الذي يحدد السعر؟' }}</h2>
+                    </div>
+                    {{-- Four factors sit as one row of four, not three plus an orphan. --}}
+                    <ol @class(['mt-8 md:mt-10 grid gap-4 md:gap-5 sm:grid-cols-2 reveal', 'lg:grid-cols-3' => count($factors) === 3 || count($factors) >= 5, 'lg:grid-cols-4' => count($factors) === 4])>
                         @foreach ($factors as $factor)
-                            <li class="flex gap-5 py-5 border-b border-neutral-200">
-                                <span class="font-display text-sm text-primary-600 tabular-nums shrink-0 pt-1" aria-hidden="true">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
-                                <div>
-                                    <p class="font-medium text-ink-950">{{ $factor['title'] }}</p>
-                                    @if (! empty($factor['description']))
-                                        <p class="mt-1 text-sm text-neutral-600 leading-relaxed">{{ $factor['description'] }}</p>
-                                    @endif
-                                </div>
+                            <li class="rounded-2xl bg-white ring-1 ring-ink-950/5 shadow-sm p-5 md:p-6">
+                                <span class="font-display text-3xl font-light text-primary-600 tabular-nums" aria-hidden="true">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                <p class="mt-3 font-display text-lg font-medium text-ink-950">{{ $factor['title'] }}</p>
+                                @if (! empty($factor['description']))
+                                    <p class="mt-1.5 text-sm text-neutral-600 leading-relaxed">{{ $factor['description'] }}</p>
+                                @endif
                             </li>
                         @endforeach
                     </ol>
                     @if (! empty($block->data['note']))
-                        <p class="mt-6 text-sm text-neutral-500 max-w-2xl">{{ $block->data['note'] }}</p>
+                        <p class="mt-6 flex items-start gap-2 text-sm text-neutral-600 max-w-2xl reveal">
+                            <x-public.icon name="info" class="w-4 h-4 mt-0.5 text-primary-600 shrink-0" />
+                            <span>{{ $block->data['note'] }}</span>
+                        </p>
                     @endif
                 </x-public.section>
             @endif
@@ -214,16 +230,16 @@
                      feature cards: a ruled two-column list with one small
                      check per row - the only icon that earns its place
                      here, because it is what signals "included". --}}
-                <x-public.section tone="surface">
+                <x-public.section>
                     @if (! empty($block->data['heading']))
-                        <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-8">
+                        <h2 class="font-display text-2xl md:text-4xl md:leading-[1.15] font-medium tracking-tight text-ink-950 mb-8 text-balance reveal">
                             {{ $block->data['heading'] }}
                         </h2>
                     @endif
-                    <ul class="grid md:grid-cols-2 gap-x-12">
+                    <ul class="grid md:grid-cols-2 gap-x-12 reveal">
                         @foreach ($items as $item)
                             <li class="flex gap-3 border-b border-neutral-200 py-4">
-                                <x-public.icon name="check" class="w-4 h-4 mt-1 text-primary-600 shrink-0" />
+                                <span class="inline-flex items-center justify-center w-6 h-6 mt-0.5 rounded-full bg-primary-50 text-primary-700 shrink-0" aria-hidden="true"><x-public.icon name="check" class="w-3.5 h-3.5" /></span>
                                 <div>
                                     <p class="font-medium text-ink-950">{{ $item['title'] ?? '' }}</p>
                                     @if (! empty($item['description']))
@@ -240,13 +256,13 @@
         @case('steps')
             @php($items = $block->data['items'] ?? [])
             @if (! empty($items))
-                <x-public.section>
+                <x-public.section tone="surface">
                     @if (! empty($block->data['heading']))
-                        <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-10">
+                        <h2 class="font-display text-2xl md:text-4xl md:leading-[1.15] font-medium tracking-tight text-ink-950 mb-10 text-balance reveal">
                             {{ $block->data['heading'] }}
                         </h2>
                     @endif
-                    <ol class="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-10">
+                    <ol class="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-10 reveal">
                         @foreach ($items as $index => $item)
                             <x-public.step-card :number="$index + 1" :title="$item['title'] ?? ''" :description="$item['description'] ?? null" />
                         @endforeach
@@ -291,7 +307,7 @@
             @if ($faqs && $faqs->isNotEmpty())
                 <x-public.section tone="surface" :width="$width">
                     @if (! empty($block->data['heading']))
-                        <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950 mb-6">
+                        <h2 class="font-display text-2xl md:text-4xl md:leading-[1.15] font-medium tracking-tight text-ink-950 mb-6 text-balance">
                             {{ $block->data['heading'] }}
                         </h2>
                     @endif

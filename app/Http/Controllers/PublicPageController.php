@@ -440,7 +440,9 @@ class PublicPageController extends Controller
         $offer = $page->pageable;
         $offer->load('featuredMedia');
 
-        $offerServices = $offer->services()->whereHas('page', fn ($query) => $query->published())->with('page')->get();
+        // 'featuredMedia' on the covered services: an offer without its own
+        // picture shows the service's photograph instead.
+        $offerServices = $offer->services()->whereHas('page', fn ($query) => $query->published())->with(['page', 'featuredMedia'])->get();
         $offerAreas = $offer->areas()->whereHas('page', fn ($query) => $query->published())->with('page')->get();
 
         return response()->view('pages.offer', [
