@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable(['key', 'value', 'type'])]
 class SiteSetting extends Model
 {
+    /**
+     * Media id of the homepage hero illustration, picked in site settings.
+     */
+    public const HOME_HERO_MEDIA_ID = 'home_hero_media_id';
+
     public static function get(string $key, mixed $default = null): mixed
     {
         $setting = static::query()->where('key', $key)->first();

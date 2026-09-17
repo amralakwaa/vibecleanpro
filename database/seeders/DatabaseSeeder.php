@@ -28,5 +28,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'Vibe Clean Pro',
             'city' => 'الرياض',
         ]);
+
+        // Licensed stock illustrations for the hero and the service
+        // catalogue - part of the initial content, not test data.
+        $this->call(InitialMediaSeeder::class);
     }
 }

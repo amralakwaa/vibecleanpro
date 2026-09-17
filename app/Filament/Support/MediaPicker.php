@@ -22,16 +22,27 @@ class MediaPicker
         return static::baseSelect($name, $label)->multiple();
     }
 
-    private static function baseSelect(string $name, string $label): Select
+    /**
+     * For project photographs: the licensed stock illustrations in the
+     * library are never offered, so a stock picture cannot be attached
+     * to a project as if it were the company's own work.
+     */
+    public static function makeForProject(string $name = 'media_id', string $label = 'الصورة'): Select
     {
+        return static::baseSelect($name, $label, excludeLibraryStock: true);
+    }
+
+    private static function baseSelect(string $name, string $label, bool $excludeLibraryStock = false): Select
+    {
+        $query = fn () => MediaModel::query()->when($excludeLibraryStock, fn ($query) => $query->excludingLibraryStock());
+
         return Select::make($name)
             ->label($label)
             ->searchable()
             ->preload()
             ->getSearchResultsUsing(
-                fn (string $search) => MediaModel::query()
-                    ->where('original_filename', 'like', "%{$search}%")
-                    ->orWhere('alt_text', 'like', "%{$search}%")
+                fn (string $search) => $query()
+                    ->where(fn ($q) => $q->where('original_filename', 'like', "%{$search}%")->orWhere('alt_text', 'like', "%{$search}%"))
                     ->limit(20)
                     ->pluck('original_filename', 'id')
             )

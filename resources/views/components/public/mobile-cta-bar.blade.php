@@ -13,7 +13,17 @@
 @props(['quoteUrl' => null, 'whatsappUrl' => null, 'phoneUrl' => null])
 
 @if ($quoteUrl || $whatsappUrl)
-    <div class="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white/95 backdrop-blur border-t border-neutral-200 pb-[env(safe-area-inset-bottom)]">
+    {{-- While a page's own primary action ([data-hero-cta]) is on screen
+         the bar slides away, so a visitor never sees two "request" buttons
+         at once. One IntersectionObserver, no scroll listeners; without
+         JS the bar simply stays. --}}
+    <div
+        x-data="{ hidden: false }"
+        x-init="const target = document.querySelector('[data-hero-cta]'); if (target && 'IntersectionObserver' in window) { new IntersectionObserver((entries) => hidden = entries[entries.length - 1].isIntersecting, { threshold: 0.4 }).observe(target); }"
+        :class="hidden ? 'translate-y-full pointer-events-none' : 'translate-y-0'"
+        :aria-hidden="hidden"
+        class="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white/95 backdrop-blur border-t border-neutral-200 pb-[env(safe-area-inset-bottom)] transition-transform duration-300"
+    >
         <div class="flex items-center gap-2 p-3">
             @if ($quoteUrl)
                 <x-public.button :href="$quoteUrl" variant="cta" size="md" icon="check-circle" class="grow min-h-12">

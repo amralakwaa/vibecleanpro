@@ -94,7 +94,7 @@ class ProjectResource extends Resource
                                 ->label('صور المشروع')
                                 ->relationship()
                                 ->schema([
-                                    MediaPicker::make('media_id', 'الصورة')->required()->columnSpan(2),
+                                    MediaPicker::makeForProject('media_id', 'الصورة')->required()->columnSpan(2),
                                     Select::make('stage')
                                         ->label('المرحلة')
                                         ->options([

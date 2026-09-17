@@ -6,9 +6,11 @@ use App\Enums\OfferAvailability;
 use App\Models\Area;
 use App\Models\BusinessProfile;
 use App\Models\Faq;
+use App\Models\Media;
 use App\Models\Offer;
 use App\Models\Project;
 use App\Models\Service;
+use App\Models\SiteSetting;
 use App\Models\Testimonial;
 use App\Seo\StructuredDataGenerator;
 use App\Seo\UrlResolver;
@@ -36,12 +38,17 @@ class HomeController extends Controller
         // 'page' is eager-loaded on every list below purely because the
         // view resolves each item's URL through UrlResolver::urlForPage()
         // - without it each card/row costs its own pages query.
+        // 'category' labels the service tiles; nothing else on the tile
+        // needs a relation beyond the page URL and the photo. Five is the
+        // count the services composition is drawn for: one featured tile
+        // spanning two rows plus four photo tiles fill the grid exactly,
+        // with no orphan tile on a third row; the rest live on /services.
         $services = Service::query()
             ->whereHas('page', fn ($query) => $query->published())
-            ->with(['featuredMedia', 'page'])
+            ->with(['featuredMedia', 'page', 'category'])
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
-            ->limit(6)
+            ->limit(5)
             ->get();
 
         $areas = Area::query()
@@ -66,17 +73,25 @@ class HomeController extends Controller
             ->limit(3)
             ->get();
 
-        // Hero image priority: the featured project's "after" photo, then
-        // the most recently completed published project that has one -
-        // never a stock or invented image (see the Phase 3 report).
-        $heroProject = Project::query()
-            ->whereHas('page', fn ($query) => $query->published())
-            ->whereHas('media', fn ($query) => $query->where('project_media.stage', 'after'))
-            ->with('media')
-            ->orderByDesc('is_featured')
-            ->orderByDesc('completed_at')
-            ->first();
-        $heroImage = $heroProject?->media->firstWhere('pivot.stage', 'after');
+        // Hero image priority: the image the editor picked in site settings
+        // (a licensed illustration from the media library, decorative -
+        // it never claims to be the company's own work), otherwise the
+        // featured project's "after" photo, then the most recently
+        // completed published project that has one. Nothing invented.
+        $heroImage = ($heroMediaId = SiteSetting::get(SiteSetting::HOME_HERO_MEDIA_ID))
+            ? Media::query()->find($heroMediaId)
+            : null;
+
+        if (! $heroImage) {
+            $heroProject = Project::query()
+                ->whereHas('page', fn ($query) => $query->published())
+                ->whereHas('media', fn ($query) => $query->where('project_media.stage', 'after'))
+                ->with('media')
+                ->orderByDesc('is_featured')
+                ->orderByDesc('completed_at')
+                ->first();
+            $heroImage = $heroProject?->media->firstWhere('pivot.stage', 'after');
+        }
 
         // 'area' is eager-loaded because the homepage pull quote prints
         // the customer's area alongside their name when it exists.
@@ -89,10 +104,13 @@ class HomeController extends Controller
 
         // Same "currently reachable" rule as /offers (see
         // OffersIndexController): expired offers never appear here.
+        // 'services' is eager-loaded because the offer moment states the
+        // covered service and derives the honest "instead of" price from
+        // it (see OfferPrice) - never from the discount label.
         $offers = Offer::query()
             ->whereHas('page', fn ($query) => $query->published())
             ->where('is_active', true)
-            ->with(['featuredMedia', 'page'])
+            ->with(['featuredMedia', 'page', 'services.featuredMedia'])
             ->orderBy('sort_order')
             ->get()
             ->filter(fn (Offer $offer) => $offer->availability() !== OfferAvailability::Expired)
@@ -109,6 +127,12 @@ class HomeController extends Controller
             ->orderBy('sort_order')
             ->limit(6)
             ->get();
+
+        // Real counts for the hero fact strip - the same published sets
+        // the /areas and /projects indexes list, so the homepage can only
+        // claim what those pages can show.
+        $publishedAreas = Area::query()->whereHas('page', fn ($query) => $query->published())->count();
+        $publishedProjects = Project::query()->whereHas('page', fn ($query) => $query->published())->count();
 
         $title = $profile?->name
             ? "{$profile->name} - خدمات تنظيف احترافية في الرياض"
@@ -138,6 +162,8 @@ class HomeController extends Controller
             'beforeAfterProjects' => $beforeAfterProjects,
             'heroImage' => $heroImage,
             'testimonials' => $testimonials,
+            'publishedAreas' => $publishedAreas,
+            'publishedProjects' => $publishedProjects,
             'offers' => $offers,
             'faqs' => $faqs,
         ], 200);

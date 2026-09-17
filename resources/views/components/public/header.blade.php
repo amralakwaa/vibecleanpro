@@ -59,20 +59,25 @@
         <div class="flex items-center justify-between h-16 md:h-20 gap-6">
             <a
                 href="{{ url('/') }}"
-                class="flex items-center gap-2.5 font-display font-medium text-lg shrink-0 transition-colors {{ $overlay ? '' : 'text-ink-950' }}"
+                class="flex items-center gap-2.5 font-display font-medium text-lg lg:text-xl shrink-0 transition-colors {{ $overlay ? '' : 'text-ink-950' }}"
                 @if ($overlay) :class="scrolled ? 'text-ink-950' : 'text-white'" @endif
             >
                 @if ($businessProfile?->logo)
-                    <img src="{{ $businessProfile->logo->url() }}" alt="{{ $brandName }}" class="h-9 w-auto">
+                    <img src="{{ $businessProfile->logo->url() }}" alt="{{ $brandName }}" class="h-9 lg:h-10 w-auto">
                 @endif
                 <span>{{ $brandName }}</span>
             </a>
 
             <nav class="hidden lg:flex items-center gap-8" aria-label="التنقل الرئيسي">
+                {{-- Each link carries a hairline that grows in on hover and
+                     stays for the current page (aria-current), so the
+                     visitor always knows where they are. --}}
                 @foreach ($primaryNav as $label => $url)
+                    @php($isCurrent = rtrim(url()->current(), '/') === rtrim(strtok($url, '?'), '/'))
                     <a
                         href="{{ $url }}"
-                        class="text-sm font-medium transition-colors {{ $overlay ? '' : 'text-neutral-700 hover:text-primary-700' }}"
+                        @if ($isCurrent) aria-current="page" @endif
+                        class="relative inline-flex items-center min-h-11 text-[0.95rem] font-medium transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-current after:origin-center after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100 aria-[current=page]:after:scale-x-100 {{ $overlay ? '' : 'text-neutral-700 hover:text-primary-700 aria-[current=page]:text-primary-700' }}"
                         @if ($overlay)
                             :class="scrolled ? 'text-neutral-700 hover:text-primary-700' : 'text-white/90 hover:text-white'"
                         @endif
@@ -82,7 +87,7 @@
 
             <div class="hidden lg:block shrink-0">
                 @if ($quoteUrl)
-                    <x-public.button :href="$quoteUrl" variant="cta" size="sm" icon="check-circle">اطلب عرض سعر</x-public.button>
+                    <x-public.button :href="$quoteUrl" variant="cta" icon="check-circle">اطلب عرض سعر</x-public.button>
                 @endif
             </div>
 

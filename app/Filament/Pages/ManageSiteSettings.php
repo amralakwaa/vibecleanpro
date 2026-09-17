@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Support\MediaPicker;
 use App\Models\SiteSetting;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -35,7 +36,17 @@ class ManageSiteSettings extends Page
 
     protected static ?string $title = 'إعدادات الموقع';
 
-    private const KEYS = ['google_analytics_id', 'google_tag_manager_id', 'default_meta_title_suffix'];
+    /**
+     * Setting key => stored type.
+     *
+     * @var array<string, string>
+     */
+    private const KEYS = [
+        'google_analytics_id' => 'string',
+        'google_tag_manager_id' => 'string',
+        'default_meta_title_suffix' => 'string',
+        SiteSetting::HOME_HERO_MEDIA_ID => 'int',
+    ];
 
     /**
      * @var array<string, mixed>|null
@@ -50,7 +61,7 @@ class ManageSiteSettings extends Page
     public function mount(): void
     {
         $this->form->fill(
-            collect(self::KEYS)->mapWithKeys(fn (string $key) => [$key => SiteSetting::get($key)])->all()
+            collect(self::KEYS)->mapWithKeys(fn (string $type, string $key) => [$key => SiteSetting::get($key)])->all()
         );
     }
 
@@ -59,6 +70,11 @@ class ManageSiteSettings extends Page
         return $schema
             ->components([
                 Form::make([
+                    Section::make('الصفحة الرئيسية')
+                        ->schema([
+                            MediaPicker::make(SiteSetting::HOME_HERO_MEDIA_ID, 'صورة الواجهة (Hero)')
+                                ->helperText('صورة من مكتبة الوسائط تظهر خلف عنوان الصفحة الرئيسية. اتركها فارغة ليُستخدم أحدث صورة "بعد" من الأعمال المنشورة.'),
+                        ]),
                     Section::make('التحليلات (Analytics)')
                         ->schema([
                             TextInput::make('google_analytics_id')->label('Google Analytics ID')->placeholder('G-XXXXXXX'),
@@ -90,10 +106,10 @@ class ManageSiteSettings extends Page
     {
         $data = $this->form->getState();
 
-        foreach (self::KEYS as $key) {
+        foreach (self::KEYS as $key => $type) {
             SiteSetting::query()->updateOrCreate(
                 ['key' => $key],
-                ['value' => $data[$key] ?? null, 'type' => 'string'],
+                ['value' => $data[$key] ?? null, 'type' => $type],
             );
         }
 

@@ -1,0 +1,301 @@
+{
+  "_readme": "Initial media library for Vibe Clean Pro. Stock service illustrations only - never used for projects or before/after evidence. Imported by Database\\Seeders\\InitialMediaSeeder (php artisan db:seed --class=InitialMediaSeeder). Alt text and assignments are defaults: editors change them from Filament and the seeder never overwrites an edited record.",
+  "library_directory": "media/library",
+  "items": [
+    {
+      "key": "home-hero",
+      "file": "home-hero.jpg",
+      "role": "hero",
+      "alt_text": "فريق تنظيف بزي موحد ينظف أرضية ونوافذ مطبخ حديث بجدران رخامية",
+      "assign": {
+        "service_slugs": [],
+        "name_keywords": []
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/6197108/",
+        "pexels_id": 6197108,
+        "photographer": "Tima Miroshnichenko"
+      }
+    },
+    {
+      "key": "villa-cleaning",
+      "file": "villa-cleaning.jpg",
+      "role": "service",
+      "alt_text": "واجهة فيلا حديثة بيضاء بأبواب جراج مغلقة",
+      "assign": {
+        "service_slugs": [
+          "villa-cleaning",
+          "villas-cleaning"
+        ],
+        "name_keywords": [
+          "فلل",
+          "فيلا",
+          "الفلل"
+        ]
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/12122335/",
+        "pexels_id": 12122335,
+        "photographer": "Ubaid Awan"
+      }
+    },
+    {
+      "key": "apartment-cleaning",
+      "file": "apartment-cleaning.jpg",
+      "role": "service",
+      "alt_text": "غرفة معيشة حديثة بأثاث فاتح وجدار رخامي",
+      "assign": {
+        "service_slugs": [
+          "apartment-cleaning",
+          "apartments-cleaning",
+          "home-cleaning",
+          "house-cleaning"
+        ],
+        "name_keywords": [
+          "شقق",
+          "شقة",
+          "منازل",
+          "منزل",
+          "بيوت"
+        ]
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/27164969/",
+        "pexels_id": 27164969,
+        "photographer": "Wilcle Nunes"
+      }
+    },
+    {
+      "key": "upholstery-carpet-cleaning",
+      "file": "upholstery-carpet-cleaning.jpg",
+      "role": "service",
+      "alt_text": "يد تنظّف مقعد كنبة قماشية بفوهة مكنسة",
+      "assign": {
+        "service_slugs": [
+          "upholstery-cleaning",
+          "sofa-cleaning",
+          "carpet-cleaning",
+          "sofa-carpet-cleaning"
+        ],
+        "name_keywords": [
+          "كنب",
+          "سجاد",
+          "مجالس",
+          "موكيت"
+        ]
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/4401538/",
+        "pexels_id": 4401538,
+        "photographer": "Jesus Arias"
+      }
+    },
+    {
+      "key": "office-cleaning",
+      "file": "office-cleaning.jpg",
+      "role": "service",
+      "alt_text": "مكتب حديث بمكاتب بيضاء ونوافذ واسعة",
+      "assign": {
+        "service_slugs": [
+          "office-cleaning",
+          "offices-cleaning",
+          "commercial-cleaning"
+        ],
+        "name_keywords": [
+          "مكاتب",
+          "مكتب",
+          "شركات",
+          "منشآت"
+        ]
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/7750129/",
+        "pexels_id": 7750129,
+        "photographer": "Max Vakhtbovych"
+      }
+    },
+    {
+      "key": "post-construction-cleaning",
+      "file": "post-construction-cleaning.jpg",
+      "role": "service",
+      "alt_text": "مكنسة صناعية ومكنسة يدوية في غرفة بعد أعمال التشطيب",
+      "assign": {
+        "service_slugs": [
+          "post-construction-cleaning",
+          "after-construction-cleaning",
+          "post-renovation-cleaning"
+        ],
+        "name_keywords": [
+          "بعد البناء",
+          "التشطيب",
+          "الترميم"
+        ]
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/3616746/",
+        "pexels_id": 3616746,
+        "photographer": "La Miko"
+      }
+    },
+    {
+      "key": "glass-facade-cleaning",
+      "file": "glass-facade-cleaning.jpg",
+      "role": "service",
+      "alt_text": "ممسحة مطاطية وقفاز أصفر يمسحان لوح زجاج مبلل",
+      "assign": {
+        "service_slugs": [
+          "glass-cleaning",
+          "facade-cleaning",
+          "window-cleaning",
+          "glass-facade-cleaning"
+        ],
+        "name_keywords": [
+          "زجاج",
+          "واجهات",
+          "نوافذ"
+        ]
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/31435403/",
+        "pexels_id": 31435403,
+        "photographer": "Blissful Place Cleaning company in Perth"
+      }
+    },
+    {
+      "key": "kitchen-bathroom-cleaning",
+      "file": "kitchen-bathroom-cleaning.jpg",
+      "role": "service",
+      "alt_text": "يد بقفاز أزرق تمسح سطح رخام أبيض بقطعة قماش صفراء",
+      "assign": {
+        "service_slugs": [
+          "kitchen-cleaning",
+          "bathroom-cleaning",
+          "kitchen-bathroom-cleaning",
+          "deep-cleaning"
+        ],
+        "name_keywords": [
+          "مطابخ",
+          "مطبخ",
+          "حمامات",
+          "دورات المياه"
+        ]
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/15293006/",
+        "pexels_id": 15293006,
+        "photographer": "Jason Deines"
+      }
+    },
+    {
+      "key": "floor-marble-cleaning",
+      "file": "floor-marble-cleaning.jpg",
+      "role": "service",
+      "alt_text": "ممر بأرضية رخام لامعة بزخارف وجدران رخامية",
+      "assign": {
+        "service_slugs": [
+          "floor-cleaning",
+          "marble-cleaning",
+          "marble-polishing",
+          "floor-polishing"
+        ],
+        "name_keywords": [
+          "رخام",
+          "أرضيات",
+          "جلي"
+        ]
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/37969730/",
+        "pexels_id": 37969730,
+        "photographer": "Suhasini Kakad"
+      }
+    },
+    {
+      "key": "ac-cleaning",
+      "file": "ac-cleaning.jpg",
+      "role": "service",
+      "alt_text": "وحدة تكييف سبليت بيضاء مثبتة على جدار داخلي",
+      "assign": {
+        "service_slugs": [
+          "ac-cleaning",
+          "air-conditioner-cleaning",
+          "split-ac-cleaning"
+        ],
+        "name_keywords": [
+          "مكيف",
+          "مكيفات",
+          "تكييف"
+        ]
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/wall-mounted-air-conditioner-in-modern-interior-38788452/",
+        "pexels_id": 38788452,
+        "photographer": "NEOSiAM 18+"
+      }
+    },
+    {
+      "key": "pool-tank-cleaning",
+      "file": "pool-tank-cleaning.jpg",
+      "role": "service",
+      "alt_text": "مسبح خارجي بماء صافٍ وسلّم معدني ومقاعد استلقاء",
+      "assign": {
+        "service_slugs": [
+          "pool-cleaning",
+          "tank-cleaning",
+          "water-tank-cleaning",
+          "swimming-pool-cleaning"
+        ],
+        "name_keywords": [
+          "مسابح",
+          "مسبح",
+          "خزان",
+          "خزانات"
+        ]
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/38127493/",
+        "pexels_id": 38127493,
+        "photographer": "panumas nikhomkhai"
+      }
+    },
+    {
+      "key": "b2b-commercial-team",
+      "file": "b2b-commercial-team.jpg",
+      "role": "b2b",
+      "alt_text": "ثلاثة من أفراد فريق التنظيف بزي موحد يحملون معداتهم",
+      "assign": {
+        "service_slugs": [],
+        "name_keywords": []
+      },
+      "source": {
+        "platform": "Pexels",
+        "license": "Pexels License - free for commercial use, no attribution required (https://www.pexels.com/license/)",
+        "url": "https://www.pexels.com/photo/6195121/",
+        "pexels_id": 6195121,
+        "photographer": "Tima Miroshnichenko"
+      }
+    }
+  ]
+}

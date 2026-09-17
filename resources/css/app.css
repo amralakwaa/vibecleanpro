@@ -124,6 +124,14 @@
     --color-text-inverted: #ffffff;
     --color-border: var(--color-neutral-200);
     --color-border-strong: var(--color-neutral-300);
+
+    /* Radius language - three roles, not five random sizes:
+       tile  = images and image-led links (16px)
+       panel = large surfaces such as the offer moment (24px)
+       control = buttons and fields (12px, the existing rounded-xl) */
+    --radius-tile: 1rem;
+    --radius-panel: 1.5rem;
+    --radius-control: 0.75rem;
 }
 
 /*
@@ -360,5 +368,89 @@
         font-weight: 500;
         color: var(--color-ink-950);
         border-bottom-color: var(--color-neutral-300);
+    }
+}
+
+/*
+ * Visual Excellence Reset - the brand's atmospheric layer.
+ *
+ * Four reusable primitives, nothing else: an atmospheric navy field, a
+ * light-blue tinted field, the offer gradient surface, and a radial
+ * glow. Waves live in the <x-public.wave> component (an SVG, so it
+ * scales without pixelation). Every one of these exists to move the eye
+ * between sections or to give one surface depth - never as decoration
+ * for its own sake, which is why there are four and not fourteen.
+ */
+@layer components {
+    /* 1. Deep atmospheric navy - hero, final decision. Two radial blue
+       fields over the navy ground so the surface reads as lit, not flat. */
+    .surface-atmos {
+        background-color: var(--color-ink-950);
+        background-image:
+            radial-gradient(60% 55% at 85% 20%, color-mix(in oklab, var(--color-primary-600) 55%, transparent) 0%, transparent 70%),
+            radial-gradient(45% 45% at 10% 90%, color-mix(in oklab, var(--color-primary-800) 60%, transparent) 0%, transparent 70%),
+            linear-gradient(180deg, var(--color-ink-900) 0%, var(--color-ink-950) 100%);
+    }
+
+    /* 2. Tinted light field - services, coverage. Light blue with one
+       soft radial highlight so a white tile sits *on* something. */
+    .surface-tint {
+        background-color: var(--color-primary-50);
+        background-image:
+            radial-gradient(70% 60% at 90% 0%, color-mix(in oklab, var(--color-primary-200) 70%, transparent) 0%, transparent 65%),
+            linear-gradient(180deg, #ffffff 0%, var(--color-primary-50) 30%, var(--color-primary-50) 100%);
+    }
+
+    /* 3. Offer surface - the one place blue is allowed to be loud. */
+    .surface-offer {
+        background-color: var(--color-primary-700);
+        background-image:
+            radial-gradient(55% 60% at 15% 15%, color-mix(in oklab, var(--color-primary-400) 55%, transparent) 0%, transparent 70%),
+            linear-gradient(135deg, var(--color-primary-700) 0%, var(--color-primary-600) 45%, var(--color-ink-900) 100%);
+    }
+
+    /* 4. Radial glow - a positioned decorative element, aria-hidden. */
+    .glow-primary {
+        background: radial-gradient(closest-side, color-mix(in oklab, var(--color-primary-500) 45%, transparent), transparent);
+        filter: blur(24px);
+    }
+
+    /* Image tile: controlled hover motion and a readable gradient scrim.
+       The scale is small on purpose (1.04) - a photograph should breathe,
+       not lunge. */
+    .tile-media {
+        transition: transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    .group:hover .tile-media,
+    .group:focus-visible .tile-media {
+        transform: scale(1.04);
+    }
+
+    .tile-scrim {
+        background: linear-gradient(to top, color-mix(in oklab, var(--color-ink-950) 88%, transparent) 0%, color-mix(in oklab, var(--color-ink-950) 35%, transparent) 55%, transparent 100%);
+    }
+
+    /* Scroll reveal - CSS-only (scroll-driven animation) where supported,
+       nothing at all otherwise. Reduced-motion users get the global
+       transition/animation kill-switch above. */
+    @supports (animation-timeline: view()) {
+        .reveal {
+            animation: reveal-up linear both;
+            animation-timeline: view();
+            animation-range: entry 0% entry 35%;
+        }
+    }
+
+    @keyframes reveal-up {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 }
