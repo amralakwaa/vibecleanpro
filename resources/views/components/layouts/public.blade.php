@@ -7,6 +7,9 @@
     $whatsappUrl = $businessProfile?->whatsappUrl();
     $phoneUrl = $businessProfile?->phoneUrl();
     $quoteUrl = route('public.quote');
+    // The header's one action never links to the page it is on: the quote
+    // page gets no header CTA (the form is the page).
+    $headerQuoteUrl = request()->routeIs('public.quote') ? null : $quoteUrl;
 
     // Pages opt into a transparent-until-scrolled header by setting
     // $headerOverlay - only correct over a full-bleed dark hero image.
@@ -93,7 +96,7 @@
         :business-profile="$businessProfile"
         :nav-items="$navItems"
         :primary-nav="collect($navItems)->except(['المدونة', 'العروض'])->all()"
-        :quote-url="$quoteUrl"
+        :quote-url="$headerQuoteUrl"
         :whatsapp-url="$whatsappUrl"
         :phone-url="$phoneUrl"
         :overlay="$headerOverlay"

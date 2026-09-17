@@ -27,6 +27,18 @@
 @php
     $primaryNav ??= $navItems;
     $brandName = $businessProfile->name ?? config('app.name');
+
+    // "تواصل معنا" and "للشركات" share /contact and differ only by
+    // ?for=business, so the current item is decided by path AND that
+    // query - never both at once. Anything other than "business" is the
+    // plain contact context (see ContactController).
+    $currentFor = request()->query('for') === 'business' ? 'business' : null;
+    $isCurrentNav = function (string $url) use ($currentFor): bool {
+        parse_str((string) parse_url($url, PHP_URL_QUERY), $query);
+
+        return rtrim(url()->current(), '/') === rtrim(explode('?', $url, 2)[0], '/')
+            && ($query['for'] ?? null) === $currentFor;
+    };
 @endphp
 
 <header
@@ -73,7 +85,7 @@
                      stays for the current page (aria-current), so the
                      visitor always knows where they are. --}}
                 @foreach ($primaryNav as $label => $url)
-                    @php($isCurrent = rtrim(url()->current(), '/') === rtrim(strtok($url, '?'), '/'))
+                    @php($isCurrent = $isCurrentNav($url))
                     <a
                         href="{{ $url }}"
                         @if ($isCurrent) aria-current="page" @endif
@@ -88,6 +100,15 @@
             <div class="hidden lg:block shrink-0">
                 @if ($quoteUrl)
                     <x-public.button :href="$quoteUrl" variant="cta" icon="check-circle">اطلب عرض سعر</x-public.button>
+                @else
+                    {{-- On the quote page itself the action would only link to
+                         the page the visitor is on. An inert, invisible stand-in
+                         of the same size keeps the navigation exactly where it
+                         sits on every other page - no link, no focus stop. --}}
+                    <span class="invisible inline-flex items-center gap-2 px-5 py-3 text-[0.95rem] font-medium" aria-hidden="true">
+                        <span class="w-[1.1em] h-[1.1em]"></span>
+                        اطلب عرض سعر
+                    </span>
                 @endif
             </div>
 
