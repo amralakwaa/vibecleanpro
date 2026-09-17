@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LeadCreated;
 use App\Http\Requests\StoreLeadRequest;
 use App\Models\Area;
 use App\Models\BusinessProfile;
@@ -67,7 +68,7 @@ class QuoteController extends Controller
             return Redirect::route('public.quote')->with('lead_submitted', true);
         }
 
-        Lead::query()->create([
+        $lead = Lead::query()->create([
             ...$request->validated(),
             'landing_page' => session('lead_attribution.landing_page'),
             'source' => 'quote_form',
@@ -79,6 +80,10 @@ class QuoteController extends Controller
             'utm_term' => session('lead_attribution.utm_term'),
             'utm_content' => session('lead_attribution.utm_content'),
         ]);
+
+        // The lead is stored; telling the team is a separate, queued step
+        // that can fail without touching the visitor's success.
+        LeadCreated::dispatch($lead);
 
         return Redirect::route('public.quote')->with('lead_submitted', true);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LeadCreated;
 use App\Http\Requests\StoreLeadRequest;
 use App\Models\BusinessProfile;
 use App\Models\Lead;
@@ -65,7 +66,7 @@ class ContactController extends Controller
             return Redirect::route('public.contact')->with('lead_submitted', true);
         }
 
-        Lead::query()->create([
+        $lead = Lead::query()->create([
             ...$request->validated(),
             'landing_page' => session('lead_attribution.landing_page'),
             'source' => $request->input('context') === 'business' ? 'contact_form_business' : 'contact_form',
@@ -77,6 +78,10 @@ class ContactController extends Controller
             'utm_term' => session('lead_attribution.utm_term'),
             'utm_content' => session('lead_attribution.utm_content'),
         ]);
+
+        // The lead is stored; telling the team is a separate, queued step
+        // that can fail without touching the visitor's success.
+        LeadCreated::dispatch($lead);
 
         return Redirect::route('public.contact')->with('lead_submitted', true);
     }

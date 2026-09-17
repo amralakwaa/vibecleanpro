@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'name', 'phone', 'whatsapp_number', 'email', 'address', 'city',
+    'name', 'phone', 'whatsapp_number', 'email', 'lead_notification_email', 'address', 'city',
     'latitude', 'longitude', 'working_hours', 'social_links', 'logo_media_id',
     'tagline', 'identity_statement', 'story', 'mission', 'vision', 'values',
     'founder_name', 'founder_title', 'founder_photo_media_id', 'founder_bio', 'founder_long_bio',
