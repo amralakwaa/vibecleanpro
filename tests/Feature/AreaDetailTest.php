@@ -270,24 +270,26 @@ class AreaDetailTest extends TestCase
         $response->assertDontSee('tel:');
     }
 
-    public function test_the_template_never_composes_a_local_sentence_from_the_area_name(): void
+    public function test_the_template_uses_the_area_name_once_in_natural_copy_and_never_as_generated_seo_text(): void
     {
         // The area's own name is deliberately distinctive so any template
-        // that interpolated it into generated copy would be caught here.
+        // that stuffed it into generated copy would be caught here.
         $page = $this->createCompliantAreaPage(slug: 'area-no-generated-copy', title: 'خدمات التنظيف في حي الورود');
         $area = $page->pageable;
         $area->update(['name' => 'زززفريدة']);
 
         $content = $this->get('/areas/area-no-generated-copy')->assertOk()->getContent();
+        preg_match('/<main[\s\S]*<\/main>/u', $content, $main);
 
         // The H1 comes from the CMS title verbatim...
         $this->assertStringContainsString('خدمات التنظيف في حي الورود', $content);
 
-        // ...and the raw area name must never be rendered into page copy
-        // by this template. It may only appear inside the prefilled
-        // WhatsApp message, which is a chat draft and not page content.
-        $withoutWhatsapp = preg_replace('/https:\/\/wa\.me\/[^"\']*/u', '', $content);
-        $this->assertStringNotContainsString('زززفريدة', $withoutWhatsapp);
+        // ...and the raw area name is used exactly once on the page, as the
+        // natural closing question - never repeated across headings, never
+        // in generated body copy. (The WhatsApp draft is not page content.)
+        $withoutWhatsapp = preg_replace('/https:\/\/wa\.me\/[^"\']*/u', '', $main[0]);
+        $this->assertSame(1, substr_count($withoutWhatsapp, 'زززفريدة'), 'the area name appears once, in the closing question');
+        $this->assertStringContainsString('تحتاج خدمة تنظيف في زززفريدة؟', $withoutWhatsapp);
     }
 
     public function test_the_faq_renders_once_and_sits_before_the_final_cta(): void
@@ -302,7 +304,7 @@ class AreaDetailTest extends TestCase
         $this->assertSame(1, substr_count($content, 'هل تخدمون يوميًا؟'));
         $this->assertStringContainsString('نعم طوال الأسبوع.', $content);
         $this->assertLessThan(
-            mb_strpos($content, 'اطلب الخدمة في منطقتك'),
+            mb_strpos($content, 'تحتاج خدمة تنظيف في '),
             mb_strpos($content, 'أسئلة عن هذا الحي'),
             'FAQ must render before the final CTA.',
         );

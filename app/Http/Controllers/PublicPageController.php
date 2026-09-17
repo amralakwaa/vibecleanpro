@@ -278,10 +278,15 @@ class PublicPageController extends Controller
         // both must hold for the pairing to be real right now.
         // 'page' is eager-loaded on every list below because the view
         // resolves each item's URL through UrlResolver::urlForPage().
+        // 'group' names the local context in the hero; 'category' groups
+        // the service rows on the page.
+        $area->load('group');
+
         $services = $area->services()
             ->wherePivot('is_active', true)
             ->whereHas('page', fn ($query) => $query->published())
-            ->with(['featuredMedia', 'page'])
+            ->with(['featuredMedia', 'page', 'category'])
+            ->orderBy('sort_order')
             ->get();
 
         // 'media' eager-loaded so the view never triggers a query per
