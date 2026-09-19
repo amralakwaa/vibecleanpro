@@ -122,7 +122,10 @@ class DiscoveryPagesV2Test extends TestCase
         $html = $this->get('/areas')->assertOk()->getContent();
 
         $this->assertMatchesRegularExpression('/href="#areas-group-0"[\s\S]{0,300}مجموعة-شمال<\/span>\s*<span[^>]*>3 أحياء/u', $html);
-        $this->assertMatchesRegularExpression('/href="#areas-group-1"[\s\S]{0,300}مجموعة-شرق<\/span>\s*<span[^>]*>حي واحد/u', $html, 'a draft area is never counted');
+        // The directory is the coverage list: a served area is named even
+        // without a published page - but it is never linked.
+        $this->assertMatchesRegularExpression('/href="#areas-group-1"[\s\S]{0,300}مجموعة-شرق<\/span>\s*<span[^>]*>حيّان/u', $html);
+        $this->assertStringNotContainsString('/areas/idx-draft', $html, 'a draft area is never linked');
         $this->assertStringNotContainsString('مجموعة-فارغة', $html);
         $this->assertStringNotContainsString('0 خدمات', $html);
         $this->assertStringNotContainsString('<img', mb_substr($html, mb_strpos($html, '<main')), 'no picture pretends to be a neighbourhood');

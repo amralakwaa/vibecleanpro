@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'tagline', 'identity_statement', 'story', 'mission', 'vision', 'values',
     'founder_name', 'founder_title', 'founder_photo_media_id', 'founder_bio', 'founder_long_bio',
     'show_founder', 'show_team',
+    'commercial_registration_number', 'display_commercial_registration', 'service_area',
+    'google_business_profile_url', 'google_review_url',
 ])]
 class BusinessProfile extends Model
 {
@@ -25,7 +27,19 @@ class BusinessProfile extends Model
             'values' => 'array',
             'show_founder' => 'boolean',
             'show_team' => 'boolean',
+            'display_commercial_registration' => 'boolean',
         ];
+    }
+
+    /**
+     * The registration number shown publicly - only a real, entered number
+     * the owner chose to display.
+     */
+    public function publicCommercialRegistration(): ?string
+    {
+        return $this->display_commercial_registration && filled($this->commercial_registration_number)
+            ? $this->commercial_registration_number
+            : null;
     }
 
     public function logo(): BelongsTo

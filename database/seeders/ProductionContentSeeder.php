@@ -220,7 +220,35 @@ class ProductionContentSeeder extends Seeder
 
         $project->media()->syncWithoutDetaching($attach);
 
-        $this->draftPage($project, PageType::Project, $data['slug'], $data['title'], $data['title'].self::BRAND, null);
+        // Only what is known: the service, the city and the stages the
+        // photos show. District, date and results wait for the owner.
+        $service = $data['service'] ? ($services[$data['service']] ?? null) : null;
+        $stageNames = ['before' => 'قبل', 'during' => 'أثناء', 'after' => 'بعد'];
+        $stages = collect($attach)->pluck('stage')->unique()->map(fn (?string $stage) => $stageNames[$stage] ?? null)->filter()->implode('، ');
+        $summary = sprintf(
+            'أعمال نفّذها فريق فايب كلين برو%s في الرياض.%s',
+            $service ? ' ضمن خدمة '.$service->name : '',
+            $stages !== '' ? ' الصور توثّق مراحل العمل: '.$stages.'.' : '',
+        );
+        $project->update(['summary' => $summary]);
+
+        $page = $this->draftPage($project, PageType::Project, $data['slug'], $data['title'], $data['title'].self::BRAND, $summary);
+
+        if (! $page) {
+            return;
+        }
+
+        $page->contentBlocks()->create(['type' => 'rich_text', 'position' => 1, 'is_active' => true, 'data' => [
+            'content' => '<p>'.e($summary).' نرسل لك عرض سعر مكتوبًا بعد المعاينة، ولا يتم الدفع عبر الموقع.</p>',
+        ]]);
+
+        if ($service?->page) {
+            $page->contentBlocks()->create(['type' => 'cta', 'position' => 2, 'is_active' => true, 'data' => [
+                'heading' => 'تحتاج '.$service->name.'؟',
+                'button_label' => 'تفاصيل الخدمة',
+                'button_url' => url('/services/'.$service->page->slug),
+            ]]);
+        }
     }
 
     /**
@@ -255,7 +283,10 @@ class ProductionContentSeeder extends Seeder
         $page->seoMetadata()->create([
             'meta_title' => $metaTitle,
             'meta_description' => $metaDescription,
-            'robots_index' => ! ($owner instanceof Area && $owner->tier === AreaTier::B),
+            // Tier B areas are noindex by rule; project pages stay noindex
+            // until the owner adds their district, date and scope, because
+            // until then their text is near-identical from one to the next.
+            'robots_index' => ! ($owner instanceof Project || ($owner instanceof Area && $owner->tier === AreaTier::B)),
             'robots_follow' => true,
         ]);
 

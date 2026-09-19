@@ -47,7 +47,7 @@
         <x-public.container width="wide" class="pt-8 pb-12 md:pt-12 md:pb-16">
             <x-public.breadcrumb :items="$seo->breadcrumbs" class="mb-6" />
             <h1 class="font-display text-[2rem] leading-[1.15] md:text-5xl md:leading-[1.08] font-medium tracking-tight text-ink-950">أعمالنا</h1>
-            <p class="mt-4 text-lg text-neutral-600 max-w-2xl leading-relaxed">صور من مواقع نفذنا فيها العمل فعليًا، بتاريخها ومكانها.</p>
+            <p class="mt-4 text-lg text-neutral-600 max-w-2xl leading-relaxed">صور من مواقع نفّذ فيها فريقنا العمل فعليًا، بمراحلها: قبل وأثناء وبعد.</p>
 
             @if ($filterServices->isNotEmpty() || $filterAreas->isNotEmpty())
                 <form method="GET" class="mt-8 rounded-2xl bg-white/80 ring-1 ring-primary-200/60 backdrop-blur-sm p-4 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end sm:gap-x-4">

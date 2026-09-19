@@ -92,7 +92,12 @@
         </div>
 
         <div class="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-300/80">
-            <p>&copy; {{ now()->year }} {{ $businessProfile->name ?? config('app.name') }}. جميع الحقوق محفوظة.</p>
+            <p>
+                &copy; {{ now()->year }} {{ $businessProfile->name ?? config('app.name') }}. جميع الحقوق محفوظة.
+                @if ($registration = $businessProfile?->publicCommercialRegistration())
+                    <span class="ms-2">السجل التجاري: <span dir="ltr">{{ $registration }}</span></span>
+                @endif
+            </p>
 
             @if ($legalLinks)
                 <ul class="flex items-center gap-4">

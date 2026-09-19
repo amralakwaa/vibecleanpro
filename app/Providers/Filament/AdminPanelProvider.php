@@ -2,10 +2,13 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\AccountSecurity;
+use App\Filament\Pages\Auth\Login;
 use App\Filament\Widgets\DashboardStats;
 use App\Filament\Widgets\LatestLeadsWidget;
 use App\Filament\Widgets\RecentlyUpdatedPagesWidget;
 use App\Filament\Widgets\SeoDashboardWidget;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -31,7 +34,13 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('Vibe Clean Pro')
-            ->login()
+            ->login(Login::class)
+            ->profile(AccountSecurity::class, isSimple: false)
+            // Optional per user for now: requiring it would lock out every
+            // current admin until they enrol, which is an owner decision.
+            ->multiFactorAuthentication([
+                AppAuthentication::make()->recoverable()->brandName('Vibe Clean Pro'),
+            ], isRequired: false)
             ->colors([
                 'primary' => Color::Amber,
             ])

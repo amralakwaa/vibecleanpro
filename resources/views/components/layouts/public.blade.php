@@ -40,10 +40,19 @@
         'تواصل معنا' => route('public.contact'),
     ]);
 
-    // Empty on purpose: no Legal-type page exists yet (see item 15/16 of
-    // the Phase 6 spec) - a fabricated Privacy/Terms link would be worse
-    // than none. The footer already omits this row entirely when empty.
-    $legalLinks = [];
+    // Legal pages are editor-created Pages at the reserved slugs "privacy"
+    // and "terms". Each link appears only once that page is actually
+    // published, so the footer never points at a draft (404). The footer
+    // omits the row entirely while both are drafts.
+    $legalPageTitles = ['privacy' => 'سياسة الخصوصية', 'terms' => 'الشروط والأحكام'];
+    $legalLinks = \App\Models\Page::query()
+        ->where('type', \App\Enums\PageType::Legal)
+        ->whereIn('slug', array_keys($legalPageTitles))
+        ->published()
+        ->get()
+        ->sortBy(fn ($page) => array_search($page->slug, array_keys($legalPageTitles)))
+        ->mapWithKeys(fn ($page) => [$legalPageTitles[$page->slug] => app(\App\Seo\UrlResolver::class)->urlForPage($page)])
+        ->all();
 @endphp
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -87,6 +96,14 @@
     <link rel="stylesheet" href="https://fonts.bunny.net/css?family=ibm-plex-sans-arabic:400,500,600,700|readex-pro:300,400,500&display=swap">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="vcp-track" content="{{ route('public.track') }}">
+    @php($analytics = app(\App\Support\Analytics\AnalyticsSettings::class))
+    @if ($searchConsoleToken = $analytics->searchConsoleToken())
+        <meta name="google-site-verification" content="{{ $searchConsoleToken }}">
+    @endif
+    @if ($analytics->isGa4Active())
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $analytics->ga4MeasurementId() }}"></script>
+        <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', @json($analytics->ga4MeasurementId()));</script>
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-background text-text-primary font-sans antialiased">
@@ -108,7 +125,7 @@
         {{ $slot }}
     </main>
 
-    <x-public.footer :business-profile="$businessProfile" :nav-items="$navItems" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
+    <x-public.footer :business-profile="$businessProfile" :nav-items="$navItems" :legal-links="$legalLinks" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
 
     @if ($mobileBar)
         <x-public.mobile-cta-bar :quote-url="route('public.quote')" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />

@@ -35,6 +35,8 @@ use App\Seo\ValueObjects\SeoCheckResult;
  */
 class PublishingGate
 {
+    public const OWNER_INPUT_MARKER = 'NEEDS OWNER INPUT';
+
     public function __construct(
         private readonly CanonicalResolver $canonical,
         private readonly InternalLinkAnalyzer $links,
@@ -52,6 +54,7 @@ class PublishingGate
             $this->checkRedirectConflict($page),
             $this->checkAboutSingleton($page),
             $this->checkContentNotEmpty($page),
+            $this->checkOwnerInputPlaceholders($page),
             $this->checkSeoTitle($page),
             $this->checkMetaDescription($page),
             $this->checkFeaturedImage($page),
@@ -175,6 +178,20 @@ class PublishingGate
         return $page->type === PageType::About
             ? $this->error('content_empty', 'صفحة من نحن بلا محتوى: أضف بيان الهوية أو قصة الشركة في "بيانات المنشأة"، أو أضف أقسامًا للصفحة.')
             : $this->error('content_empty', 'الصفحة لا تحتوي على أي محتوى (أقسام فارغة).');
+    }
+
+    /**
+     * Drafts prepared ahead of owner/legal decisions (privacy policy, about
+     * page) carry visible "NEEDS OWNER INPUT" markers. A page is never
+     * published while one remains in any block.
+     */
+    private function checkOwnerInputPlaceholders(Page $page): ?SeoCheckResult
+    {
+        $pending = $page->contentBlocks->filter(fn ($block) => str_contains(json_encode($block->data, JSON_UNESCAPED_UNICODE) ?: '', self::OWNER_INPUT_MARKER))->count();
+
+        return $pending > 0
+            ? $this->error('owner_input', "الصفحة تحتوي على {$pending} قسم بعلامة «".self::OWNER_INPUT_MARKER.'» — قرارات بانتظار المالك أو المستشار القانوني.')
+            : null;
     }
 
     private function hasCompanyIdentityContent(): bool

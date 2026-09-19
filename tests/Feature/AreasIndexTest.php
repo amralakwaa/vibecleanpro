@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\AreaTier;
 use App\Enums\PageStatus;
 use App\Enums\PageType;
 use App\Models\Area;
@@ -33,14 +34,25 @@ class AreasIndexTest extends TestCase
         $this->assertStringContainsString('حي الملقا', $html);
     }
 
-    public function test_an_area_with_no_published_page_is_never_linked(): void
+    public function test_a_served_area_without_a_published_page_is_listed_but_never_linked(): void
     {
         $group = AreaGroup::factory()->create();
-        Area::factory()->create(['area_group_id' => $group->id, 'name' => 'حي-بدون-صفحة-منشورة']);
+        $area = Area::factory()->create(['area_group_id' => $group->id, 'name' => 'حي-بدون-صفحة-منشورة', 'slug' => 'no-page-area']);
+        $draft = Page::factory()->create(['type' => PageType::Area, 'slug' => 'no-page-area', 'status' => PageStatus::Draft]);
+        $area->page()->save($draft);
 
         $html = $this->get('/areas')->getContent();
 
-        $this->assertStringNotContainsString('حي-بدون-صفحة-منشورة', $html);
+        $this->assertStringContainsString('حي-بدون-صفحة-منشورة', $html);
+        $this->assertStringNotContainsString('/areas/no-page-area', $html);
+    }
+
+    public function test_tier_c_areas_are_outside_the_coverage_list(): void
+    {
+        $group = AreaGroup::factory()->create();
+        Area::factory()->create(['area_group_id' => $group->id, 'name' => 'حي-خارج-التغطية', 'tier' => AreaTier::C]);
+
+        $this->get('/areas')->assertOk()->assertDontSee('حي-خارج-التغطية');
     }
 
     public function test_an_area_group_with_no_published_areas_is_not_rendered_as_an_empty_heading(): void

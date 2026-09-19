@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AreaTier;
 use App\Models\Area;
 use App\Models\AreaGroup;
 use App\Models\BusinessProfile;
@@ -24,11 +25,13 @@ class AreasIndexController extends Controller
     {
         $businessProfile = BusinessProfile::query()->first();
 
-        // 'page' is eager-loaded because every directory entry resolves
-        // its URL through UrlResolver::urlForPage().
+        // The directory is the coverage list: every district the company
+        // serves (Tier A and B). Only an area whose own page is published
+        // is linked; the rest are plain text, so no thin page is created
+        // or linked just to name a district. Tier C is outside coverage.
         $areas = Area::query()
-            ->whereHas('page', fn ($query) => $query->published())
-            ->with('page')
+            ->whereIn('tier', [AreaTier::A, AreaTier::B])
+            ->with(['page' => fn ($query) => $query->published()])
             ->withCount('services')
             ->orderBy('sort_order')
             ->get();

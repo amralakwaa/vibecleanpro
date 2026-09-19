@@ -142,6 +142,14 @@ class StructuredDataGenerator
         // Only what the About page itself shows: the founder is emitted
         // when the editor entered a name and kept the section visible, and
         // nothing else about the person is asserted (no awards, no dates).
+        if ($profile->city) {
+            $data['areaServed'] = ['@type' => 'City', 'name' => $profile->city];
+        }
+
+        if ($hours = $this->openingHours($profile)) {
+            $data['openingHoursSpecification'] = $hours;
+        }
+
         if ($profile->hasVisibleFounder()) {
             $data['founder'] = array_filter([
                 '@type' => 'Person',
@@ -151,6 +159,54 @@ class StructuredDataGenerator
         }
 
         return $data;
+    }
+
+    /**
+     * Opening hours are emitted only from entries this can read with
+     * certainty: a known day label (or an "every day" label) and two
+     * unambiguous 24-hour times, opening before closing. Anything freer -
+     * "بعد العصر", "حسب الطلب", a 12-hour time - is shown to visitors but
+     * never turned into schema, because a wrong opening time in search
+     * results is worse than none.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function openingHours(BusinessProfile $profile): array
+    {
+        $days = [
+            'الأحد' => 'Sunday', 'الاثنين' => 'Monday', 'الإثنين' => 'Monday', 'الثلاثاء' => 'Tuesday',
+            'الأربعاء' => 'Wednesday', 'الخميس' => 'Thursday', 'الجمعة' => 'Friday', 'السبت' => 'Saturday',
+        ];
+        $everyDay = ['كل أيام الأسبوع', 'جميع أيام الأسبوع', 'يوميًا', 'يوميا', 'كل الأيام', 'جميع الأيام'];
+        $specifications = [];
+
+        foreach ((array) $profile->working_hours as $label => $value) {
+            $label = trim((string) $label);
+            $dayOfWeek = match (true) {
+                in_array($label, $everyDay, true) => array_values(array_unique($days)),
+                isset($days[$label]) => [$days[$label]],
+                default => null,
+            };
+
+            if ($dayOfWeek === null || ! preg_match('/\b([01]?\d|2[0-3]):([0-5]\d)\b\D+\b([01]?\d|2[0-3]):([0-5]\d)\b/u', (string) $value, $matches)) {
+                continue;
+            }
+
+            [$opens, $closes] = [sprintf('%02d:%02d', $matches[1], $matches[2]), sprintf('%02d:%02d', $matches[3], $matches[4])];
+
+            if ($opens >= $closes) {
+                continue;
+            }
+
+            $specifications[] = [
+                '@type' => 'OpeningHoursSpecification',
+                'dayOfWeek' => $dayOfWeek,
+                'opens' => $opens,
+                'closes' => $closes,
+            ];
+        }
+
+        return $specifications;
     }
 
     /**

@@ -226,7 +226,7 @@
                                 </legend>
                                 <div class="mt-4">
                                     <x-public.field.textarea name="message" label="تفاصيل الطلب" :rows="4"
-                                        help="اختياري. مثال: عدد الغرف أو المساحة التقريبية، الوقت المناسب لك." :error="$errors->first('message')">{{ old('message') }}</x-public.field.textarea>
+                                        help="اختياري، لكنه يجعل العرض أدق: نوع المكان (فيلا/شقة/مكتب/منشأة)، وما تحتاجه تحديدًا، والمساحة التقريبية إن عرفتها، وعدد الأدوار عند الحاجة، والوقت المناسب لك. لإرسال صور للمكان استخدم واتساب — الموقع لا يستقبل مرفقات." :error="$errors->first('message')">{{ old('message') }}</x-public.field.textarea>
                                 </div>
                             </fieldset>
 

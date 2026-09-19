@@ -175,7 +175,7 @@
                         <h2 id="home-evidence" class="mt-2 font-display text-3xl md:text-5xl md:leading-[1.1] font-medium tracking-tight text-ink-950 text-balance">
                             قبل وبعد - من مواقع نفذنا فيها العمل فعليًا
                         </h2>
-                        <p class="mt-4 text-neutral-600 leading-relaxed max-w-md">صور حقيقية بلا فلاتر، بتاريخها ومكانها. كل مشروع له صفحة تروي ما حدث.</p>
+                        <p class="mt-4 text-neutral-600 leading-relaxed max-w-md">صور حقيقية من أعمال فريقنا، بلا فلاتر. كل مشروع له صفحة تعرض مراحل العمل.</p>
                         <a href="{{ route('public.projects.index') }}" class="mt-6 inline-flex items-center gap-2 min-h-11 font-medium text-primary-700 underline-offset-4 hover:underline">
                             جميع الأعمال
                             <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />

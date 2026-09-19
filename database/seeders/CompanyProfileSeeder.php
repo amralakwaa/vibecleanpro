@@ -16,13 +16,21 @@ use Illuminate\Database\Seeder;
 class CompanyProfileSeeder extends Seeder
 {
     /**
-     * @var array<string, string>
+     * Owner-confirmed values. `working_hours` keeps 24-hour times so the
+     * structured data generator can read them unambiguously; the label is
+     * what visitors see. The lead notification inbox is deliberately NOT
+     * here - it is an internal address the owner decides separately.
+     *
+     * @var array<string, string|array<string, string>>
      */
     public const APPROVED = [
         'name' => 'Vibe Clean Pro',
         'phone' => '+966534999194',
         'whatsapp_number' => '966534999194',
         'city' => 'الرياض',
+        'email' => 'info@vibecleanpro.com',
+        'service_area' => 'مدينة الرياض',
+        'working_hours' => ['كل أيام الأسبوع' => 'من 08:00 إلى 14:00'],
     ];
 
     public function run(): void

@@ -100,13 +100,20 @@
                         <ul class="flex flex-wrap gap-2.5 reveal">
                             @foreach ($section['areas'] as $area)
                                 <li>
-                                    <a href="{{ $urlResolver->urlForPage($area->page) }}" class="group inline-flex items-center gap-2.5 min-h-12 rounded-full bg-neutral-50 ring-1 ring-ink-950/10 ps-3.5 pe-4 py-1.5 text-ink-950 transition-[box-shadow,color,background-color] hover:bg-white hover:ring-primary-400 hover:text-primary-700">
-                                        <x-public.icon name="map-pin" class="w-4 h-4 text-primary-600 shrink-0" />
-                                        <span class="font-medium">{{ $area->name }}</span>
-                                        @if ($label = $servicesLabel((int) $area->services_count))
-                                            <span class="text-sm text-neutral-500 group-hover:text-primary-600/80 transition-colors">· {{ $label }}</span>
-                                        @endif
-                                    </a>
+                                    @if ($area->page)
+                                        <a href="{{ $urlResolver->urlForPage($area->page) }}" class="group inline-flex items-center gap-2.5 min-h-12 rounded-full bg-neutral-50 ring-1 ring-ink-950/10 ps-3.5 pe-4 py-1.5 text-ink-950 transition-[box-shadow,color,background-color] hover:bg-white hover:ring-primary-400 hover:text-primary-700">
+                                            <x-public.icon name="map-pin" class="w-4 h-4 text-primary-600 shrink-0" />
+                                            <span class="font-medium">{{ $area->name }}</span>
+                                            @if ($label = $servicesLabel((int) $area->services_count))
+                                                <span class="text-sm text-neutral-500 group-hover:text-primary-600/80 transition-colors">· {{ $label }}</span>
+                                            @endif
+                                        </a>
+                                    @else
+                                        <span class="inline-flex items-center gap-2 min-h-11 rounded-full ring-1 ring-ink-950/10 px-3.5 py-1.5 text-neutral-700">
+                                            <x-public.icon name="map-pin" class="w-4 h-4 text-neutral-400 shrink-0" />
+                                            {{ $area->name }}
+                                        </span>
+                                    @endif
                                 </li>
                             @endforeach
                         </ul>

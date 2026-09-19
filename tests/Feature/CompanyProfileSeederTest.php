@@ -21,8 +21,12 @@ class CompanyProfileSeederTest extends TestCase
         $this->assertSame('+966500000000', $profile->phone);
         $this->assertSame('966534999194', $profile->whatsapp_number);
         $this->assertSame('https://wa.me/966534999194', $profile->whatsappUrl());
-        $this->assertNull($profile->email);
+        // Confirmed values are filled in; anything still unconfirmed (a
+        // street address, the internal notification inbox) stays empty.
+        $this->assertSame('info@vibecleanpro.com', $profile->email);
+        $this->assertSame(['كل أيام الأسبوع' => 'من 08:00 إلى 14:00'], $profile->working_hours);
         $this->assertNull($profile->address);
+        $this->assertNull($profile->lead_notification_email);
     }
 
     public function test_it_is_idempotent(): void

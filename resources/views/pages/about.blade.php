@@ -48,6 +48,10 @@
     // only when there is enough to be worth stating.
     $facts = collect([
         $profile?->city ? ['label' => 'مقر العمل', 'value' => $profile->city, 'url' => null] : null,
+        // Stored values, so a change in the business profile updates the
+        // page - the hours are never retyped into the page content.
+        filled($profile?->working_hours) ? ['label' => 'ساعات العمل', 'value' => collect($profile->working_hours)->map(fn ($hours, $day) => $day.': '.$hours)->implode(' · '), 'url' => null] : null,
+        $profile?->phone ? ['label' => 'الهاتف', 'value' => $profile->phone, 'url' => $profile->phoneUrl()] : null,
         $publishedAreas >= 3 ? ['label' => 'مناطق التغطية', 'value' => $publishedAreas.' '.($publishedAreas <= 10 ? 'أحياء' : 'حيًا'), 'url' => route('public.areas.index')] : null,
         $publishedProjects >= 3 ? ['label' => 'أعمال موثقة', 'value' => $publishedProjects.' '.($publishedProjects <= 10 ? 'مشاريع' : 'مشروعًا'), 'url' => route('public.projects.index')] : null,
     ])->filter();

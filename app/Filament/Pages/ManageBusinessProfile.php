@@ -30,6 +30,11 @@ class ManageBusinessProfile extends Page
 {
     protected string $view = 'filament.pages.manage-business-profile';
 
+    /**
+     * Resolved once per request by getRecord().
+     */
+    private ?BusinessProfile $record = null;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
     protected static string|UnitEnum|null $navigationGroup = 'الإعدادات';
@@ -51,6 +56,10 @@ class ManageBusinessProfile extends Page
     public function mount(): void
     {
         $this->form->fill($this->getRecord()->attributesToArray());
+
+        if ($this->duplicateProfileCount() > 0) {
+            $this->warnAboutDuplicates();
+        }
     }
 
     public function form(Schema $schema): Schema
@@ -65,10 +74,42 @@ class ManageBusinessProfile extends Page
                                     TextInput::make('name')->label('اسم المنشأة')->required()->maxLength(255),
                                     TextInput::make('phone')->label('الهاتف')->tel(),
                                     TextInput::make('whatsapp_number')->label('رقم واتساب')->tel(),
-                                    TextInput::make('email')->label('البريد الإلكتروني')->email(),
+                                    TextInput::make('email')->label('البريد العام (يظهر للعملاء)')->email(),
                                     Textarea::make('address')->label('العنوان')->rows(2)->columnSpanFull(),
-                                    TextInput::make('city')->label('المدينة'),
+                                    // NOT NULL in the schema: without it the very
+                                    // first save on a fresh install would fail.
+                                    TextInput::make('city')->label('المدينة')->required()->maxLength(120),
                                     MediaPicker::make('logo_media_id', 'الشعار'),
+                                    Textarea::make('service_area')
+                                        ->label('منطقة الخدمة')
+                                        ->rows(2)
+                                        ->helperText('كما تريد وصفها للعملاء ولملف Google التجاري. اتركها فارغة حتى تُحسم.')
+                                        ->columnSpanFull(),
+                                ])
+                                ->columns(2),
+                            Section::make('السجل التجاري')
+                                ->description('لا يظهر الرقم في الموقع إلا بعد إدخال رقم حقيقي وتفعيل خيار العرض.')
+                                ->schema([
+                                    TextInput::make('commercial_registration_number')
+                                        ->label('رقم السجل التجاري / وثيقة العمل الحر')
+                                        ->maxLength(30)
+                                        ->regex('/^[0-9A-Za-z\-]+$/'),
+                                    Toggle::make('display_commercial_registration')
+                                        ->label('عرض الرقم في تذييل الموقع'),
+                                ])
+                                ->columns(2),
+                            Section::make('Google')
+                                ->description('روابط حقيقية فقط. زر «قيّم تجربتك معنا على Google» لا يظهر في الموقع ما دام رابط التقييم فارغًا.')
+                                ->schema([
+                                    TextInput::make('google_business_profile_url')
+                                        ->label('رابط الملف التجاري على Google')
+                                        ->url()
+                                        ->maxLength(500),
+                                    TextInput::make('google_review_url')
+                                        ->label('رابط كتابة تقييم على Google')
+                                        ->url()
+                                        ->maxLength(500)
+                                        ->helperText('من ملفك التجاري: «اطلب تقييمات». لا يُستخدم لطلب تقييمات إيجابية أو مقابل حوافز.'),
                                 ])
                                 ->columns(2),
                             Section::make('روابط التواصل الاجتماعي')
@@ -188,13 +229,42 @@ class ManageBusinessProfile extends Page
     {
         $data = $this->form->getState();
 
+        // Refuse to write while the table holds more than one profile:
+        // guessing which row is "the" profile could silently edit the
+        // wrong one, or merge two. A human resolves it.
+        if ($this->duplicateProfileCount() > 0) {
+            $this->warnAboutDuplicates();
+
+            return;
+        }
+
         $this->getRecord()->fill($data)->save();
 
         Notification::make()->success()->title('تم الحفظ')->send();
     }
 
+    /**
+     * The site has exactly one business profile, whatever its id: the
+     * oldest row, which is the same one the public site reads. When none
+     * exists yet, an unsaved instance - saving it creates the single row.
+     */
     public function getRecord(): BusinessProfile
     {
-        return BusinessProfile::query()->firstOrNew(['id' => 1]);
+        return $this->record ??= BusinessProfile::query()->oldest('id')->first() ?? new BusinessProfile;
+    }
+
+    private function duplicateProfileCount(): int
+    {
+        return max(0, BusinessProfile::query()->count() - 1);
+    }
+
+    private function warnAboutDuplicates(): void
+    {
+        Notification::make()
+            ->danger()
+            ->persistent()
+            ->title('يوجد أكثر من سجل لبيانات المنشأة')
+            ->body('عُثر على '.($this->duplicateProfileCount() + 1).' سجلات. الحفظ متوقف حتى يُبقي فريق التقنية سجلًا واحدًا فقط، حتى لا يُعدَّل السجل الخطأ أو تُدمج البيانات تلقائيًا.')
+            ->send();
     }
 }

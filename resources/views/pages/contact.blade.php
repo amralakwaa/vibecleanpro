@@ -136,7 +136,7 @@
                 @endif
 
                 {{-- Stored facts only. --}}
-                @if ($businessProfile?->working_hours || $businessProfile?->address)
+                @if ($businessProfile?->working_hours || $businessProfile?->address || $businessProfile?->service_area)
                     <dl class="mt-6 pt-6 border-t border-neutral-200 space-y-5">
                         @if ($businessProfile?->working_hours)
                             <div class="flex gap-3">
@@ -149,17 +149,21 @@
                                 </div>
                             </div>
                         @endif
-                        @if ($businessProfile?->address)
+                        {{-- A stored address only. With none, the stored service
+                             area is stated instead - never an invented street. --}}
+                        @if ($businessProfile?->address || $businessProfile?->service_area)
                             <div class="flex gap-3">
                                 <x-public.icon name="map-pin" class="w-5 h-5 text-primary-600 shrink-0 mt-0.5" />
                                 <div>
-                                    <dt class="text-sm text-neutral-500">العنوان</dt>
-                                    <dd class="mt-1 text-neutral-800">{{ $businessProfile->address }}</dd>
+                                    <dt class="text-sm text-neutral-500">{{ $businessProfile->address ? 'العنوان' : 'نطاق الخدمة' }}</dt>
+                                    <dd class="mt-1 text-neutral-800">{{ $businessProfile->address ?: 'نقدم خدماتنا داخل '.$businessProfile->service_area.'.' }}</dd>
                                 </div>
                             </div>
                         @endif
                     </dl>
                 @endif
+
+                <x-public.google-review-cta :business-profile="$businessProfile" class="mt-6" />
 
                 {{-- The business path, named once - the same form with its own framing. --}}
                 @if (! $isBusinessContext)

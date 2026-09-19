@@ -6,6 +6,19 @@ All notable changes to Vibe Clean Pro. Every entry that touches URLs, indexing o
 
 Production system build on branch `feature/production-system` (uncommitted). Test suite: **548 tests / 2,190+ assertions, all green**.
 
+### Added — pre-launch hardening (2026-09-19/20)
+- **Launch command** — `php artisan site:launch --mode=dry-run|validate|apply` applies the owner-approved manifest `database/seeders/content/launch-manifest.json` (47 project confirmations, 10 article→service links, 4 services + 10 articles + 4 projects published). Validates dependencies, runs every page through the Publishing Gate as it *will* be, refuses a page linking to something that stays unpublished, applies in one transaction, and is idempotent. Verified end to end on an empty database (65 changes, re-run 0).
+- **Launch content moved into the repo** — project page drafts (factual summary, meta description, noindex, CTA) are now produced by `ProductionContentSeeder`; the 10 launch articles by `ArticleContentSeeder`; the Privacy and About drafts by `TrustPagesDraftSeeder`.
+- **Publishing Gate check `owner_input`** — a page carrying a `NEEDS OWNER INPUT` marker can never be published.
+- **Business profile fields** — commercial registration number + explicit "show publicly" switch (footer), service area, Google Business Profile URL, Google review URL. Reuses the existing public email, lead notification inbox and working hours. Migration reversible.
+- **Two-factor authentication** — Filament's built-in authenticator-app MFA, optional per user, on a new "أمان الحساب" page limited to MFA (no self-service name/email/password changes). Secrets and recovery codes are encrypted at rest and hidden from serialisation. No new dependency. Migration reversible.
+- **Security audit trail** — sign-in, sign-out, failed sign-in, rate-limited sign-in and password reset are written to the existing `audit_logs` table (never a password, token or code).
+- **Backups** — `php artisan backup:run` writes a gzipped database dump, a zip of media originals and a SHA-256 manifest to private storage, with retention; scheduled daily 02:30. Restore tested locally: 45/45 tables and 516/516 media files identical. No new dependency.
+- **Readiness widget** — computed states for lead-notification email, privacy policy, Search Console, GA4, review CTA, two-factor enrolment and backups.
+- **Search Console + GA4** — verification meta printed only for a valid token; GA4 reuses the existing `google_analytics_id` setting and stays off until explicitly enabled *and* the privacy policy is published.
+- **Google review CTA** — shown on the contact page only when a real review URL is saved; asks for an honest review, with no incentive and no rating steering.
+- **Areas coverage directory** — `/areas` now lists all 84 served districts grouped by direction; only areas with a published page are links.
+
 ### Added
 - **Conversion tracking** — `conversion_events` table; `POST /e` beacon endpoint (throttled 30/min, bots dropped, 10 s dedupe, HMAC session hash, no raw IP); WhatsApp/phone click and quote-form-start tracking in `resources/js/tracking.js`; server-side recording of quote/contact submissions; page attribution code `V-XXXXXXX` appended to WhatsApp messages and resolvable in the CRM. Migration reversible.
 - **Leads CRM pipeline** — statuses New → Contacted → Qualified → Quoted → Won → Completed / Lost / Spam, auto-stamped stage dates, assignee, lost reason, linked project, device type, attribution code, marketing consent; Sales role sees only its own leads; `leads:prune-personal-data` (daily 03:00: IP/UA cleared after 90 days, spam removed after 30). Migration reversible.
