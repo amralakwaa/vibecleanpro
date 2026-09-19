@@ -182,7 +182,7 @@
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('public.quote.store') }}" @submit="submitting = true" class="mt-5">
+                        <form method="POST" action="{{ route('public.quote.store') }}" @submit="submitting = true" data-track-form="quote_form_start" class="mt-5">
                             @csrf
 
                             {{-- Honeypot: hidden from real visitors via CSS, never via

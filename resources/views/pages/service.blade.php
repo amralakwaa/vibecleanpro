@@ -155,7 +155,7 @@
                                 @if ($cover)
                                     <a href="{{ $urlResolver->urlForPage($project->page) }}"
                                         class="group relative isolate flex flex-col justify-end overflow-hidden rounded-2xl text-white aspect-[4/3] shadow-sm hover:shadow-xl hover:shadow-primary-900/15 transition-shadow duration-300">
-                                        <img src="{{ $cover->url() }}" alt="{{ $cover->alt_text ?? $project->title }}" loading="lazy"
+                                        <img src="{{ $cover->url() }}" srcset="{{ $cover->srcset() }}" alt="{{ $cover->alt_text ?? $project->title }}" loading="lazy"
                                             width="{{ $cover->width ?: 800 }}" height="{{ $cover->height ?: 600 }}"
                                             class="tile-media absolute inset-0 -z-20 w-full h-full object-cover">
                                         <div class="tile-scrim absolute inset-0 -z-10" aria-hidden="true"></div>
@@ -233,7 +233,7 @@
                   </div>
                   @if ($leadOffer->featuredMedia)
                     <div class="relative min-h-[14rem] lg:min-h-0 [mask-image:linear-gradient(to_bottom,transparent_0%,black_18%)] lg:[mask-image:linear-gradient(to_left,transparent_0%,black_24%)]">
-                        <img src="{{ $leadOffer->featuredMedia->url() }}" alt="{{ $leadOffer->featuredMedia->alt_text ?? $leadOffer->title }}" loading="lazy"
+                        <img src="{{ $leadOffer->featuredMedia->url() }}" srcset="{{ $leadOffer->featuredMedia->srcset() }}" alt="{{ $leadOffer->featuredMedia->alt_text ?? $leadOffer->title }}" loading="lazy"
                             width="{{ $leadOffer->featuredMedia->width ?: 1200 }}" height="{{ $leadOffer->featuredMedia->height ?: 800 }}"
                             class="absolute inset-0 w-full h-full object-cover">
                     </div>

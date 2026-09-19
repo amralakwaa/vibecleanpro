@@ -74,7 +74,7 @@
             @if (! empty($block->data['heading']))
                 <section class="relative isolate overflow-hidden bg-ink-950 text-white">
                     @if ($heroMedia)
-                        <img src="{{ $heroMedia->url() }}" alt="{{ $heroMedia->alt_text ?? '' }}" loading="lazy" width="1600" height="900"
+                        <img src="{{ $heroMedia->url() }}" srcset="{{ $heroMedia->srcset() }}" alt="{{ $heroMedia->alt_text ?? '' }}" loading="lazy" width="1600" height="900"
                             class="absolute inset-0 -z-10 w-full h-full object-cover opacity-40">
                         <div class="absolute inset-0 -z-10 bg-gradient-to-t from-ink-950 via-ink-950/70 to-ink-950/30" aria-hidden="true"></div>
                     @endif
@@ -199,7 +199,7 @@
             @if ($img)
                 <x-public.section :width="$width">
                     <figure>
-                        <img src="{{ $img->url() }}" alt="{{ $img->alt_text ?? '' }}" loading="lazy"
+                        <img src="{{ $img->url() }}" srcset="{{ $img->srcset() }}" alt="{{ $img->alt_text ?? '' }}" loading="lazy"
                             class="w-full" width="{{ $img->width }}" height="{{ $img->height }}">
                         @if (! empty($block->data['caption']))
                             <figcaption class="mt-2 text-sm text-neutral-500 text-center">{{ $block->data['caption'] }}</figcaption>
@@ -215,7 +215,7 @@
                 <x-public.section :width="$width">
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-px bg-neutral-200">
                         @foreach ($images as $img)
-                            <img src="{{ $img->url() }}" alt="{{ $img->alt_text ?? '' }}" loading="lazy"
+                            <img src="{{ $img->url() }}" srcset="{{ $img->srcset() }}" alt="{{ $img->alt_text ?? '' }}" loading="lazy"
                                 class="w-full aspect-square object-cover bg-neutral-50">
                         @endforeach
                     </div>

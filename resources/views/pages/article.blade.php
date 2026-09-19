@@ -91,7 +91,7 @@
                         <figure class="reveal">
                             <div class="overflow-hidden rounded-3xl ring-1 ring-ink-950/10 shadow-xl shadow-primary-900/15 bg-white">
                                 <img
-                                    src="{{ $article->featuredMedia->url() }}"
+                                    src="{{ $article->featuredMedia->url() }}" srcset="{{ $article->featuredMedia->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                                     alt="{{ $article->featuredMedia->alt_text ?? $page->title }}"
                                     fetchpriority="high"
                                     width="{{ $article->featuredMedia->width ?: 1200 }}"
@@ -169,7 +169,7 @@
                     @if ($leadProjectCover)
                         <a href="{{ $urlResolver->urlForPage($leadProject->page) }}"
                             class="group relative isolate mt-4 flex flex-col justify-end overflow-hidden rounded-3xl text-white aspect-[16/9] shadow-sm hover:shadow-xl hover:shadow-primary-900/15 transition-shadow duration-300 reveal">
-                            <img src="{{ $leadProjectCover->url() }}" alt="{{ $leadProjectCover->alt_text ?? $leadProject->title }}" loading="lazy"
+                            <img src="{{ $leadProjectCover->url() }}" srcset="{{ $leadProjectCover->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $leadProjectCover->alt_text ?? $leadProject->title }}" loading="lazy"
                                 width="{{ $leadProjectCover->width ?: 1200 }}" height="{{ $leadProjectCover->height ?: 675 }}"
                                 class="tile-media absolute inset-0 -z-20 w-full h-full object-cover">
                             <div class="tile-scrim absolute inset-0 -z-10" aria-hidden="true"></div>

@@ -96,7 +96,7 @@
                         <a href="{{ $urlResolver->urlForPage($featuredService->page) }}"
                             class="group relative isolate flex flex-col justify-end overflow-hidden rounded-2xl text-white min-h-[22rem] md:min-h-[20rem] md:col-span-2 lg:min-h-0 lg:row-span-2 shadow-sm hover:shadow-xl hover:shadow-primary-900/15 transition-shadow duration-300 reveal">
                             @if ($featuredService->featuredMedia)
-                                <img src="{{ $featuredService->featuredMedia->url() }}" alt="{{ $featuredService->featuredMedia->alt_text ?? $featuredService->name }}"
+                                <img src="{{ $featuredService->featuredMedia->url() }}" srcset="{{ $featuredService->featuredMedia->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $featuredService->featuredMedia->alt_text ?? $featuredService->name }}"
                                     width="1200" height="800"
                                     class="tile-media absolute inset-0 -z-20 w-full h-full object-cover">
                             @else
@@ -133,7 +133,7 @@
                         <a href="{{ $urlResolver->urlForPage($service->page) }}"
                             class="group relative isolate flex flex-col justify-end overflow-hidden rounded-2xl text-white min-h-[15rem] md:min-h-[16rem] lg:min-h-0 shadow-sm hover:shadow-xl hover:shadow-primary-900/15 transition-shadow duration-300 reveal">
                             @if ($service->featuredMedia)
-                                <img src="{{ $service->featuredMedia->url() }}" alt="{{ $service->featuredMedia->alt_text ?? $service->name }}"
+                                <img src="{{ $service->featuredMedia->url() }}" srcset="{{ $service->featuredMedia->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $service->featuredMedia->alt_text ?? $service->name }}"
                                     loading="lazy" width="640" height="427"
                                     class="tile-media absolute inset-0 -z-20 w-full h-full object-cover">
                             @else
@@ -234,7 +234,7 @@
                 @if ($b2cImage)
                     {{-- The home photo is a landscape strip above the copy on
                          phones and a tall portrait beside it from tablet up. --}}
-                    <img src="{{ $b2cImage->url() }}" alt="{{ $b2cImage->alt_text ?? '' }}" loading="lazy" width="800" height="1000"
+                    <img src="{{ $b2cImage->url() }}" srcset="{{ $b2cImage->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $b2cImage->alt_text ?? '' }}" loading="lazy" width="800" height="1000"
                         class="-order-1 md:order-none w-full aspect-[16/10] md:aspect-[4/5] object-cover rounded-2xl shadow-lg shadow-primary-900/10 reveal">
                 @endif
             </div>
@@ -339,7 +339,7 @@
                                      edge (masked, like the hero) instead of butting
                                      against the copy with a hard seam. --}}
                                 <div class="relative min-h-[16rem] lg:min-h-0 [mask-image:linear-gradient(to_bottom,transparent_0%,black_18%)] lg:[mask-image:linear-gradient(to_left,transparent_0%,black_24%)]">
-                                    <img src="{{ $leadOfferImage->url() }}" alt="{{ $leadOfferImage->alt_text ?? $leadOffer->title }}" loading="lazy"
+                                    <img src="{{ $leadOfferImage->url() }}" srcset="{{ $leadOfferImage->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $leadOfferImage->alt_text ?? $leadOffer->title }}" loading="lazy"
                                         width="1200" height="800"
                                         class="absolute inset-0 w-full h-full object-cover">
                                 </div>

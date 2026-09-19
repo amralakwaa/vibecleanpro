@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\MediaPrivacyStatus;
+use App\Enums\MediaStatus;
+use App\Enums\MediaType;
 use App\Models\Media;
 use App\Models\Service;
 use App\Models\SiteSetting;
@@ -93,6 +96,10 @@ class InitialMediaSeeder extends Seeder
             'width' => $width,
             'height' => $height,
             'alt_text' => $item['alt_text'],
+            'status' => MediaStatus::Ready,
+            'privacy_status' => MediaPrivacyStatus::Cleared,
+            'media_type' => MediaType::Stock,
+            'source' => 'stock_library',
         ]);
     }
 

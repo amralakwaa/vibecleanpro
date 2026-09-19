@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Areas;
 
+use App\Enums\AreaTier;
 use App\Enums\PageStatus;
 use App\Enums\PageType;
 use App\Filament\Resources\Areas\Pages\CreateArea;
@@ -77,6 +78,19 @@ class AreaResource extends Resource
                                         ->helperText('مُعرّف داخلي للمنطقة. لا يعني وجوده أن للمنطقة صفحة منشورة.')
                                         ->maxLength(255),
                                     TextInput::make('sort_order')->label('ترتيب العرض')->numeric()->default(0),
+                                    Select::make('tier')
+                                        ->label('طبقة الفهرسة')
+                                        ->options(AreaTier::options())
+                                        ->default(AreaTier::B->value)
+                                        ->required()
+                                        ->native(false)
+                                        ->live()
+                                        ->helperText('A = طلب بحث مثبت ومحتوى مكتوب لهذا الحي فقط (تُفهرس). B = صفحة تغطية (noindex تلقائيًا). C = سجل فقط.'),
+                                    TextInput::make('promotion_reason')
+                                        ->label('سبب الترقية إلى A')
+                                        ->placeholder('مثل: أول مشروع منشور في الحي')
+                                        ->visible(fn (Get $get) => in_array($get('tier'), [AreaTier::A, AreaTier::A->value], true))
+                                        ->maxLength(255),
                                 ])
                                 ->columns(2),
                         ]),
@@ -148,6 +162,9 @@ class AreaResource extends Resource
             ->columns([
                 TextColumn::make('name')->label('الاسم')->searchable()->weight('medium'),
                 TextColumn::make('group.name')->label('مجموعة المناطق')->badge(),
+                TextColumn::make('tier')->label('الطبقة')->badge()->formatStateUsing(fn (?AreaTier $state) => $state?->name ?? '—')->color(fn (?AreaTier $state) => match ($state) {
+                    AreaTier::A => 'success', AreaTier::B => 'warning', default => 'gray'
+                }),
                 IconColumn::make('page.id')->label('لها صفحة')->boolean()->getStateUsing(fn (Area $record) => $record->page !== null),
                 TextColumn::make('services_count')->label('عدد الخدمات')->counts('services'),
                 TextColumn::make('projects_count')->label('عدد المشاريع')->counts('projects'),
@@ -156,6 +173,7 @@ class AreaResource extends Resource
             ->defaultSort('sort_order')
             ->filters([
                 SelectFilter::make('area_group_id')->label('مجموعة المناطق')->relationship('group', 'name'),
+                SelectFilter::make('tier')->label('الطبقة')->options(AreaTier::options()),
                 TrashedFilter::make(),
             ])
             ->recordActions([

@@ -129,7 +129,7 @@
                     <div class="surface-atmos absolute inset-0 -translate-x-3 translate-y-3 md:-translate-x-5 md:translate-y-5 rounded-3xl -z-10" aria-hidden="true"></div>
                     <div class="group relative overflow-hidden rounded-3xl ring-1 ring-ink-950/10 shadow-xl shadow-primary-900/15 bg-white">
                         <img
-                            src="{{ $image->url() }}"
+                            src="{{ $image->url() }}" srcset="{{ $image->srcset() }}"
                             alt="{{ $image->alt_text ?? $heading }}"
                             fetchpriority="high"
                             width="{{ $image->width ?: 1200 }}"

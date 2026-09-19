@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Testimonials;
 
+use App\Enums\TestimonialSource;
 use App\Filament\Resources\Testimonials\Pages\CreateTestimonial;
 use App\Filament\Resources\Testimonials\Pages\EditTestimonial;
 use App\Filament\Resources\Testimonials\Pages\ListTestimonials;
@@ -12,15 +13,18 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use UnitEnum;
@@ -52,6 +56,18 @@ class TestimonialResource extends Resource
             Textarea::make('content')->label('نص الرأي')->required()->rows(4)->columnSpanFull(),
             Toggle::make('is_featured')->label('مميز')->default(false),
             TextInput::make('sort_order')->label('ترتيب العرض')->numeric()->default(0),
+            Section::make('المصدر والاعتماد')
+                ->description('لا يظهر الرأي في الموقع قبل اعتماده. تعديل نص الرأي بعد الاعتماد يلغي الاعتماد تلقائيًا.')
+                ->schema([
+                    Select::make('source')->label('المصدر')->options(TestimonialSource::options()),
+                    TextInput::make('source_ref')->label('رابط أو مرجع المصدر')->maxLength(255),
+                    Toggle::make('consent_confirmed')->label('وافق العميل على نشر رأيه'),
+                    DateTimePicker::make('approved_at')
+                        ->label('تاريخ الاعتماد')
+                        ->disabled(fn (): bool => ! (auth()->user()?->can('approve_testimonial') ?? false)),
+                ])
+                ->columns(2)
+                ->columnSpanFull(),
         ])->columns(2);
     }
 
@@ -65,9 +81,11 @@ class TestimonialResource extends Resource
                 TextColumn::make('service.name')->label('الخدمة'),
                 TextColumn::make('area.name')->label('المنطقة'),
                 IconColumn::make('is_featured')->label('مميز')->boolean(),
+                IconColumn::make('approved_at')->label('معتمد')->boolean()->getStateUsing(fn (Testimonial $record) => $record->approved_at !== null),
             ])
             ->defaultSort('sort_order')
             ->filters([
+                TernaryFilter::make('approved_at')->label('الاعتماد')->nullable(),
                 TrashedFilter::make(),
             ])
             ->recordActions([

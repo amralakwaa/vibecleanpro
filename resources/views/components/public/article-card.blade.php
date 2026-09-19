@@ -3,7 +3,7 @@
 <x-public.card :padded="false" class="relative overflow-hidden flex flex-col h-full">
     <div class="aspect-[16/9] bg-neutral-100 overflow-hidden">
         @if ($article->featuredMedia)
-            <img src="{{ $article->featuredMedia->url() }}" alt="{{ $article->featuredMedia->alt_text }}"
+            <img src="{{ $article->featuredMedia->url() }}" srcset="{{ $article->featuredMedia->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $article->featuredMedia->alt_text }}"
                 loading="lazy" class="w-full h-full object-cover" width="480" height="270">
         @else
             <div class="w-full h-full flex items-center justify-center text-primary-300">

@@ -76,7 +76,10 @@ class DiscoveryPagesV2Test extends TestCase
         $this->assertLessThan(mb_strpos($html, 'خدمة-سعر-مخفي'), mb_strpos($html, 'خدمة-البلاطة'));
         $this->assertMatchesRegularExpression('/tile-scrim[\s\S]{0,900}خدمة-البلاطة[\s\S]{0,700}يبدأ من 700 ر\.س/u', $html, 'the featured tile carries its public price');
         $this->assertSame(1, substr_count($html, 'خدمة مميزة'));
-        $this->assertStringNotContainsString('999', $html, 'a hidden price never leaks');
+        // Matched as a rendered price, not a bare "999": random media UUIDs
+        // in image URLs can contain that digit run and made this flaky.
+        $this->assertStringNotContainsString('999 ر.س', $html, 'a hidden price never leaks');
+        $this->assertStringNotContainsString('999 ريال', $html, 'a hidden price never leaks');
         $this->assertMatchesRegularExpression('/خدمة-عرض-فقط[\s\S]{0,700}تفاصيل الخدمة<\/span>/u', $html);
         $this->assertStringNotContainsString('الأكثر طلبًا', $html);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ConversionEventType;
 use App\Events\LeadCreated;
 use App\Http\Requests\StoreLeadRequest;
 use App\Models\BusinessProfile;
@@ -9,6 +10,8 @@ use App\Models\Lead;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
+use App\Support\Tracking\ConversionRecorder;
+use App\Support\Tracking\VisitorClassifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -60,7 +63,7 @@ class ContactController extends Controller
         ], 200);
     }
 
-    public function store(StoreLeadRequest $request): RedirectResponse
+    public function store(StoreLeadRequest $request, ConversionRecorder $conversions, VisitorClassifier $visitors): RedirectResponse
     {
         if ($request->filled('website_url')) {
             return Redirect::route('public.contact')->with('lead_submitted', true);
@@ -72,6 +75,7 @@ class ContactController extends Controller
             'source' => $request->input('context') === 'business' ? 'contact_form_business' : 'contact_form',
             'ip_address' => $request->ip(),
             'user_agent' => (string) $request->userAgent(),
+            'device_type' => $visitors->deviceType($request->userAgent()),
             'utm_source' => session('lead_attribution.utm_source'),
             'utm_medium' => session('lead_attribution.utm_medium'),
             'utm_campaign' => session('lead_attribution.utm_campaign'),
@@ -82,6 +86,8 @@ class ContactController extends Controller
         // The lead is stored; telling the team is a separate, queued step
         // that can fail without touching the visitor's success.
         LeadCreated::dispatch($lead);
+
+        $conversions->recordSubmission(ConversionEventType::ContactFormSubmit, $lead, $request);
 
         return Redirect::route('public.contact')->with('lead_submitted', true);
     }

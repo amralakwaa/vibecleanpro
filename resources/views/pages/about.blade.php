@@ -211,7 +211,7 @@
                     <div class="relative max-w-xs md:max-w-none reveal">
                         <div class="surface-atmos absolute inset-0 rounded-3xl -translate-x-3 translate-y-3 md:-translate-x-5 md:translate-y-5" aria-hidden="true"></div>
                         <img
-                            src="{{ $profile->founderPhoto->url() }}"
+                            src="{{ $profile->founderPhoto->url() }}" srcset="{{ $profile->founderPhoto->srcset() }}"
                             alt="{{ $profile->founderPhoto->alt_text ?? $profile->founder_name }}"
                             loading="lazy"
                             width="640"
@@ -257,7 +257,7 @@
                     <li class="flex gap-5 rounded-3xl ring-1 ring-ink-950/10 bg-background p-5 reveal">
                         @if ($member->photo)
                             <img
-                                src="{{ $member->photo->url() }}"
+                                src="{{ $member->photo->url() }}" srcset="{{ $member->photo->srcset() }}"
                                 alt="{{ $member->photo->alt_text ?? $member->name }}"
                                 loading="lazy"
                                 width="160"

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ServiceCapability;
 use App\Enums\ServicePricingMode;
 use App\Models\Concerns\HasPage;
 use App\Support\Pricing\PublicPrice;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
     'service_category_id', 'featured_media_id', 'name', 'short_description', 'icon', 'is_featured', 'sort_order',
-    'pricing_mode', 'price_min', 'price_max', 'price_unit', 'price_note', 'show_price',
+    'pricing_mode', 'price_min', 'price_max', 'price_unit', 'price_note', 'show_price', 'capability_status',
 ])]
 class Service extends Model
 {
@@ -28,6 +29,7 @@ class Service extends Model
         return [
             'is_featured' => 'boolean',
             'pricing_mode' => ServicePricingMode::class,
+            'capability_status' => ServiceCapability::class,
             'price_min' => 'decimal:2',
             'price_max' => 'decimal:2',
             'show_price' => 'boolean',

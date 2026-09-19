@@ -11,6 +11,7 @@ use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\ServicesIndexController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\TrackEventController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -38,6 +39,8 @@ Route::post('/contact', [ContactController::class, 'store'])->middleware('thrott
 
 Route::get('/quote', [QuoteController::class, 'create'])->name('public.quote');
 Route::post('/quote', [QuoteController::class, 'store'])->middleware('throttle:6,1')->name('public.quote.store');
+
+Route::post('/e', TrackEventController::class)->middleware('throttle:30,1')->name('public.track');
 
 // Standalone pages (trust/legal/landing - including editor-managed pages
 // like /about, /faq, /service-guarantee once created in the admin) live

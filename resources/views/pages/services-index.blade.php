@@ -84,7 +84,7 @@
                     <a id="service-{{ $lead->id }}" href="{{ $urlResolver->urlForPage($lead->page) }}"
                         class="group relative isolate mt-3 flex flex-col justify-end overflow-hidden rounded-3xl text-white min-h-[22rem] md:min-h-[26rem] scroll-mt-24 shadow-sm hover:shadow-xl hover:shadow-primary-900/15 transition-shadow duration-300 reveal">
                         @if ($lead->featuredMedia)
-                            <img src="{{ $lead->featuredMedia->url() }}" alt="{{ $lead->featuredMedia->alt_text ?? $lead->name }}"
+                            <img src="{{ $lead->featuredMedia->url() }}" srcset="{{ $lead->featuredMedia->srcset() }}" alt="{{ $lead->featuredMedia->alt_text ?? $lead->name }}"
                                 width="{{ $lead->featuredMedia->width ?: 1600 }}" height="{{ $lead->featuredMedia->height ?: 900 }}" fetchpriority="high"
                                 class="tile-media absolute inset-0 -z-20 w-full h-full object-cover">
                         @else
@@ -132,7 +132,7 @@
                                         class="group flex items-stretch h-full overflow-hidden rounded-2xl bg-white ring-1 ring-ink-950/5 shadow-sm transition-[box-shadow,ring-color] hover:shadow-md hover:ring-primary-200">
                                         @if ($service->featuredMedia)
                                             <span class="relative w-32 sm:w-44 lg:w-52 shrink-0 overflow-hidden">
-                                                <img src="{{ $service->featuredMedia->url() }}" alt="{{ $service->featuredMedia->alt_text ?? $service->name }}" loading="lazy"
+                                                <img src="{{ $service->featuredMedia->url() }}" srcset="{{ $service->featuredMedia->srcset() }}" alt="{{ $service->featuredMedia->alt_text ?? $service->name }}" loading="lazy"
                                                     width="{{ $service->featuredMedia->width ?: 800 }}" height="{{ $service->featuredMedia->height ?: 600 }}"
                                                     class="tile-media absolute inset-0 w-full h-full object-cover">
                                             </span>

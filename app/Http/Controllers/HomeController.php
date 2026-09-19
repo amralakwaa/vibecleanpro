@@ -96,6 +96,7 @@ class HomeController extends Controller
         // 'area' is eager-loaded because the homepage pull quote prints
         // the customer's area alongside their name when it exists.
         $testimonials = Testimonial::query()
+            ->approved()
             ->with('area')
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')

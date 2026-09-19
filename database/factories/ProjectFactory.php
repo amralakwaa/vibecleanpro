@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProjectFactory extends Factory
 {
+    /**
+     * The default is a project the owner has confirmed (site, date, publication
+     * permission) - the only kind that may be published.
+     */
     public function definition(): array
     {
         return [
@@ -17,8 +21,14 @@ class ProjectFactory extends Factory
             'title' => fake()->sentence(3),
             'summary' => fake()->sentence(),
             'completed_at' => fake()->date(),
+            'owner_confirmed_at' => now(),
             'is_featured' => false,
             'sort_order' => 0,
         ];
+    }
+
+    public function unconfirmed(): static
+    {
+        return $this->state(['owner_confirmed_at' => null, 'completed_at' => null, 'summary' => null]);
     }
 }

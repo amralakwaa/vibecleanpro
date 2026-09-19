@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ConversionEventType;
 use App\Events\LeadCreated;
 use App\Http\Requests\StoreLeadRequest;
 use App\Models\Area;
@@ -11,6 +12,8 @@ use App\Models\Service;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
+use App\Support\Tracking\ConversionRecorder;
+use App\Support\Tracking\VisitorClassifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Redirect;
@@ -60,7 +63,7 @@ class QuoteController extends Controller
         ], 200);
     }
 
-    public function store(StoreLeadRequest $request): RedirectResponse
+    public function store(StoreLeadRequest $request, ConversionRecorder $conversions, VisitorClassifier $visitors): RedirectResponse
     {
         // Invisible to a real visitor (see resources/views/pages/quote.blade.php) -
         // a filled honeypot pretends success without touching the database.
@@ -74,6 +77,7 @@ class QuoteController extends Controller
             'source' => 'quote_form',
             'ip_address' => $request->ip(),
             'user_agent' => (string) $request->userAgent(),
+            'device_type' => $visitors->deviceType($request->userAgent()),
             'utm_source' => session('lead_attribution.utm_source'),
             'utm_medium' => session('lead_attribution.utm_medium'),
             'utm_campaign' => session('lead_attribution.utm_campaign'),
@@ -84,6 +88,8 @@ class QuoteController extends Controller
         // The lead is stored; telling the team is a separate, queued step
         // that can fail without touching the visitor's success.
         LeadCreated::dispatch($lead);
+
+        $conversions->recordSubmission(ConversionEventType::QuoteFormSubmit, $lead, $request);
 
         return Redirect::route('public.quote')->with('lead_submitted', true);
     }

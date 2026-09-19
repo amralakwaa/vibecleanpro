@@ -24,6 +24,7 @@ class RobotsController extends Controller
         $lines = [
             'User-agent: *',
             'Disallow: /admin',
+            'Disallow: /e',
             '',
             "Sitemap: {$sitemapUrl}",
         ];

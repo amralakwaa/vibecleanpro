@@ -97,7 +97,7 @@
                             </div>
                             @if ($leadImage)
                                 <div class="relative min-h-[16rem] lg:min-h-0 [mask-image:linear-gradient(to_bottom,transparent_0%,black_18%)] lg:[mask-image:linear-gradient(to_left,transparent_0%,black_24%)]">
-                                    <img src="{{ $leadImage->url() }}" alt="{{ $leadImage->alt_text ?? $lead->title }}" fetchpriority="high"
+                                    <img src="{{ $leadImage->url() }}" srcset="{{ $leadImage->srcset() }}" alt="{{ $leadImage->alt_text ?? $lead->title }}" fetchpriority="high"
                                         width="{{ $leadImage->width ?: 1200 }}" height="{{ $leadImage->height ?: 800 }}"
                                         class="absolute inset-0 w-full h-full object-cover">
                                 </div>
@@ -118,7 +118,7 @@
                                     <a href="{{ $urlResolver->urlForPage($offer->page) }}" class="group flex items-stretch gap-0 rounded-2xl border border-white/15 bg-white/[0.06] overflow-hidden min-h-24 transition-colors hover:bg-white/[0.12]">
                                         @if ($image)
                                             <span class="relative w-28 sm:w-36 shrink-0 overflow-hidden">
-                                                <img src="{{ $image->url() }}" alt="{{ $image->alt_text ?? $offer->title }}" loading="lazy" width="{{ $image->width ?: 800 }}" height="{{ $image->height ?: 600 }}" class="tile-media absolute inset-0 w-full h-full object-cover">
+                                                <img src="{{ $image->url() }}" srcset="{{ $image->srcset() }}" alt="{{ $image->alt_text ?? $offer->title }}" loading="lazy" width="{{ $image->width ?: 800 }}" height="{{ $image->height ?: 600 }}" class="tile-media absolute inset-0 w-full h-full object-cover">
                                             </span>
                                         @endif
                                         <span class="flex min-w-0 grow items-center justify-between gap-4 px-5 py-4">

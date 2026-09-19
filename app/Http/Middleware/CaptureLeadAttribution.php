@@ -23,6 +23,7 @@ class CaptureLeadAttribution
     {
         if (! $request->session()->has('lead_attribution.landing_page')) {
             $request->session()->put('lead_attribution.landing_page', $request->path() === '/' ? '/' : '/'.ltrim($request->path(), '/'));
+            $request->session()->put('lead_attribution.referrer_host', $this->externalReferrerHost($request));
         }
 
         foreach (self::UTM_KEYS as $key) {
@@ -32,5 +33,17 @@ class CaptureLeadAttribution
         }
 
         return $next($request);
+    }
+
+    /**
+     * Only the host is kept (never the full referring URL), and an internal
+     * referrer counts as none - the first request of a session with a
+     * same-site referer is a returning tab, not a new traffic source.
+     */
+    private function externalReferrerHost(Request $request): ?string
+    {
+        $host = parse_url((string) $request->headers->get('referer'), PHP_URL_HOST);
+
+        return is_string($host) && $host !== $request->getHost() ? mb_substr(mb_strtolower($host), 0, 100) : null;
     }
 }

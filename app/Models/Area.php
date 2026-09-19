@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\AreaTier;
 use App\Models\Concerns\HasPage;
+use App\Observers\AreaObserver;
 use Database\Factories\AreaFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,11 +15,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['area_group_id', 'name', 'slug', 'sort_order'])]
+#[ObservedBy(AreaObserver::class)]
+#[Fillable(['area_group_id', 'tier', 'promoted_at', 'promotion_reason', 'name', 'slug', 'sort_order'])]
 class Area extends Model
 {
     /** @use HasFactory<AreaFactory> */
     use HasFactory, HasPage, SoftDeletes;
+
+    protected function casts(): array
+    {
+        return [
+            'tier' => AreaTier::class,
+            'promoted_at' => 'datetime',
+        ];
+    }
 
     public function group(): BelongsTo
     {

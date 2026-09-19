@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import './tracking';
 
 // Alpine powers the small, real interactions on otherwise server-rendered
 // public pages (mobile nav, FAQ disclosure, header scroll state) - see the

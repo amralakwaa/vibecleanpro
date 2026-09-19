@@ -85,6 +85,8 @@
 
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
     <link rel="stylesheet" href="https://fonts.bunny.net/css?family=ibm-plex-sans-arabic:400,500,600,700|readex-pro:300,400,500&display=swap">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="vcp-track" content="{{ route('public.track') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-background text-text-primary font-sans antialiased">

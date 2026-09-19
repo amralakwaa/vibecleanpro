@@ -50,7 +50,7 @@
              should keep its subject - the copy owns the right side. --}}
         <div class="absolute inset-0 -z-10 lg:start-auto lg:end-0 lg:w-[60%] lg:[mask-image:linear-gradient(to_left,transparent_0%,black_45%),linear-gradient(to_bottom,transparent_0%,black_18%)] xl:[mask-image:linear-gradient(to_left,transparent_0%,black_30%),linear-gradient(to_bottom,transparent_0%,black_18%)] lg:[mask-composite:intersect] lg:[-webkit-mask-composite:source-in]" aria-hidden="true">
             <img
-                src="{{ $image->url() }}"
+                src="{{ $image->url() }}" srcset="{{ $image->srcset() }}"
                 alt=""
                 fetchpriority="high"
                 width="{{ $image->width ?: 1600 }}"

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Services;
 
 use App\Enums\PageStatus;
 use App\Enums\PageType;
+use App\Enums\ServiceCapability;
 use App\Enums\ServicePricingMode;
 use App\Filament\Resources\Services\Pages\CreateService;
 use App\Filament\Resources\Services\Pages\EditService;
@@ -85,6 +86,15 @@ class ServiceResource extends Resource
                                         ->label('الأيقونة (اسم Heroicon)')
                                         ->placeholder('heroicon-o-sparkles'),
                                     MediaPicker::make('featured_media_id', 'الصورة الرئيسية'),
+                                    Select::make('capability_status')
+                                        ->label('هل ننفذ هذه الخدمة بفريقنا؟')
+                                        ->options(ServiceCapability::options())
+                                        ->default(ServiceCapability::NeedsConfirmation->value)
+                                        ->required()
+                                        ->native(false)
+                                        ->helperText('لا تُنشر صفحة الخدمة إلا إذا كانت "متوفرة". الخدمات التي تحتاج ترخيصًا (مثل مكافحة الحشرات) لا تُعتمد قبله.')
+                                        ->disabled(fn () => ! (auth()->user()?->can('manage_business_profile') ?? false))
+                                        ->dehydrated(),
                                     Toggle::make('is_featured')->label('خدمة مميزة'),
                                     TextInput::make('sort_order')->label('ترتيب العرض')->numeric()->default(0),
                                 ])

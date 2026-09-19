@@ -31,11 +31,16 @@ class RolePermissionSeeder extends Seeder
     private const SINGLETON_RESOURCES = ['business_profile', 'site_settings'];
 
     /**
-     * One standalone permission (not CRUD-shaped) for the sitewide SEO
-     * Dashboard - distinct from update_page, which already gates the
-     * per-page audit panel on the Page edit screen itself.
+     * Standalone (not CRUD-shaped) permissions:
+     * - view_seo_dashboard: the sitewide SEO Dashboard (update_page already
+     *   gates the per-page audit panel).
+     * - approve_media: clear a photo's privacy and mark it ready to publish.
+     * - confirm_project: the owner's confirmation that a project really
+     *   happened as described - the Publishing Gate requires it.
+     * - approve_testimonial: publish a customer review after checking it.
+     * - view_conversion_reports: the leads/conversion dashboard widgets.
      */
-    private const STANDALONE_PERMISSIONS = ['view_seo_dashboard'];
+    private const STANDALONE_PERMISSIONS = ['view_seo_dashboard', 'approve_media', 'confirm_project', 'approve_testimonial', 'view_conversion_reports'];
 
     /**
      * The editorial content resources (a subset of the two CRUD lists above)
@@ -99,6 +104,10 @@ class RolePermissionSeeder extends Seeder
             'manage_business_profile',
             'manage_site_settings',
             'view_seo_dashboard',
+            'approve_media',
+            'confirm_project',
+            'approve_testimonial',
+            'view_conversion_reports',
         ]);
 
         $seoManager = Role::findOrCreate('SEO Manager', 'web');
@@ -107,6 +116,7 @@ class RolePermissionSeeder extends Seeder
             ...$this->crud(['redirect', 'internal_link']),
             'view_any_service', 'view_any_area', 'view_any_project', 'view_any_article', 'view_any_offer', 'view_any_media',
             'view_seo_dashboard',
+            'view_conversion_reports',
         ]);
 
         $contentManager = Role::findOrCreate('Content Manager', 'web');
@@ -119,6 +129,13 @@ class RolePermissionSeeder extends Seeder
         $projectManager->syncPermissions([
             ...$this->crud(['project', 'media'], restore: true),
             'view_any_service', 'view_any_area',
+        ]);
+
+        $mediaManager = Role::findOrCreate('Media Manager', 'web');
+        $mediaManager->syncPermissions([
+            ...$this->crud(['media']),
+            'approve_media',
+            'view_any_service', 'view_any_area', 'view_any_project', 'view_any_page',
         ]);
 
         $sales = Role::findOrCreate('Sales', 'web');

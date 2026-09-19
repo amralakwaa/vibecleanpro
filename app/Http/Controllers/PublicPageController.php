@@ -240,6 +240,7 @@ class PublicPageController extends Controller
         // 'area' eager-loaded because the pull quote prints the customer's
         // area next to their name when the relation exists.
         $testimonials = $service->testimonials()
+            ->approved()
             ->with('area')
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
@@ -324,6 +325,7 @@ class PublicPageController extends Controller
             ->get();
 
         $testimonials = $area->testimonials()
+            ->approved()
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->limit(6)

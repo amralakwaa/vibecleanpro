@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Observers\SeoMetadataObserver;
 use Database\Factories\SeoMetadataFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Touches;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'robots_index', 'robots_follow', 'og_title', 'og_description', 'og_image_media_id', 'structured_data',
 ])]
 #[Touches('page')]
+#[ObservedBy(SeoMetadataObserver::class)]
 class SeoMetadata extends Model
 {
     /** @use HasFactory<SeoMetadataFactory> */

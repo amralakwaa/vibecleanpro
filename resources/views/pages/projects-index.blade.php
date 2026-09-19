@@ -84,7 +84,7 @@
                             <div class="relative">
                                 <div class="surface-atmos absolute inset-0 -translate-x-3 translate-y-3 md:-translate-x-5 md:translate-y-5 rounded-3xl -z-10" aria-hidden="true"></div>
                                 <div class="relative overflow-hidden rounded-3xl ring-1 ring-ink-950/10 shadow-xl shadow-primary-900/15 bg-white">
-                                    <img src="{{ $image->url() }}" alt="{{ $image->alt_text ?? $lead->title }}"
+                                    <img src="{{ $image->url() }}" srcset="{{ $image->srcset() }}" alt="{{ $image->alt_text ?? $lead->title }}"
                                         width="{{ $image->width ?: 1200 }}" height="{{ $image->height ?: 800 }}" fetchpriority="high"
                                         class="tile-media w-full aspect-[4/3] md:aspect-[3/2] object-cover">
                                     @if ($hasBeforeAndAfter($lead))
@@ -143,7 +143,7 @@
                                     <a href="{{ $urlResolver->urlForPage($project->page) }}"
                                         class="group relative isolate flex flex-col justify-end overflow-hidden rounded-2xl text-white shadow-sm hover:shadow-xl hover:shadow-primary-900/15 transition-shadow duration-300"
                                         style="aspect-ratio: {{ $ratio($image) }}">
-                                        <img src="{{ $image->url() }}" alt="{{ $image->alt_text ?? $project->title }}" loading="lazy"
+                                        <img src="{{ $image->url() }}" srcset="{{ $image->srcset() }}" alt="{{ $image->alt_text ?? $project->title }}" loading="lazy"
                                             width="{{ $image->width ?: 800 }}" height="{{ $image->height ?: 600 }}"
                                             class="tile-media absolute inset-0 -z-20 w-full h-full object-cover">
                                         <div class="tile-scrim absolute inset-0 -z-10" aria-hidden="true"></div>

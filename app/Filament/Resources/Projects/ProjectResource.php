@@ -35,6 +35,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -77,6 +78,16 @@ class ProjectResource extends Resource
                                     DatePicker::make('completed_at')->label('تاريخ الإنجاز'),
                                     Toggle::make('is_featured')->label('مشروع مميز'),
                                     TextInput::make('sort_order')->label('ترتيب العرض')->numeric()->default(0),
+                                ])
+                                ->columns(2),
+                            Section::make('تأكيد المالك')
+                                ->description('لا تُنشر صفحة مشروع قبل أن يؤكد المالك أن العمل نُفّذ كما هو موصوف: الخدمة، الحي، التاريخ، والصور.')
+                                ->schema([
+                                    DateTimePicker::make('owner_confirmed_at')
+                                        ->label('تاريخ تأكيد المالك')
+                                        ->helperText('فارغ = مرشّح من مكتبة الصور لم يُؤكَّد بعد.')
+                                        ->disabled(fn (): bool => ! (auth()->user()?->can('confirm_project') ?? false)),
+                                    TextInput::make('source_ref')->label('مرجع المكتبة')->disabled()->dehydrated(false),
                                 ])
                                 ->columns(2),
                             CheckboxList::make('services')
@@ -169,11 +180,13 @@ class ProjectResource extends Resource
                 TextColumn::make('media_count')->label('عدد الصور')->counts('media'),
                 TextColumn::make('completed_at')->label('تاريخ الإنجاز')->date('Y-m-d')->sortable(),
                 IconColumn::make('is_featured')->label('مميز')->boolean(),
+                IconColumn::make('owner_confirmed_at')->label('مؤكَّد')->boolean()->getStateUsing(fn (Project $record) => $record->owner_confirmed_at !== null),
                 IconColumn::make('page.id')->label('له صفحة')->boolean()->getStateUsing(fn (Project $record) => $record->page !== null),
             ])
             ->defaultSort('sort_order')
             ->filters([
                 SelectFilter::make('area_id')->label('المنطقة')->relationship('area', 'name'),
+                TernaryFilter::make('owner_confirmed_at')->label('تأكيد المالك')->nullable(),
                 TrashedFilter::make(),
             ])
             ->recordActions([

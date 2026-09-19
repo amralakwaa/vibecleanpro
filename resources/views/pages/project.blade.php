@@ -154,7 +154,7 @@
                     <figure class="reveal">
                         <div class="relative overflow-hidden rounded-3xl ring-1 ring-ink-950/10 shadow-2xl shadow-primary-900/20 bg-white">
                             <img
-                                src="{{ $heroImage->url() }}"
+                                src="{{ $heroImage->url() }}" srcset="{{ $heroImage->srcset() }}"
                                 alt="{{ $heroImage->alt_text ?? $project->title }}"
                                 fetchpriority="high"
                                 width="{{ $heroImage->width ?: 1600 }}"
@@ -206,7 +206,7 @@
                         <div @class(['grid gap-4 sm:grid-cols-2', 'lg:grid-cols-3' => $unpairedBefore->count() > 2])>
                             @foreach ($unpairedBefore as $image)
                                 <figure class="relative overflow-hidden rounded-2xl ring-1 ring-ink-950/5 bg-neutral-100">
-                                    <img src="{{ $image->url() }}" alt="{{ $image->alt_text ?? 'قبل التنفيذ - '.$project->title }}" loading="lazy"
+                                    <img src="{{ $image->url() }}" srcset="{{ $image->srcset() }}" alt="{{ $image->alt_text ?? 'قبل التنفيذ - '.$project->title }}" loading="lazy"
                                         width="{{ $image->width ?: 800 }}" height="{{ $image->height ?: 600 }}"
                                         class="w-full aspect-[4/3] object-cover">
                                     <span class="absolute top-3 start-3 inline-flex items-center rounded-full bg-ink-950/70 px-3 py-1 text-xs font-medium tracking-wide text-white backdrop-blur-sm">قبل</span>
@@ -228,7 +228,7 @@
                         <div class="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 sm:grid sm:overflow-visible sm:grid-cols-2 lg:grid-cols-3">
                             @foreach ($duringImages as $image)
                                 <figure class="relative shrink-0 w-[78vw] sm:w-auto snap-start overflow-hidden rounded-2xl ring-1 ring-ink-950/5 bg-neutral-100">
-                                    <img src="{{ $image->url() }}" alt="{{ $image->alt_text ?? 'أثناء التنفيذ - '.$project->title }}" loading="lazy"
+                                    <img src="{{ $image->url() }}" srcset="{{ $image->srcset() }}" alt="{{ $image->alt_text ?? 'أثناء التنفيذ - '.$project->title }}" loading="lazy"
                                         width="{{ $image->width ?: 800 }}" height="{{ $image->height ?: 600 }}"
                                         class="w-full aspect-[4/3] object-cover">
                                     <span class="absolute top-3 start-3 inline-flex items-center rounded-full bg-white/90 text-ink-950 px-3 py-1 text-xs font-medium tracking-wide backdrop-blur-sm">{{ $loop->iteration }} / {{ $duringImages->count() }}</span>
@@ -288,7 +288,7 @@
                         <div @class(['grid gap-4 sm:grid-cols-2', 'lg:grid-cols-3' => $unpairedAfter->count() > 2])>
                             @foreach ($unpairedAfter as $image)
                                 <figure class="relative overflow-hidden rounded-2xl ring-1 ring-ink-950/5 bg-neutral-100">
-                                    <img src="{{ $image->url() }}" alt="{{ $image->alt_text ?? 'بعد التنفيذ - '.$project->title }}" loading="lazy"
+                                    <img src="{{ $image->url() }}" srcset="{{ $image->srcset() }}" alt="{{ $image->alt_text ?? 'بعد التنفيذ - '.$project->title }}" loading="lazy"
                                         width="{{ $image->width ?: 800 }}" height="{{ $image->height ?: 600 }}"
                                         class="w-full aspect-[4/3] object-cover">
                                     <span class="absolute top-3 start-3 inline-flex items-center gap-1 rounded-full bg-primary-600 px-3 py-1 text-xs font-medium tracking-wide text-white shadow-sm">
@@ -330,7 +330,7 @@
                             @if ($cover)
                                 <a href="{{ $urlResolver->urlForPage($related->page) }}"
                                     class="group relative isolate flex flex-col justify-end overflow-hidden rounded-2xl text-white aspect-[4/3] shadow-sm hover:shadow-xl hover:shadow-primary-900/15 transition-shadow duration-300">
-                                    <img src="{{ $cover->url() }}" alt="{{ $cover->alt_text ?? $related->title }}" loading="lazy"
+                                    <img src="{{ $cover->url() }}" srcset="{{ $cover->srcset() }}" alt="{{ $cover->alt_text ?? $related->title }}" loading="lazy"
                                         width="{{ $cover->width ?: 800 }}" height="{{ $cover->height ?: 600 }}"
                                         class="tile-media absolute inset-0 -z-20 w-full h-full object-cover">
                                     <div class="tile-scrim absolute inset-0 -z-10" aria-hidden="true"></div>

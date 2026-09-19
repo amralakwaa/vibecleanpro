@@ -35,7 +35,7 @@
         <div class="grid grid-cols-2 gap-0.5 bg-white">
             <div class="relative bg-neutral-100">
                 <img
-                    src="{{ $before->url() }}"
+                    src="{{ $before->url() }}" srcset="{{ $before->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                     alt="{{ $before->alt_text ?? 'قبل التنفيذ - '.$project->title }}"
                     loading="lazy"
                     width="{{ $before->width ?: 800 }}"
@@ -47,7 +47,7 @@
 
             <div class="relative bg-neutral-100">
                 <img
-                    src="{{ $after->url() }}"
+                    src="{{ $after->url() }}" srcset="{{ $after->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                     alt="{{ $after->alt_text ?? 'بعد التنفيذ - '.$project->title }}"
                     loading="lazy"
                     width="{{ $after->width ?: 800 }}"

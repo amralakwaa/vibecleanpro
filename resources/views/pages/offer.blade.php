@@ -143,7 +143,7 @@
                             'ring-1 ring-ink-950/10 bg-white' => $isExpired,
                         ])>
                             <img
-                                src="{{ $image->url() }}"
+                                src="{{ $image->url() }}" srcset="{{ $image->srcset() }}"
                                 alt="{{ $image->alt_text ?? $page->title }}"
                                 fetchpriority="high"
                                 width="{{ $image->width ?: 1200 }}"

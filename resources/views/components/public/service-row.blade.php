@@ -21,7 +21,7 @@
     @if ($service->featuredMedia)
         <div @class(['md:order-2' => $flip])>
             <img
-                src="{{ $service->featuredMedia->url() }}"
+                src="{{ $service->featuredMedia->url() }}" srcset="{{ $service->featuredMedia->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                 alt="{{ $service->featuredMedia->alt_text ?? $service->name }}"
                 loading="lazy"
                 width="900"

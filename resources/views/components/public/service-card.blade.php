@@ -11,7 +11,7 @@
 <x-public.card :padded="false" class="relative overflow-hidden flex flex-col h-full border-neutral-200/80">
     <div class="aspect-[4/3] bg-neutral-100 overflow-hidden">
         @if ($service->featuredMedia)
-            <img src="{{ $service->featuredMedia->url() }}" alt="{{ $service->featuredMedia->alt_text }}"
+            <img src="{{ $service->featuredMedia->url() }}" srcset="{{ $service->featuredMedia->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $service->featuredMedia->alt_text }}"
                 loading="lazy" class="w-full h-full object-cover" width="480" height="360">
         @else
             <div class="w-full h-full flex items-center justify-center text-primary-300">

@@ -2,10 +2,14 @@
 
 namespace App\Seo;
 
+use App\Enums\AreaTier;
+use App\Enums\MediaType;
 use App\Enums\PageType;
+use App\Enums\ServiceCapability;
 use App\Models\Area;
 use App\Models\Article;
 use App\Models\BusinessProfile;
+use App\Models\Media;
 use App\Models\Offer;
 use App\Models\Page;
 use App\Models\Project;
@@ -52,6 +56,10 @@ class PublishingGate
             $this->checkMetaDescription($page),
             $this->checkFeaturedImage($page),
             $this->checkImageAltText($page),
+            $this->checkMediaPublishable($page),
+            $this->checkServiceCapability($page),
+            $this->checkAreaTier($page),
+            $this->checkProjectConfirmed($page),
             $this->checkInternalLinks($page),
             $this->checkRelatedContent($page),
             $this->checkCallToAction($page),
@@ -229,6 +237,104 @@ class PublishingGate
         return blank($media->alt_text)
             ? $this->warning('image_alt', 'الصورة الرئيسية بلا نص بديل (Alt Text).')
             : $this->pass('image_alt', 'الصورة الرئيسية تحتوي نصًا بديلًا.');
+    }
+
+    /**
+     * Every image the page would show must have passed privacy and
+     * verification review, and the page's own main image can never be a
+     * placeholder. A held (private) photo reaching a public page is exactly
+     * the failure this system exists to prevent, so this is an ERROR.
+     */
+    private function checkMediaPublishable(Page $page): ?SeoCheckResult
+    {
+        $ids = $this->referencedMediaIds($page);
+
+        if ($ids === []) {
+            return null;
+        }
+
+        $media = Media::query()->whereIn('id', $ids)->get(['id', 'status', 'media_type', 'original_filename']);
+        $blocked = $media->reject(fn (Media $item) => $item->status?->isPublishable());
+        $featuredId = $page->pageable?->featured_media_id ?? null;
+        $placeholderHero = $featuredId && $media->firstWhere('id', $featuredId)?->media_type === MediaType::Placeholder;
+
+        if ($placeholderHero) {
+            return $this->error('media_publishable', 'الصورة الرئيسية للصفحة صورة مؤقتة (Placeholder) - استبدلها بصورة حقيقية معتمدة قبل النشر.');
+        }
+
+        return $blocked->isNotEmpty()
+            ? $this->error('media_publishable', sprintf('الصفحة تستخدم %d صورة غير معتمدة للنشر (بانتظار المراجعة أو محجوبة للخصوصية): %s.', $blocked->count(), $blocked->pluck('original_filename')->take(3)->implode('، ')))
+            : $this->pass('media_publishable', 'كل صور الصفحة معتمدة للنشر.');
+    }
+
+    private function checkServiceCapability(Page $page): ?SeoCheckResult
+    {
+        $service = $page->pageable;
+
+        if (! $service instanceof Service || $service->capability_status === null) {
+            return null;
+        }
+
+        return $service->capability_status === ServiceCapability::Available
+            ? $this->pass('service_capability', 'الخدمة مؤكدة: ننفذها بفريقنا.')
+            : $this->error('service_capability', "لا يمكن نشر خدمة حالتها \"{$service->capability_status->label()}\" - نشر صفحة لخدمة لا نقدمها ادعاء غير صحيح. أكّد القدرة (والترخيص إن لزم) أولًا.");
+    }
+
+    private function checkAreaTier(Page $page): ?SeoCheckResult
+    {
+        $area = $page->pageable;
+
+        if (! $area instanceof Area || $area->tier === null) {
+            return null;
+        }
+
+        return match (true) {
+            $area->tier === AreaTier::C => $this->error('area_tier', 'حي من الطبقة C سجل فقط - لا تُنشر له صفحة. رقِّه إلى B أو A أولًا.'),
+            $area->tier === AreaTier::B && $page->seoMetadata?->robots_index !== false => $this->error('area_tier', 'صفحة حي من الطبقة B يجب أن تكون noindex - صفحات التغطية لا تدخل فهرس Google (منع صفحات Doorway).'),
+            default => $this->pass('area_tier', "طبقة الحي: {$area->tier->label()}."),
+        };
+    }
+
+    /**
+     * A project page presents work as done for a real client. Until the
+     * owner confirms the site, date and permission to publish, it is a
+     * candidate from the photo library - not a project.
+     */
+    private function checkProjectConfirmed(Page $page): ?SeoCheckResult
+    {
+        $project = $page->pageable;
+
+        if (! $project instanceof Project) {
+            return null;
+        }
+
+        return $project->owner_confirmed_at
+            ? $this->pass('project_confirmed', 'المالك أكّد تفاصيل المشروع وإذن نشره.')
+            : $this->error('project_confirmed', 'لا يُنشر مشروع قبل تأكيد المالك (نفس الموقع · التاريخ · إذن النشر). سجّل تاريخ التأكيد أولًا.');
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function referencedMediaIds(Page $page): array
+    {
+        $entity = $page->pageable;
+
+        $ids = [
+            $entity?->featured_media_id ?? null,
+            $page->seoMetadata?->og_image_media_id,
+        ];
+
+        if ($entity instanceof Project) {
+            $ids = [...$ids, ...$entity->media()->pluck('media.id')->all()];
+        }
+
+        foreach ($page->contentBlocks as $block) {
+            $data = is_array($block->data) ? $block->data : [];
+            $ids = [...$ids, $data['background_media_id'] ?? null, $data['media_id'] ?? null, ...array_values((array) ($data['media_ids'] ?? []))];
+        }
+
+        return array_values(array_unique(array_map('intval', array_filter($ids, fn ($id) => is_numeric($id)))));
     }
 
     private function checkInternalLinks(Page $page): SeoCheckResult

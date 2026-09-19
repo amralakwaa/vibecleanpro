@@ -164,7 +164,7 @@
                                 @if ($cover)
                                     <a href="{{ $urlResolver->urlForPage($project->page) }}"
                                         class="group relative isolate flex flex-col justify-end overflow-hidden rounded-2xl text-white aspect-[4/3] shadow-sm hover:shadow-xl hover:shadow-primary-900/15 transition-shadow duration-300">
-                                        <img src="{{ $cover->url() }}" alt="{{ $cover->alt_text ?? $project->title }}" loading="lazy"
+                                        <img src="{{ $cover->url() }}" srcset="{{ $cover->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $cover->alt_text ?? $project->title }}" loading="lazy"
                                             width="{{ $cover->width ?: 800 }}" height="{{ $cover->height ?: 600 }}"
                                             class="tile-media absolute inset-0 -z-20 w-full h-full object-cover">
                                         <div class="tile-scrim absolute inset-0 -z-10" aria-hidden="true"></div>
@@ -238,7 +238,7 @@
                                             class="group flex items-stretch overflow-hidden rounded-2xl bg-white ring-1 ring-ink-950/5 shadow-sm min-h-20 transition-[box-shadow,ring-color] hover:shadow-md hover:ring-primary-200">
                                             @if ($service->featuredMedia)
                                                 <span class="relative w-24 sm:w-28 shrink-0 overflow-hidden">
-                                                    <img src="{{ $service->featuredMedia->url() }}" alt="{{ $service->featuredMedia->alt_text ?? $service->name }}" loading="lazy"
+                                                    <img src="{{ $service->featuredMedia->url() }}" srcset="{{ $service->featuredMedia->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $service->featuredMedia->alt_text ?? $service->name }}" loading="lazy"
                                                         width="{{ $service->featuredMedia->width ?: 800 }}" height="{{ $service->featuredMedia->height ?: 600 }}"
                                                         class="tile-media absolute inset-0 w-full h-full object-cover">
                                                 </span>

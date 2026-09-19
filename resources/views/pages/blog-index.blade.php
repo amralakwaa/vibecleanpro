@@ -58,7 +58,7 @@
                             <div class="relative">
                                 <div class="surface-atmos absolute inset-0 -translate-x-3 translate-y-3 md:-translate-x-5 md:translate-y-5 rounded-3xl -z-10" aria-hidden="true"></div>
                                 <div class="relative overflow-hidden rounded-3xl ring-1 ring-ink-950/10 shadow-xl shadow-primary-900/15 bg-white">
-                                    <img src="{{ $featured->featuredMedia->url() }}" alt="{{ $featured->featuredMedia->alt_text ?? $featured->title }}"
+                                    <img src="{{ $featured->featuredMedia->url() }}" srcset="{{ $featured->featuredMedia->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $featured->featuredMedia->alt_text ?? $featured->title }}"
                                         width="{{ $featured->featuredMedia->width ?: 1200 }}" height="{{ $featured->featuredMedia->height ?: 675 }}" fetchpriority="high"
                                         class="tile-media w-full aspect-[16/9] object-cover">
                                 </div>
@@ -104,7 +104,7 @@
                                 ])>
                                     @if ($article->featuredMedia)
                                         <span class="block overflow-hidden rounded-2xl ring-1 ring-ink-950/5">
-                                            <img src="{{ $article->featuredMedia->url() }}" alt="{{ $article->featuredMedia->alt_text ?? $article->title }}" loading="lazy"
+                                            <img src="{{ $article->featuredMedia->url() }}" srcset="{{ $article->featuredMedia->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $article->featuredMedia->alt_text ?? $article->title }}" loading="lazy"
                                                 width="{{ $article->featuredMedia->width ?: 520 }}" height="{{ $article->featuredMedia->height ?: 390 }}"
                                                 class="tile-media w-full aspect-[4/3] object-cover">
                                         </span>
