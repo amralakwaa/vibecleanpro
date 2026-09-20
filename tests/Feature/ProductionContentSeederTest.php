@@ -35,14 +35,14 @@ class ProductionContentSeederTest extends TestCase
     {
         $this->seed(ProductionContentSeeder::class);
 
-        $this->assertSame(17, Service::query()->count());
+        $this->assertSame(18, Service::query()->count());
         $this->assertSame(86, Area::query()->count());
         $this->assertSame(47, Project::query()->count());
         $this->assertSame(0, Page::query()->where('status', '!=', PageStatus::Draft->value)->count());
         $this->assertSame(0, Project::query()->whereNotNull('owner_confirmed_at')->count());
         // The owner confirmed on 2026-09-20 that the company can perform
         // every listed service, so none ships awaiting confirmation.
-        $this->assertSame(17, Service::query()->where('capability_status', ServiceCapability::Available->value)->count());
+        $this->assertSame(18, Service::query()->where('capability_status', ServiceCapability::Available->value)->count());
         $this->assertTrue(Page::query()->where('slug', 'privacy')->exists());
     }
 

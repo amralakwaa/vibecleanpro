@@ -12,7 +12,7 @@ use App\Models\Service;
 use Illuminate\Database\Seeder;
 
 /**
- * Wave 1 service content from database/seeders/content/wave1-services*.php.
+ * Wave service content from database/seeders/content/wave*-services*.php.
  *
  * Two modes:
  *  - page:   fills a service page that has no content yet. Skipped once an
@@ -34,7 +34,7 @@ class ServiceContentSeeder extends Seeder
         // Several files may carry definitions for the same slug (a page in
         // one batch, extra sections in a later one), so they are collected
         // per slug and applied in file order rather than overwriting.
-        foreach (glob(database_path('seeders/content/wave1-services*.php')) as $file) {
+        foreach (glob(database_path('seeders/content/wave*-services*.php')) as $file) {
             foreach (require $file as $slug => $definition) {
                 $content[$slug][] = $definition;
             }

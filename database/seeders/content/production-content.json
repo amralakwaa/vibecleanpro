@@ -1508,6 +1508,28 @@
                 "shop-cleaning",
                 "facade-cleaning"
             ]
+        },
+        {
+            "slug": "courtyard-cleaning",
+            "name": "تنظيف الأحواش والممرات الخارجية",
+            "category": "residential",
+            "capability": "available",
+            "sort_order": 18,
+            "is_featured": false,
+            "page": {
+                "title": "تنظيف الأحواش والممرات الخارجية بالرياض",
+                "meta_title": "تنظيف أحواش وانترلوك بالرياض — ممرات ومداخل | فايب كلين برو",
+                "meta_description": "تنظيف الأحواش والممرات والمداخل الخارجية بالرياض: الانترلوك والبلاط والأسوار وآثار الرمل والزيوت، بعرض سعر مكتوب قبل التنفيذ."
+            },
+            "short_description": "تنظيف الأحواش والممرات والمداخل الخارجية بالرياض: الانترلوك والبلاط والأسوار، وإزالة الرمل وآثار الزيوت.",
+            "featured_media_file": null,
+            "blocks": [],
+            "faqs": [],
+            "links": [
+                "villa-cleaning",
+                "home-cleaning",
+                "facade-cleaning"
+            ]
         }
     ],
     "area_groups": [

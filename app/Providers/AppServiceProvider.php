@@ -38,6 +38,7 @@ use App\Policies\TeamMemberPolicy;
 use App\Policies\TestimonialPolicy;
 use App\Policies\UserPolicy;
 use App\Seo\DuplicateSimilarityAnalyzer;
+use App\Support\Content\PublishedLinkFilter;
 use App\Support\Mail\MailSettings;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
@@ -83,6 +84,10 @@ class AppServiceProvider extends ServiceProvider
         // so without a shared instance the O(n^2) scan would re-run once
         // per page in the same request.
         $this->app->singleton(DuplicateSimilarityAnalyzer::class);
+
+        // Same reason: a page renders many rich-text blocks, and each one
+        // would otherwise re-query the list of published pages.
+        $this->app->scoped(PublishedLinkFilter::class);
     }
 
     /**

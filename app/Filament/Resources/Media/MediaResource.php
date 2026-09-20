@@ -109,6 +109,10 @@ class MediaResource extends Resource
                         ->label('نوع الصورة')
                         ->options(MediaType::options())
                         ->default(MediaType::Real->value)
+                        ->live()
+                        ->helperText(fn (?string $state): string => $state
+                            ? (MediaType::tryFrom($state)?->usageNote() ?? '')
+                            : 'التصنيف يحدد أين يُسمح باستخدام الصورة.')
                         ->required(),
                     Select::make('captured_stage')
                         ->label('مرحلة التصوير')

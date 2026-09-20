@@ -1,8 +1,8 @@
 {
     "version": 1,
     "decided_by": "owner",
-    "decided_at": "2026-09-19",
-    "notes": "Owner-approved launch decisions. The site:launch command applies only what is listed here, and every publish goes through the Publishing Gate. Run the content seeders (media import, ProductionContentSeeder, ArticleContentSeeder) first.",
+    "decided_at": "2026-09-20",
+    "notes": "Owner-approved launch decisions. The site:launch command applies only what is listed here, and every publish goes through the Publishing Gate. Run the content seeders (media import, ProductionContentSeeder, ArticleContentSeeder, ServiceContentSeeder) and `php artisan media:service-covers` first. Owner decided on 2026-09-20 that every service in the catalogue is one the company can actually perform, so all 18 publish: a missing photo or a secondary operational detail is never a reason to hold a page at Review. Pools, pest control and periodic contracts moved from Review to Published under that decision; anything an owner may want to change later (scope wording, contract terms) is editable from the panel.",
     "confirm_projects": {
         "decision": "Owner confirmed in chat on 2026-09-19 that all 47 library project groups are the company's own work. No district, date or results were confirmed.",
         "source_refs": [
@@ -107,7 +107,15 @@
             "water-tank-cleaning",
             "disinfection",
             "sofa-cleaning",
-            "carpet-cleaning"
+            "carpet-cleaning",
+            "apartment-cleaning",
+            "majlis-cleaning",
+            "shop-cleaning",
+            "marble-polishing",
+            "courtyard-cleaning",
+            "pool-cleaning",
+            "pest-control",
+            "cleaning-contracts"
         ],
         "articles": [
             "cleaning-prices-riyadh",

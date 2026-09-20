@@ -3,7 +3,6 @@
 namespace App\Seo;
 
 use App\Enums\AreaTier;
-use App\Enums\MediaType;
 use App\Enums\PageType;
 use App\Enums\ServiceCapability;
 use App\Models\Area;
@@ -273,10 +272,26 @@ class PublishingGate
         $media = Media::query()->whereIn('id', $ids)->get(['id', 'status', 'media_type', 'original_filename']);
         $blocked = $media->reject(fn (Media $item) => $item->status?->isPublishable());
         $featuredId = $page->pageable?->featured_media_id ?? null;
-        $placeholderHero = $featuredId && $media->firstWhere('id', $featuredId)?->media_type === MediaType::Placeholder;
+        $hero = $featuredId ? $media->firstWhere('id', $featuredId) : null;
 
-        if ($placeholderHero) {
-            return $this->error('media_publishable', 'الصورة الرئيسية للصفحة صورة مؤقتة (Placeholder) - استبدلها بصورة حقيقية معتمدة قبل النشر.');
+        if ($hero?->media_type?->canCoverAService() === false) {
+            return $this->error('media_publishable', 'الصورة الرئيسية للصفحة صورة مؤقتة (Placeholder) - استبدلها بصورة معتمدة قبل النشر.');
+        }
+
+        // A brand cover may carry a service page, and nothing else: inside
+        // the body it would read as a photograph of work we did.
+        $misplaced = $media->filter(
+            fn (Media $item) => $item->media_type?->canAppearInBody() === false
+                && $item->media_type?->isPublishable() === true
+                && $item->id !== $featuredId
+        );
+
+        if ($misplaced->isNotEmpty()) {
+            return $this->error('media_publishable', sprintf(
+                'الصفحة تعرض %d غلافًا مصمَّمًا داخل محتواها (%s) - الغلاف يصلح كصورة رئيسية للخدمة فقط، لا داخل المعارض أو المحتوى.',
+                $misplaced->count(),
+                $misplaced->pluck('original_filename')->take(3)->implode('، '),
+            ));
         }
 
         return $blocked->isNotEmpty()

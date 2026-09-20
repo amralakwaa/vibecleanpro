@@ -187,9 +187,14 @@
                  (a hand-written, Arabic-tuned set - NOT the Tailwind
                  typography plugin, which is not installed). `prose-reading`
                  steps the body up a size for a page whose job is reading. --}}
+            {{-- PublishedLinkFilter unwraps any link to a page that is not
+                 published, so body copy written ahead of a page going live
+                 (or after one is pulled back to Review) never leaves a
+                 visitor on an internal 404. The text stays; the link
+                 returns by itself once the target publishes. --}}
             <x-public.section :width="$width">
                 <div @class(['prose', 'prose-reading' => $width === 'narrow'])>
-                    {!! $block->data['content'] ?? '' !!}
+                    {!! app(\App\Support\Content\PublishedLinkFilter::class)->filter($block->data['content'] ?? '') !!}
                 </div>
             </x-public.section>
             @break

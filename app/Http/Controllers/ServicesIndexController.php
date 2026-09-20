@@ -31,7 +31,10 @@ class ServicesIndexController extends Controller
             ->with(['featuredMedia', 'page', 'category'])
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
-            ->paginate(12)
+            // The catalogue is 18 services and grows slowly; one page keeps
+            // every service one click from the hub. Pagination stays wired
+            // up for the day the list outgrows a single screen.
+            ->paginate(24)
             ->withQueryString();
 
         $canonicalPath = '/services'.($services->currentPage() > 1 ? '?page='.$services->currentPage() : '');

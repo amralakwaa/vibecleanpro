@@ -82,7 +82,13 @@ class Media extends Model
      */
     public function scopeExcludingLibraryStock(Builder $query): void
     {
-        $query->where('path', 'not like', self::LIBRARY_DIRECTORY.'/%');
+        $nonEvidence = collect(MediaType::cases())
+            ->reject(fn (MediaType $type) => $type->isEvidence())
+            ->map(fn (MediaType $type) => $type->value)
+            ->all();
+
+        $query->where('path', 'not like', self::LIBRARY_DIRECTORY.'/%')
+            ->where(fn (Builder $inner) => $inner->whereNull('media_type')->orWhereNotIn('media_type', $nonEvidence));
     }
 
     /**
@@ -102,7 +108,7 @@ class Media extends Model
             $this->media_type === MediaType::Placeholder => 'الصورة المؤقتة (Placeholder) لا تكون جاهزة للنشر أبدًا.',
             $this->privacy_status !== MediaPrivacyStatus::Cleared => 'لا يمكن اعتماد صورة قبل مراجعة خصوصيتها (حالة الخصوصية يجب أن تكون: مُراجَع — لا مانع).',
             blank($this->alt_text) => 'أضف النص البديل (Alt) قبل اعتماد الصورة.',
-            $this->media_type === MediaType::Real && blank($this->verified_description) => 'أضف الوصف الموثّق لما تُظهره الصورة فعلًا قبل اعتمادها.',
+            in_array($this->media_type, [MediaType::Real, MediaType::Illustration], true) && blank($this->verified_description) => 'أضف الوصف الموثّق لما تُظهره الصورة فعلًا قبل اعتمادها.',
             default => null,
         };
     }
