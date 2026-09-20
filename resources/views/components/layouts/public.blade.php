@@ -44,14 +44,18 @@
     // and "terms". Each link appears only once that page is actually
     // published, so the footer never points at a draft (404). The footer
     // omits the row entirely while both are drafts.
-    $legalPageTitles = ['privacy' => 'سياسة الخصوصية', 'terms' => 'الشروط والأحكام'];
-    $legalLinks = \App\Models\Page::query()
-        ->where('type', \App\Enums\PageType::Legal)
-        ->whereIn('slug', array_keys($legalPageTitles))
-        ->published()
-        ->get()
-        ->sortBy(fn ($page) => array_search($page->slug, array_keys($legalPageTitles)))
-        ->mapWithKeys(fn ($page) => [$legalPageTitles[$page->slug] => app(\App\Seo\UrlResolver::class)->urlForPage($page)])
+    // Slug AND type must both match: a Trust page sitting at the slug
+    // "privacy" is not the privacy policy, and must never be linked as one.
+    $legalPageTitles = [
+        'warranty' => ['title' => 'الضمان وشروط الخدمة', 'type' => \App\Enums\PageType::Trust],
+        'privacy' => ['title' => 'سياسة الخصوصية', 'type' => \App\Enums\PageType::Legal],
+        'terms' => ['title' => 'الشروط والأحكام', 'type' => \App\Enums\PageType::Legal],
+    ];
+    $legalLinks = collect($legalPageTitles)
+        ->map(fn (array $meta, string $slug) => \App\Models\Page::query()
+            ->where('slug', $slug)->where('type', $meta['type'])->published()->first())
+        ->filter()
+        ->mapWithKeys(fn ($page) => [$legalPageTitles[$page->slug]['title'] => app(\App\Seo\UrlResolver::class)->urlForPage($page)])
         ->all();
 @endphp
 <!DOCTYPE html>

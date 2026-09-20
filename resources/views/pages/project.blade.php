@@ -184,6 +184,62 @@
         <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" />
     </div>
 
+    {{-- ===== 2b. The case study: the problem, the site as we found it,
+             what we did, and what changed. Every part is optional and
+             renders only when the owner has written it - an empty field is
+             silence, never a placeholder or an invented claim. ===== --}}
+    @if ($project->hasCaseStudy())
+        <section class="bg-white" aria-labelledby="project-case-study">
+            <x-public.container width="narrow" class="py-12 md:py-16">
+                <h2 id="project-case-study" class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950">تفاصيل التنفيذ</h2>
+
+                <div class="mt-6 space-y-8">
+                    @if (filled($project->challenge))
+                        <div class="reveal">
+                            <h3 class="font-display text-lg font-medium text-ink-950">المشكلة</h3>
+                            <p class="mt-2 text-neutral-600 leading-relaxed">{{ $project->challenge }}</p>
+                        </div>
+                    @endif
+
+                    @if (filled($project->site_condition))
+                        <div class="reveal">
+                            <h3 class="font-display text-lg font-medium text-ink-950">حالة الموقع قبل التنفيذ</h3>
+                            <p class="mt-2 text-neutral-600 leading-relaxed">{{ $project->site_condition }}</p>
+                        </div>
+                    @endif
+
+                    @if (filled($project->execution_steps))
+                        <div class="reveal">
+                            <h3 class="font-display text-lg font-medium text-ink-950">خطوات التنفيذ</h3>
+                            <ol class="mt-3 space-y-3">
+                                @foreach ($project->execution_steps as $index => $step)
+                                    @if (filled($step['title'] ?? null))
+                                        <li class="flex gap-3">
+                                            <span class="flex items-center justify-center w-7 h-7 shrink-0 rounded-full bg-primary-50 font-display text-sm font-medium text-primary-700 tabular-nums">{{ $index + 1 }}</span>
+                                            <span>
+                                                <span class="block font-medium text-ink-950">{{ $step['title'] }}</span>
+                                                @if (filled($step['description'] ?? null))
+                                                    <span class="mt-1 block text-neutral-600 leading-relaxed">{{ $step['description'] }}</span>
+                                                @endif
+                                            </span>
+                                        </li>
+                                    @endif
+                                @endforeach
+                            </ol>
+                        </div>
+                    @endif
+
+                    @if (filled($project->outcome))
+                        <div class="surface-tint rounded-2xl ring-1 ring-primary-200/60 p-5 md:p-6 reveal">
+                            <h3 class="font-display text-lg font-medium text-ink-950">النتيجة</h3>
+                            <p class="mt-2 text-neutral-700 leading-relaxed">{{ $project->outcome }}</p>
+                        </div>
+                    @endif
+                </div>
+            </x-public.container>
+        </section>
+    @endif
+
     {{-- ===== 3-6. The evidence chapter: one continuous section, three
              movements. Pairs are the centrepiece; leftover befores and
              afters are shown honestly under their own stage; "during"

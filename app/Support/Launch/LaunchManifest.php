@@ -25,6 +25,8 @@ final readonly class LaunchManifest
         public array $publishArticles,
         public array $publishProjectRefs,
         public ?string $homepageHeroMediaFile,
+        /** Standalone CMS pages (about / trust / legal / landing), by slug. */
+        public array $publishPages = [],
     ) {}
 
     public static function defaultPath(): string
@@ -77,6 +79,7 @@ final readonly class LaunchManifest
             publishArticles: $list($data['publish']['articles'] ?? [], 'publish.articles'),
             publishProjectRefs: $list($data['publish']['projects'] ?? [], 'publish.projects'),
             homepageHeroMediaFile: $hero,
+            publishPages: $list($data['publish']['pages'] ?? [], 'publish.pages'),
         );
     }
 }

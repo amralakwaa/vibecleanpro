@@ -100,9 +100,13 @@ class LaunchSiteCommandTest extends TestCase
         $manifest = LaunchManifest::load();
 
         $this->assertCount(47, $manifest->confirmProjectRefs);
-        $this->assertCount(4, $manifest->publishServices);
+        // Wave 1 published 10 service pages (batch 1: home; batch 2: AC,
+        // tanks, disinfection, sofa, carpet); the warranty page publishes
+        // through the same manifest as a standalone page.
+        $this->assertCount(10, $manifest->publishServices);
+        $this->assertSame(['warranty', 'terms', 'privacy', 'about'], $manifest->publishPages);
         $this->assertCount(10, $manifest->publishArticles);
-        $this->assertCount(4, $manifest->publishProjectRefs);
+        $this->assertCount(7, $manifest->publishProjectRefs);
         $this->assertCount(10, $manifest->articleServices);
         $this->assertEmpty(array_diff($manifest->publishProjectRefs, $manifest->confirmProjectRefs));
         $this->assertNull($manifest->homepageHeroMediaFile);

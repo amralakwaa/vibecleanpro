@@ -287,6 +287,8 @@
     @endif
 
     {{-- ===== 7. Anything else the editor added, then FAQs ===== --}}
+    <x-public.trust-strip :business-profile="$profile" />
+
     <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" width="narrow" />
     <x-public.blocks :blocks="$page->contentBlocks" :only="['faq']" :faqs="$faqs" width="narrow" />
 

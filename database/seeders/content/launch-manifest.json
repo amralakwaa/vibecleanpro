@@ -6,49 +6,139 @@
     "confirm_projects": {
         "decision": "Owner confirmed in chat on 2026-09-19 that all 47 library project groups are the company's own work. No district, date or results were confirmed.",
         "source_refs": [
-            "CAND-20260507-EXTERIOR-B", "CAND-20260507-LUXURY-INTERIOR", "CAND-20260507-MODERN-VILLA", "CAND-20260507-VILLA-A",
-            "CAND-20260516-COMMERCIAL", "CAND-20260523-BLUE-FACADE-01", "CAND-20260523-CORRIDOR-01", "CAND-20260523-EXTERIOR-A",
-            "CAND-20260523-FACADE-01", "CAND-20260523-FACADE-B", "CAND-20260523-GLASS-EXTERIOR-01", "CAND-20260523-GLASS-INTERIOR-01",
-            "CAND-20260523-MALL-01", "CAND-20260523-PARKING-01", "CAND-20260614-CHANDELIER-01", "CAND-20260614-FACADE-D",
-            "CAND-20260614-FLOOR-D", "CAND-20260614-HALL-F", "CAND-20260614-INSTITUTIONAL-C", "CAND-20260614-KITCHEN-E",
-            "CAND-20260614-OFFICE-01", "CAND-20260614-OFFICE-C", "CAND-20260614-OFFICE-E", "CAND-20260614-OFFICE-G",
-            "CAND-20260614-POSTCON-B", "CAND-20260614-VILLA-01", "CAND-20260614-VILLA-A", "CAND-20260723-INTERIOR",
-            "CAND-20260726-SITE", "CAND-20260729-FACADE-A", "CAND-20260730-FACADE-B", "CAND-20260730-INDUSTRIAL-C",
-            "CAND-20260730-PAVERS-D", "CAND-20260731-COMMERCIAL", "CAND-20260801-FACADE-B", "CAND-20260801-INSTITUTIONAL",
-            "CAND-20260801-OFFICE", "CAND-20260801-VILLA-A", "CAND-20260801-VILLA-C", "CAND-20260821-GLASS-A",
-            "CAND-20260822-INTERIOR", "CAND-20260823-INTERIOR", "CAND-20260909-OFFICE-A", "CAND-20260916-VILLA-B",
-            "PRJ-CAND-20260305-01", "PRJ-CAND-20260313-01", "PRJ-CAND-20260507-01"
+            "CAND-20260507-EXTERIOR-B",
+            "CAND-20260507-LUXURY-INTERIOR",
+            "CAND-20260507-MODERN-VILLA",
+            "CAND-20260507-VILLA-A",
+            "CAND-20260516-COMMERCIAL",
+            "CAND-20260523-BLUE-FACADE-01",
+            "CAND-20260523-CORRIDOR-01",
+            "CAND-20260523-EXTERIOR-A",
+            "CAND-20260523-FACADE-01",
+            "CAND-20260523-FACADE-B",
+            "CAND-20260523-GLASS-EXTERIOR-01",
+            "CAND-20260523-GLASS-INTERIOR-01",
+            "CAND-20260523-MALL-01",
+            "CAND-20260523-PARKING-01",
+            "CAND-20260614-CHANDELIER-01",
+            "CAND-20260614-FACADE-D",
+            "CAND-20260614-FLOOR-D",
+            "CAND-20260614-HALL-F",
+            "CAND-20260614-INSTITUTIONAL-C",
+            "CAND-20260614-KITCHEN-E",
+            "CAND-20260614-OFFICE-01",
+            "CAND-20260614-OFFICE-C",
+            "CAND-20260614-OFFICE-E",
+            "CAND-20260614-OFFICE-G",
+            "CAND-20260614-POSTCON-B",
+            "CAND-20260614-VILLA-01",
+            "CAND-20260614-VILLA-A",
+            "CAND-20260723-INTERIOR",
+            "CAND-20260726-SITE",
+            "CAND-20260729-FACADE-A",
+            "CAND-20260730-FACADE-B",
+            "CAND-20260730-INDUSTRIAL-C",
+            "CAND-20260730-PAVERS-D",
+            "CAND-20260731-COMMERCIAL",
+            "CAND-20260801-FACADE-B",
+            "CAND-20260801-INSTITUTIONAL",
+            "CAND-20260801-OFFICE",
+            "CAND-20260801-VILLA-A",
+            "CAND-20260801-VILLA-C",
+            "CAND-20260821-GLASS-A",
+            "CAND-20260822-INTERIOR",
+            "CAND-20260823-INTERIOR",
+            "CAND-20260909-OFFICE-A",
+            "CAND-20260916-VILLA-B",
+            "PRJ-CAND-20260305-01",
+            "PRJ-CAND-20260313-01",
+            "PRJ-CAND-20260507-01"
         ]
     },
     "article_services": {
-        "cleaning-prices-riyadh": ["facade-cleaning", "office-cleaning", "post-construction-cleaning", "villa-cleaning"],
-        "courtyard-interlock-cleaning": ["villa-cleaning"],
-        "facade-access-rope-lift-scaffold": ["facade-cleaning"],
-        "facade-cleaning-cost-riyadh": ["facade-cleaning"],
-        "how-to-choose-cleaning-company-riyadh": ["office-cleaning", "villa-cleaning"],
-        "office-cleaning-scope-of-work": ["office-cleaning"],
-        "post-construction-handover-checklist": ["post-construction-cleaning"],
-        "streak-free-glass-cleaning-riyadh": ["facade-cleaning"],
-        "villa-cleaning-checklist": ["villa-cleaning"],
-        "villa-cleaning-cost-riyadh": ["villa-cleaning"]
+        "cleaning-prices-riyadh": [
+            "ac-cleaning",
+            "carpet-cleaning",
+            "facade-cleaning",
+            "office-cleaning",
+            "post-construction-cleaning",
+            "sofa-cleaning",
+            "villa-cleaning",
+            "water-tank-cleaning"
+        ],
+        "courtyard-interlock-cleaning": [
+            "villa-cleaning"
+        ],
+        "facade-access-rope-lift-scaffold": [
+            "facade-cleaning"
+        ],
+        "facade-cleaning-cost-riyadh": [
+            "facade-cleaning"
+        ],
+        "how-to-choose-cleaning-company-riyadh": [
+            "disinfection",
+            "office-cleaning",
+            "villa-cleaning"
+        ],
+        "office-cleaning-scope-of-work": [
+            "office-cleaning"
+        ],
+        "post-construction-handover-checklist": [
+            "post-construction-cleaning"
+        ],
+        "streak-free-glass-cleaning-riyadh": [
+            "facade-cleaning"
+        ],
+        "villa-cleaning-checklist": [
+            "villa-cleaning"
+        ],
+        "villa-cleaning-cost-riyadh": [
+            "villa-cleaning"
+        ]
     },
     "publish": {
-        "services": ["villa-cleaning", "office-cleaning", "facade-cleaning", "post-construction-cleaning"],
+        "services": [
+            "villa-cleaning",
+            "office-cleaning",
+            "facade-cleaning",
+            "post-construction-cleaning",
+            "home-cleaning",
+            "ac-cleaning",
+            "water-tank-cleaning",
+            "disinfection",
+            "sofa-cleaning",
+            "carpet-cleaning"
+        ],
         "articles": [
-            "cleaning-prices-riyadh", "how-to-choose-cleaning-company-riyadh", "post-construction-handover-checklist",
-            "villa-cleaning-cost-riyadh", "villa-cleaning-checklist", "facade-cleaning-cost-riyadh",
-            "facade-access-rope-lift-scaffold", "streak-free-glass-cleaning-riyadh", "office-cleaning-scope-of-work",
+            "cleaning-prices-riyadh",
+            "how-to-choose-cleaning-company-riyadh",
+            "post-construction-handover-checklist",
+            "villa-cleaning-cost-riyadh",
+            "villa-cleaning-checklist",
+            "facade-cleaning-cost-riyadh",
+            "facade-access-rope-lift-scaffold",
+            "streak-free-glass-cleaning-riyadh",
+            "office-cleaning-scope-of-work",
             "courtyard-interlock-cleaning"
         ],
+        "pages": [
+            "warranty",
+            "terms",
+            "privacy",
+            "about"
+        ],
         "projects": [
-            "CAND-20260614-CHANDELIER-01", "CAND-20260614-OFFICE-01", "CAND-20260614-OFFICE-E", "CAND-20260730-INDUSTRIAL-C"
+            "CAND-20260614-CHANDELIER-01",
+            "CAND-20260614-OFFICE-01",
+            "CAND-20260614-OFFICE-E",
+            "CAND-20260730-INDUSTRIAL-C",
+            "CAND-20260730-FACADE-B",
+            "CAND-20260507-MODERN-VILLA",
+            "CAND-20260614-VILLA-01"
         ]
     },
     "homepage_hero_media_file": null,
     "_excluded_pending_decision": {
-        "about": "Drafted in the CMS. Blocked by the Publishing Gate (owner_input): the founder section and company story need the owner.",
-        "privacy": "Drafted in the CMS from PRIVACY_DATA_INVENTORY.md. Blocked by the Publishing Gate (owner_input): 6 legal decisions outstanding.",
-        "terms": "Drafted in the CMS from operational facts. Blocked by the Publishing Gate (owner_input): 6 legal decisions outstanding.",
         "homepage_hero": "The preferred first-party photo is unverified (privacy status, no verified description, no alt text); the licensed stock hero stays until a Media Manager clears a replacement."
     }
 }

@@ -168,6 +168,24 @@ class ManageBusinessProfile extends Page
                                         ->addActionLabel('إضافة مبدأ')
                                         ->defaultItems(0)
                                         ->columnSpanFull(),
+                                ]),
+                            Section::make('نقاط الثقة')
+                                ->description('تظهر في الصفحة الرئيسية وصفحة من نحن وكل صفحة خدمة. مصدر واحد يُحرَّر هنا، فلا تتكرر الصياغة ولا تتناقض بين الصفحات.')
+                                ->schema([
+                                    Repeater::make('trust_points')
+                                        ->label('')
+                                        ->schema([
+                                            TextInput::make('title')->label('النقطة')->required()->maxLength(80),
+                                            Textarea::make('description')->label('التفصيل')->rows(2)->maxLength(300),
+                                            TextInput::make('icon')->label('أيقونة')->maxLength(40)
+                                                ->helperText('اسم أيقونة من مكتبة الموقع، مثل shield-check أو users أو check-circle.'),
+                                        ])
+                                        ->reorderable()
+                                        ->collapsible()
+                                        ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                                        ->addActionLabel('إضافة نقطة ثقة')
+                                        ->defaultItems(0)
+                                        ->columnSpanFull(),
                                 ])
                                 ->columns(2),
                         ]),

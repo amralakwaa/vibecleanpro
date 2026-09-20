@@ -57,7 +57,7 @@ class PreLaunchHardeningTest extends TestCase
 
     // ---- Phase 2: privacy & about drafts --------------------------------
 
-    public function test_the_draft_seeder_fills_privacy_and_about_with_owner_markers_and_publishes_nothing(): void
+    public function test_the_draft_seeder_writes_the_trust_pages_and_publishes_nothing(): void
     {
         $privacy = $this->trustPage('privacy', PageType::Legal);
         $about = $this->trustPage('about', PageType::About);
@@ -66,8 +66,15 @@ class PreLaunchHardeningTest extends TestCase
 
         foreach ([$privacy, $about] as $page) {
             $page->refresh();
-            $this->assertSame(PageStatus::Draft, $page->status);
-            $this->assertStringContainsString(PublishingGate::OWNER_INPUT_MARKER, json_encode($page->contentBlocks->pluck('data'), JSON_UNESCAPED_UNICODE));
+            $this->assertSame(PageStatus::Draft, $page->status, 'the seeder publishes nothing - site:launch does');
+        }
+
+        // Both pages are now written in full - the privacy policy from what
+        // the application actually collects, and About from the identity and
+        // founder fields that CompanyProfileSeeder ships - so neither asks
+        // the owner anything any more.
+        foreach ([$privacy, $about] as $page) {
+            $this->assertStringNotContainsString(PublishingGate::OWNER_INPUT_MARKER, json_encode($page->contentBlocks->pluck('data'), JSON_UNESCAPED_UNICODE));
         }
     }
 

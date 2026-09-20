@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['source_ref', 'area_id', 'title', 'summary', 'completed_at', 'owner_confirmed_at', 'is_featured', 'sort_order'])]
+#[Fillable(['source_ref', 'area_id', 'title', 'summary', 'challenge', 'site_condition', 'execution_steps', 'outcome', 'completed_at', 'owner_confirmed_at', 'is_featured', 'sort_order'])]
 #[ObservedBy(ProjectObserver::class)]
 class Project extends Model
 {
@@ -28,7 +28,20 @@ class Project extends Model
             'completed_at' => 'date',
             'owner_confirmed_at' => 'datetime',
             'is_featured' => 'boolean',
+            'execution_steps' => 'array',
         ];
+    }
+
+    /**
+     * Whether this project has a written case study beyond its summary.
+     * Each section renders only when it holds something real.
+     */
+    public function hasCaseStudy(): bool
+    {
+        return filled($this->challenge)
+            || filled($this->site_condition)
+            || filled($this->outcome)
+            || filled($this->execution_steps);
     }
 
     public function area(): BelongsTo

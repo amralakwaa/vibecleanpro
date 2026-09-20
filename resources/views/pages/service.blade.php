@@ -91,6 +91,10 @@
          The FAQ is rendered by a second pass further down, because on a
          landing page the objection-handling belongs immediately before
          the decision - see the two-pass contract in blocks.blade.php. --}}
+    {{-- The company's commitments, from the business profile - not retyped
+         into every service page's content. --}}
+    <x-public.trust-strip :business-profile="$businessProfile" />
+
     <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" :related="$related" related-item-type="service" />
 
     {{-- ===== 5. Real evidence for THIS service ===== --}}

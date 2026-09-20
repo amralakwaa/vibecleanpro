@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'latitude', 'longitude', 'working_hours', 'social_links', 'logo_media_id',
     'tagline', 'identity_statement', 'story', 'mission', 'vision', 'values',
     'founder_name', 'founder_title', 'founder_photo_media_id', 'founder_bio', 'founder_long_bio',
-    'show_founder', 'show_team',
+    'show_founder', 'show_team', 'trust_points',
     'commercial_registration_number', 'display_commercial_registration', 'service_area',
     'google_business_profile_url', 'google_review_url', 'google_maps_place_id',
 ])]
@@ -26,6 +26,7 @@ class BusinessProfile extends Model
             'working_hours' => 'array',
             'social_links' => 'array',
             'values' => 'array',
+            'trust_points' => 'array',
             'show_founder' => 'boolean',
             'show_team' => 'boolean',
             'display_commercial_registration' => 'boolean',

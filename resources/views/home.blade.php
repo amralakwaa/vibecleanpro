@@ -165,6 +165,10 @@
         </section>
     @endif
 
+    {{-- ===== 2b. Trust - the company's own commitments, edited once in
+         the business profile and shown wherever they matter ===== --}}
+    <x-public.trust-strip :business-profile="$businessProfile" />
+
     {{-- ===== 3. Evidence - photograph-led proof on white ===== --}}
     @if ($beforeAfterProjects->isNotEmpty())
         <section class="bg-white" aria-labelledby="home-evidence">

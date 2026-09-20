@@ -197,6 +197,15 @@ class LaunchPlanner
             }
         }
 
+        // Standalone CMS pages (about / trust / legal / landing) are matched
+        // by slug alone, because their type is theirs to choose.
+        foreach ($manifest->publishPages as $slug) {
+            $page = Page::query()->where('slug', $slug)
+                ->whereIn('type', [PageType::About, PageType::Trust, PageType::Legal, PageType::Landing])
+                ->first();
+            $page ? $pages->push($page) : $plan->problem("Standalone page {$slug} is not in the database.");
+        }
+
         foreach ($manifest->publishProjectRefs as $ref) {
             if (! in_array($ref, $manifest->confirmProjectRefs, true)) {
                 $plan->problem("Project {$ref} is listed for publishing but not for owner confirmation.");

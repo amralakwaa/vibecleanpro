@@ -88,18 +88,50 @@ class StaticPagesTest extends TestCase
         $this->assertStringNotContainsString(url('/privacy'), $home);
     }
 
-    public function test_owner_markers_block_publishing_privacy_and_terms(): void
+    public function test_the_about_page_is_written_in_full_and_asks_the_owner_nothing(): void
+    {
+        $this->draftPage('about', PageType::About);
+        $this->seed(TrustPagesDraftSeeder::class);
+
+        $page = Page::query()->where('slug', 'about')->first();
+        $gate = app(PublishingGate::class)->evaluate($page);
+
+        $this->assertTrue($gate->canPublish());
+        $this->assertNotContains('owner_input', $gate->errors()->pluck('key')->all());
+    }
+
+    public function test_the_privacy_policy_is_written_in_full_and_asks_the_owner_nothing(): void
     {
         $this->draftPage('privacy', PageType::Legal);
+        $this->seed(TrustPagesDraftSeeder::class);
+
+        $page = Page::query()->where('slug', 'privacy')->first();
+        $gate = app(PublishingGate::class)->evaluate($page);
+
+        $this->assertTrue($gate->canPublish());
+        $this->assertNotContains('owner_input', $gate->errors()->pluck('key')->all());
+
+        $html = $page->contentBlocks()->get()->map(fn ($block) => $block->data['content'] ?? '')->implode(' ');
+        foreach (['ما الذي نجمعه', 'ملفات الارتباط', 'مدة الاحتفاظ', 'حقوقك', 'بيانات الأطفال'] as $section) {
+            $this->assertStringContainsString($section, $html);
+        }
+    }
+
+    public function test_the_terms_page_is_written_in_full_and_asks_the_owner_nothing(): void
+    {
         $this->draftPage('terms', PageType::Legal);
         $this->seed(TrustPagesDraftSeeder::class);
 
-        foreach (['privacy', 'terms'] as $slug) {
-            $page = Page::query()->where('slug', $slug)->first();
-            $page->update(['status' => PageStatus::Published]);
+        $page = Page::query()->where('slug', 'terms')->first();
+        $gate = app(PublishingGate::class)->evaluate($page);
 
-            $this->assertSame(PageStatus::Draft, $page->fresh()->status, "{$slug} stays a draft");
-            $this->assertContains('owner_input', app(PublishingGate::class)->evaluate($page->fresh())->errors()->pluck('key')->all());
+        $this->assertNotContains('owner_input', $gate->errors()->pluck('key')->all());
+        $this->assertTrue($gate->canPublish());
+
+        // The six policy clauses the page shipped without.
+        $html = $page->contentBlocks()->get()->map(fn ($block) => $block->data['content'] ?? '')->implode(' ');
+        foreach (['الإلغاء وإعادة الجدولة', 'الدفع', 'التزامات العميل', 'الضمان وإعادة التنفيذ', 'المسؤولية والأضرار', 'الشكاوى', 'النظام الواجب التطبيق'] as $clause) {
+            $this->assertStringContainsString($clause, $html);
         }
     }
 
@@ -144,7 +176,7 @@ class StaticPagesTest extends TestCase
 
     // ---- About ----------------------------------------------------------
 
-    public function test_about_hides_its_owner_notes_from_visitors_but_still_blocks_publishing(): void
+    public function test_about_renders_its_written_content_and_the_profile_facts(): void
     {
         $about = $this->publish('about', PageType::About);
 
@@ -154,13 +186,14 @@ class StaticPagesTest extends TestCase
         $this->assertStringContainsString('كيف نعمل', $html);
         $this->assertStringContainsString('من 08:00 إلى 14:00', $html, 'hours come from the business profile');
 
-        // Re-seeding a fresh draft keeps the markers, which block publishing.
+        // Re-seeding a fresh draft writes the same finished page - no
+        // owner prompt comes back, and the page may publish again.
         $about->contentBlocks()->delete();
         $about->update(['status' => PageStatus::Draft]);
         $this->seed(TrustPagesDraftSeeder::class);
-        $about->refresh()->update(['status' => PageStatus::Published]);
 
-        $this->assertSame(PageStatus::Draft, $about->fresh()->status);
+        $this->assertStringNotContainsString(PublishingGate::OWNER_INPUT_MARKER, json_encode($about->fresh()->contentBlocks->pluck('data'), JSON_UNESCAPED_UNICODE));
+        $this->assertTrue(app(PublishingGate::class)->evaluate($about->fresh())->canPublish());
     }
 
     public function test_about_makes_no_unprovable_claim(): void

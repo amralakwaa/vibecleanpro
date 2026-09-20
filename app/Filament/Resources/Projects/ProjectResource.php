@@ -80,6 +80,39 @@ class ProjectResource extends Resource
                                     TextInput::make('sort_order')->label('ترتيب العرض')->numeric()->default(0),
                                 ])
                                 ->columns(2),
+                            Section::make('دراسة الحالة')
+                                ->description('ما حدث فعلًا في هذا المشروع. كل حقل اختياري، وما يبقى فارغًا لا يظهر في الصفحة — لا تُكتب هنا تفاصيل غير مؤكدة، ولا اسم عميل دون إذنه.')
+                                ->schema([
+                                    Textarea::make('challenge')
+                                        ->label('المشكلة التي جاء العميل من أجلها')
+                                        ->rows(3)
+                                        ->maxLength(600)
+                                        ->columnSpanFull(),
+                                    Textarea::make('site_condition')
+                                        ->label('حالة الموقع قبل التنفيذ')
+                                        ->rows(3)
+                                        ->maxLength(600)
+                                        ->columnSpanFull(),
+                                    Repeater::make('execution_steps')
+                                        ->label('خطوات التنفيذ')
+                                        ->schema([
+                                            TextInput::make('title')->label('الخطوة')->required()->maxLength(120),
+                                            Textarea::make('description')->label('ماذا نُفّذ فيها')->rows(2)->maxLength(400),
+                                        ])
+                                        ->reorderable()
+                                        ->collapsible()
+                                        ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                                        ->addActionLabel('إضافة خطوة')
+                                        ->defaultItems(0)
+                                        ->columnSpanFull(),
+                                    Textarea::make('outcome')
+                                        ->label('النتيجة')
+                                        ->rows(3)
+                                        ->maxLength(600)
+                                        ->helperText('ما الذي تغيّر فعلًا بعد التنفيذ. بلا أرقام أو نسب غير مقاسة.')
+                                        ->columnSpanFull(),
+                                ]),
+
                             Section::make('تأكيد المالك')
                                 ->description('لا تُنشر صفحة مشروع قبل أن يؤكد المالك أن العمل نُفّذ كما هو موصوف: الخدمة، الحي، التاريخ، والصور.')
                                 ->schema([
