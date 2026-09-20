@@ -4,7 +4,20 @@ All notable changes to Vibe Clean Pro. Every entry that touches URLs, indexing o
 
 ## [Unreleased] — feature/production-system
 
-Production system build on branch `feature/production-system` (uncommitted). Test suite: **548 tests / 2,190+ assertions, all green**.
+Production system build on branch `feature/production-system`. Test suite: **630 tests / 2,686 assertions, all green**.
+
+### Added — system integrations & operations control center (2026-09-20, uncommitted)
+- **System & Integrations settings centre** in the admin panel (mail, backups, Google), with every integration reporting a computed state: NOT CONFIGURED / CONFIGURED / READY / ACTIVE / ERROR.
+- **SMTP management** — full transport settings, password encrypted at rest and never shown again, environment configuration always wins, and a test-message action.
+- **Backup management** — schedule, retention and contents driven from the panel; off-site destination contract and registry with no provider implemented yet (reports NOT CONFIGURED rather than claiming a copy exists).
+- **Search Console & GA4 readiness** — verification tag printed only for a valid, enabled, non-demo token; GA4 activates only with a valid ID, an explicit switch and a published privacy policy.
+- **Google Business Profile settings** — profile URL, review URL and Place ID, surfaced publicly only when real.
+- **Commercial registration settings** — shown in the footer only with a real number and the display switch on.
+- **System Readiness dashboard** — 14 checks with a reason and a link to the screen that fixes each one; no secret is ever rendered.
+- **Demo data protection** — `DemoIntegrationSeeder` refuses to run outside local/testing, seeds everything switched off, and uses reserved placeholder values that the public site recognises and refuses to display.
+- **Admin accounts** — 2FA state, last sign-in, safe 2FA reset, session revoke, and Super Admin only grantable by a Super Admin.
+
+Migration: one reversible migration adding `users.last_login_at` and `business_profiles.google_maps_place_id`. **SEO impact:** none — no page, URL or indexing rule changed.
 
 ### Added — pre-launch hardening (2026-09-19/20)
 - **Launch command** — `php artisan site:launch --mode=dry-run|validate|apply` applies the owner-approved manifest `database/seeders/content/launch-manifest.json` (47 project confirmations, 10 article→service links, 4 services + 10 articles + 4 projects published). Validates dependencies, runs every page through the Publishing Gate as it *will* be, refuses a page linking to something that stays unpublished, applies in one transaction, and is idempotent. Verified end to end on an empty database (65 changes, re-run 0).

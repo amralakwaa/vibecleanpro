@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Settings\DemoValue;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'founder_name', 'founder_title', 'founder_photo_media_id', 'founder_bio', 'founder_long_bio',
     'show_founder', 'show_team',
     'commercial_registration_number', 'display_commercial_registration', 'service_area',
-    'google_business_profile_url', 'google_review_url',
+    'google_business_profile_url', 'google_review_url', 'google_maps_place_id',
 ])]
 class BusinessProfile extends Model
 {
@@ -37,9 +38,23 @@ class BusinessProfile extends Model
      */
     public function publicCommercialRegistration(): ?string
     {
-        return $this->display_commercial_registration && filled($this->commercial_registration_number)
-            ? $this->commercial_registration_number
+        return $this->display_commercial_registration
+            ? DemoValue::realOrNull($this->commercial_registration_number)
             : null;
+    }
+
+    /**
+     * Google links are shown publicly only when they are real: a seeded
+     * placeholder (example.invalid) never reaches a visitor.
+     */
+    public function publicGoogleReviewUrl(): ?string
+    {
+        return DemoValue::realOrNull($this->google_review_url);
+    }
+
+    public function publicGoogleBusinessProfileUrl(): ?string
+    {
+        return DemoValue::realOrNull($this->google_business_profile_url);
     }
 
     public function logo(): BelongsTo

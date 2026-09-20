@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Support\Backup\BackupSettings;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
@@ -25,17 +26,25 @@ class BackupRun extends Command
 
     protected $description = 'Back up the database and uploaded media to local storage, with checksums and retention';
 
-    public function handle(): int
+    public function handle(BackupSettings $settings): int
     {
         $disk = Storage::disk(config('backup.disk'));
         $set = trim(config('backup.directory'), '/').'/'.now()->format('Y-m-d_His');
         $disk->makeDirectory($set);
 
         try {
-            $files = ['database.sql.gz' => $this->dumpDatabase($disk, $set)];
+            $files = [];
 
-            if (! $this->option('skip-media')) {
+            if ($settings->includesDatabase()) {
+                $files['database.sql.gz'] = $this->dumpDatabase($disk, $set);
+            }
+
+            if (! $this->option('skip-media') && $settings->includesMedia()) {
                 $files['media.zip'] = $this->archiveMedia($disk, $set);
+            }
+
+            if ($files === []) {
+                throw new RuntimeException('Both the database and the media are excluded - nothing to back up.');
             }
         } catch (RuntimeException $exception) {
             $disk->deleteDirectory($set);
@@ -56,7 +65,11 @@ class BackupRun extends Command
         ];
         $disk->put($set.'/manifest.json', json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-        $removed = $this->prune($disk);
+        $removed = $this->prune($disk, $settings->keep());
+
+        if ($settings->externalEnabled() && $settings->externalReadiness()['state'] !== 'ready') {
+            $this->warn('Off-site copy is switched on but no destination implementation is available: this set stays on this server only.');
+        }
 
         $this->info("Backup written to {$set} (".implode(', ', array_keys($files)).'). Old sets removed: '.$removed.'.');
 
@@ -125,10 +138,10 @@ class BackupRun extends Command
         return $path;
     }
 
-    private function prune(Filesystem $disk): int
+    private function prune(Filesystem $disk, int $keep): int
     {
         $sets = collect($disk->directories(trim(config('backup.directory'), '/')))->sort()->values();
-        $old = $sets->slice(0, max(0, $sets->count() - max(1, (int) config('backup.keep'))));
+        $old = $sets->slice(0, max(0, $sets->count() - max(1, $keep)));
 
         $old->each(fn (string $directory) => $disk->deleteDirectory($directory));
 

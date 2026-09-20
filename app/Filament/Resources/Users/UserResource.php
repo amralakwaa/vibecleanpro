@@ -5,9 +5,11 @@ namespace App\Filament\Resources\Users;
 use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\Pages\ListUsers;
+use App\Listeners\LogSecurityEvent;
 use App\Models\User;
 use App\Support\UserGuardRails;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -15,6 +17,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -22,6 +25,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use UnitEnum;
 
@@ -56,7 +60,12 @@ class UserResource extends Resource
                 ->helperText('اتركها فارغة عند التعديل للإبقاء على كلمة المرور الحالية.'),
             Select::make('roles')
                 ->label('الأدوار')
-                ->relationship('roles', 'name')
+                // Only a Super Admin may grant Super Admin: the role
+                // bypasses every policy, so handing it out cannot be an
+                // ordinary administrator's privilege.
+                ->relationship('roles', 'name', fn ($query) => Auth::user()?->hasRole('Super Admin')
+                    ? $query
+                    : $query->where('name', '!=', 'Super Admin'))
                 ->multiple()
                 ->preload()
                 ->required()
@@ -84,11 +93,42 @@ class UserResource extends Resource
                 TextColumn::make('email')->label('البريد الإلكتروني')->searchable(),
                 TextColumn::make('roles.name')->label('الأدوار')->badge(),
                 IconColumn::make('is_active')->label('نشط')->boolean(),
+                TextColumn::make('app_authentication_secret')
+                    ->label('التحقق الثنائي')
+                    ->badge()
+                    // The stored secret is never rendered - only whether one exists.
+                    ->state(fn (User $record): string => filled($record->app_authentication_secret) ? 'مفعّل' : 'غير مفعّل')
+                    ->color(fn (string $state): string => $state === 'مفعّل' ? 'success' : 'gray'),
+                TextColumn::make('last_login_at')->label('آخر دخول')->dateTime('Y-m-d H:i')->placeholder('لم يسجل الدخول')->sortable(),
                 TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime('Y-m-d')->sortable(),
             ])
             ->defaultSort('name')
             ->recordActions([
                 EditAction::make(),
+                Action::make('resetTwoFactor')
+                    ->label('إعادة تعيين التحقق الثنائي')
+                    ->icon(Heroicon::OutlinedKey)
+                    ->color('warning')
+                    ->visible(fn (User $record): bool => filled($record->app_authentication_secret) && (Auth::user()?->can('update', $record) ?? false))
+                    ->requiresConfirmation()
+                    ->modalDescription('يُحذف مفتاح التحقق الثنائي ورموز الاسترداد لهذا المستخدم، وسيحتاج إلى إعداده من جديد عند الدخول. استخدمه عند فقدان الجهاز فقط.')
+                    ->action(function (User $record): void {
+                        $record->forceFill(['app_authentication_secret' => null, 'app_authentication_recovery_codes' => null])->save();
+                        LogSecurityEvent::record('admin.two_factor_reset', Auth::user());
+                        Notification::make()->success()->title('أُعيد تعيين التحقق الثنائي')->body('أبلغ المستخدم بإعداده مجددًا عند أول دخول.')->send();
+                    }),
+                Action::make('revokeSessions')
+                    ->label('إنهاء الجلسات')
+                    ->icon(Heroicon::OutlinedArrowRightOnRectangle)
+                    ->color('gray')
+                    ->visible(fn (User $record): bool => Auth::user()?->can('update', $record) ?? false)
+                    ->requiresConfirmation()
+                    ->modalDescription('تُنهى كل جلسات هذا المستخدم على جميع الأجهزة، وسيحتاج إلى تسجيل الدخول من جديد.')
+                    ->action(function (User $record): void {
+                        $deleted = DB::table('sessions')->where('user_id', $record->getKey())->delete();
+                        LogSecurityEvent::record('admin.sessions_revoked', Auth::user());
+                        Notification::make()->success()->title('أُنهيت الجلسات')->body("عدد الجلسات المُنهاة: {$deleted}.")->send();
+                    }),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

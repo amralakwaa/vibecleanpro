@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Seo\PublishingGate;
 use App\Support\Analytics\AnalyticsSettings;
 use App\Support\Readiness\LaunchReadiness;
+use App\Support\Settings\IntegrationSettings;
 use Database\Seeders\RolePermissionSeeder;
 use Database\Seeders\TrustPagesDraftSeeder;
 use Filament\Facades\Filament;
@@ -163,14 +164,21 @@ class PreLaunchHardeningTest extends TestCase
     public function test_lead_notifications_are_not_configured_without_an_inbox_or_a_real_mailer(): void
     {
         $this->profile();
-        $this->assertSame('not_configured', app(LaunchReadiness::class)->leadNotifications()['state']);
+        $this->assertSame('not_configured', app(LaunchReadiness::class)->leadNotifications()->state);
 
+        // An inbox alone is not enough while no transport can deliver it.
         BusinessProfile::query()->update(['lead_notification_email' => 'team@example.test']);
         config(['mail.default' => 'log']);
-        $this->assertSame('not_configured', app(LaunchReadiness::class)->leadNotifications()['state']);
+        $this->assertSame('error', app(LaunchReadiness::class)->leadNotifications()->state);
 
+        $settings = app(IntegrationSettings::class);
+        $settings->set(IntegrationSettings::SMTP_ENABLED, true, 'bool');
+        $settings->set(IntegrationSettings::SMTP_HOST, 'smtp.provider.test.invalid');
+        $settings->set(IntegrationSettings::SMTP_FROM_ADDRESS, 'no-reply@vibecleanpro.com');
+        $settings->putSecret(IntegrationSettings::SMTP_PASSWORD, 'secret');
         config(['mail.default' => 'smtp']);
-        $this->assertSame('ready', app(LaunchReadiness::class)->leadNotifications()['state']);
+
+        $this->assertSame('ready', app(LaunchReadiness::class)->leadNotifications()->state);
     }
 
     public function test_the_readiness_widget_warns_in_the_admin(): void
@@ -184,7 +192,7 @@ class PreLaunchHardeningTest extends TestCase
 
         Livewire::test(SystemReadinessWidget::class)
             ->assertOk()
-            ->assertSee('إشعارات الطلبات بالبريد')
+            ->assertSee('إشعارات الطلبات')
             ->assertSee('غير مهيأة');
     }
 
@@ -192,6 +200,8 @@ class PreLaunchHardeningTest extends TestCase
 
     public function test_search_console_verification_prints_only_a_valid_token(): void
     {
+        // Printing is switched on; the token itself decides the rest.
+        $this->setting(IntegrationSettings::SEARCH_CONSOLE_ENABLED, '1', 'bool');
         $this->setting(AnalyticsSettings::SEARCH_CONSOLE_KEY, '<meta name="x">');
         $this->get('/')->assertDontSee('google-site-verification', false);
 

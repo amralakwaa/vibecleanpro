@@ -163,6 +163,15 @@
                     </dl>
                 @endif
 
+                {{-- Shown only for a real, saved profile link (a seeded
+                     placeholder never reaches a visitor). --}}
+                @if ($googleProfileUrl = $businessProfile?->publicGoogleBusinessProfileUrl())
+                    <a href="{{ $googleProfileUrl }}" target="_blank" rel="noopener noreferrer" class="mt-6 inline-flex items-center gap-1.5 min-h-11 text-sm font-medium text-primary-700 underline-offset-4 hover:underline">
+                        عرض ملفنا على Google
+                        <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />
+                    </a>
+                @endif
+
                 <x-public.google-review-cta :business-profile="$businessProfile" class="mt-6" />
 
                 {{-- The business path, named once - the same form with its own framing. --}}

@@ -21,6 +21,10 @@ class LogSecurityEvent
     public function handleLogin(Login $event): void
     {
         self::record('auth.login', $event->user);
+
+        if ($event->user instanceof User) {
+            $event->user->forceFill(['last_login_at' => now()])->saveQuietly();
+        }
     }
 
     public function handleLogout(Logout $event): void

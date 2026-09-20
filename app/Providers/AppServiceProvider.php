@@ -38,6 +38,7 @@ use App\Policies\TeamMemberPolicy;
 use App\Policies\TestimonialPolicy;
 use App\Policies\UserPolicy;
 use App\Seo\DuplicateSimilarityAnalyzer;
+use App\Support\Mail\MailSettings;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -115,5 +116,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Super Admin bypasses every Policy/Gate check outright.
         Gate::before(fn ($user, string $ability) => $user->hasRole('Super Admin') ? true : null);
+
+        // Mail credentials entered in the panel are applied here, unless the
+        // environment already defines the transport (which always wins).
+        // Wrapped: a request must not fail because the settings table is not
+        // migrated yet (fresh installs, CI, migrate:fresh).
+        rescue(fn () => app(MailSettings::class)->applyRuntimeConfiguration(), report: false);
     }
 }

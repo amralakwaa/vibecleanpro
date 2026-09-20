@@ -6,7 +6,7 @@
     suggested, nothing is offered in return, and every customer is asked
     the same way (no filtering of who gets the link).
 --}}
-@if ($reviewUrl = $businessProfile?->google_review_url)
+@if ($reviewUrl = $businessProfile?->publicGoogleReviewUrl())
     <div {{ $attributes->class('rounded-2xl ring-1 ring-ink-950/10 bg-white p-5') }}>
         <p class="flex items-center gap-2 text-sm font-medium text-ink-950">
             <x-public.icon name="star-outline" class="w-4 h-4 text-primary-600" />

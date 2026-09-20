@@ -6,6 +6,8 @@ use App\Enums\PageStatus;
 use App\Enums\PageType;
 use App\Models\Page;
 use App\Models\SiteSetting;
+use App\Support\Settings\DemoValue;
+use App\Support\Settings\IntegrationSettings;
 
 /**
  * Search Console verification and GA4, read from site settings.
@@ -29,18 +31,40 @@ class AnalyticsSettings
 
     public const GA4_PATTERN = '/^G-[A-Z0-9]{4,15}$/';
 
+    /**
+     * The token only when it is valid, switched on, and not a seeded
+     * placeholder - so a demo token is never printed for visitors.
+     */
     public function searchConsoleToken(): ?string
     {
         $token = trim((string) SiteSetting::get(self::SEARCH_CONSOLE_KEY));
 
-        return preg_match(self::TOKEN_PATTERN, $token) ? $token : null;
+        if (! preg_match(self::TOKEN_PATTERN, $token) || DemoValue::isDemo($token)) {
+            return null;
+        }
+
+        return SiteSetting::get(IntegrationSettings::SEARCH_CONSOLE_ENABLED, false) ? $token : null;
+    }
+
+    /**
+     * Whether a usable token is stored, regardless of the switch.
+     */
+    public function hasSearchConsoleToken(): bool
+    {
+        $token = trim((string) SiteSetting::get(self::SEARCH_CONSOLE_KEY));
+
+        return preg_match(self::TOKEN_PATTERN, $token) && ! DemoValue::isDemo($token);
     }
 
     public function ga4MeasurementId(): ?string
     {
         $id = strtoupper(trim((string) SiteSetting::get(self::GA4_ID_KEY)));
 
-        return preg_match(self::GA4_PATTERN, $id) ? $id : null;
+        if (! preg_match(self::GA4_PATTERN, $id) || DemoValue::isDemo($id)) {
+            return null;
+        }
+
+        return $id;
     }
 
     public function ga4State(): string

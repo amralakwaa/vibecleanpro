@@ -3,20 +3,22 @@
 namespace App\Filament\Widgets;
 
 use App\Support\Readiness\LaunchReadiness;
-use Filament\Support\Icons\Heroicon;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Auth;
 
 /**
  * Operational readiness at a glance: what works, what is configured but
- * off, what is missing. States are computed by LaunchReadiness.
+ * off, and what still needs a decision - each with its reason and a link
+ * to the screen that fixes it. States come from LaunchReadiness, which
+ * computes them; no secret value is ever rendered.
  */
-class SystemReadinessWidget extends BaseWidget
+class SystemReadinessWidget extends Widget
 {
     protected static ?int $sort = 1;
 
-    protected ?string $heading = 'جاهزية التشغيل';
+    protected int|string|array $columnSpan = 'full';
+
+    protected string $view = 'filament.widgets.system-readiness';
 
     public static function canView(): bool
     {
@@ -25,24 +27,11 @@ class SystemReadinessWidget extends BaseWidget
         return $user && ($user->can('manage_business_profile') || $user->can('manage_site_settings'));
     }
 
-    protected function getStats(): array
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getViewData(): array
     {
-        $readiness = app(LaunchReadiness::class);
-        $ok = ['ready', 'configured', 'active', 'published', 'visible', 'complete', 'recent'];
-
-        $stat = fn (string $title, array $item, $icon) => Stat::make($title, $item['label'])
-            ->description($item['detail'])
-            ->icon($icon)
-            ->color(in_array($item['state'], $ok, true) ? 'success' : ($item['state'] === 'configured_disabled' ? 'gray' : 'danger'));
-
-        return [
-            $stat('إشعارات الطلبات بالبريد', $readiness->leadNotifications(), Heroicon::OutlinedEnvelope),
-            $stat('سياسة الخصوصية', $readiness->privacyPolicy(), Heroicon::OutlinedShieldCheck),
-            $stat('Google Search Console', $readiness->searchConsole(), Heroicon::OutlinedMagnifyingGlass),
-            $stat('Google Analytics 4', $readiness->ga4(), Heroicon::OutlinedChartBar),
-            $stat('زر تقييم Google', $readiness->googleReviewCta(), Heroicon::OutlinedStar),
-            $stat('التحقق الثنائي', $readiness->twoFactor(), Heroicon::OutlinedKey),
-            $stat('النسخ الاحتياطي', $readiness->backups(), Heroicon::OutlinedServerStack),
-        ];
+        return ['groups' => app(LaunchReadiness::class)->groups()];
     }
 }

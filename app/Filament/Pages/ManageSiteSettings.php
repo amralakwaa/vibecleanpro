@@ -4,11 +4,9 @@ namespace App\Filament\Pages;
 
 use App\Filament\Support\MediaPicker;
 use App\Models\SiteSetting;
-use App\Support\Analytics\AnalyticsSettings;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
@@ -20,7 +18,8 @@ use UnitEnum;
 
 /**
  * Deliberately minimal: only settings with a real, current use are exposed
- * here (analytics + one SEO default). No speculative keys for features
+ * here (the homepage hero and one SEO default). Mail, backups and the
+ * Google integrations live on ManageIntegrations. No speculative keys for features
  * that don't exist yet - business identity/contact data belongs on
  * ManageBusinessProfile instead, not duplicated here.
  *
@@ -44,10 +43,6 @@ class ManageSiteSettings extends Page
      * @var array<string, string>
      */
     private const KEYS = [
-        AnalyticsSettings::GA4_ID_KEY => 'string',
-        AnalyticsSettings::GA4_ENABLED_KEY => 'bool',
-        AnalyticsSettings::SEARCH_CONSOLE_KEY => 'string',
-        'google_tag_manager_id' => 'string',
         'default_meta_title_suffix' => 'string',
         SiteSetting::HOME_HERO_MEDIA_ID => 'int',
     ];
@@ -79,23 +74,6 @@ class ManageSiteSettings extends Page
                             MediaPicker::make(SiteSetting::HOME_HERO_MEDIA_ID, 'صورة الواجهة (Hero)')
                                 ->helperText('صورة من مكتبة الوسائط تظهر خلف عنوان الصفحة الرئيسية. اتركها فارغة ليُستخدم أحدث صورة "بعد" من الأعمال المنشورة.'),
                         ]),
-                    Section::make('Google Search Console')
-                        ->schema([
-                            TextInput::make(AnalyticsSettings::SEARCH_CONSOLE_KEY)
-                                ->label('رمز التحقق (google-site-verification)')
-                                ->regex(AnalyticsSettings::TOKEN_PATTERN)
-                                ->helperText('قيمة content فقط من وسم التحقق، لا الوسم كاملًا. يُطبع الوسم في الموقع عند وجود قيمة صحيحة.'),
-                        ]),
-                    Section::make('التحليلات (Analytics)')
-                        ->description('GA4 لا يبدأ بمجرد إدخال المعرّف: يلزم تفعيله صراحةً، ونشر سياسة الخصوصية أولًا.')
-                        ->schema([
-                            TextInput::make(AnalyticsSettings::GA4_ID_KEY)->label('GA4 Measurement ID')->placeholder('G-XXXXXXX')->regex(AnalyticsSettings::GA4_PATTERN),
-                            Toggle::make(AnalyticsSettings::GA4_ENABLED_KEY)
-                                ->label('تفعيل GA4')
-                                ->helperText('لا يعمل ما دامت صفحة سياسة الخصوصية غير منشورة. حسم الموافقة على ملفات الارتباط قرار قانوني للمالك.'),
-                            TextInput::make('google_tag_manager_id')->label('Google Tag Manager ID')->placeholder('GTM-XXXXXXX')->helperText('محفوظ فقط — غير مطبوع في الموقع.'),
-                        ])
-                        ->columns(2),
                     Section::make('إعدادات SEO الافتراضية')
                         ->schema([
                             TextInput::make('default_meta_title_suffix')
