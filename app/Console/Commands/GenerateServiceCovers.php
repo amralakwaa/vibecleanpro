@@ -51,6 +51,7 @@ class GenerateServiceCovers extends Command
         'pest-control' => ['shield', '#071228', '#1e40af', '#93bbfd'],
         'cleaning-contracts' => ['calendar', '#16233d', '#2563eb', '#dbe8fe'],
         'courtyard-cleaning' => ['pavers', '#0c1830', '#1d4fd8', '#bfd7fe'],
+        'glass-cleaning' => ['window', '#102a4f', '#2563eb', '#eff5ff'],
         'sofa-cleaning' => ['sofa', '#1e3a8a', '#3b7cf6', '#eff5ff'],
         'water-tank-cleaning' => ['tank', '#072554', '#1d4fd8', '#93bbfd'],
         'disinfection' => ['spray', '#0c1830', '#2563eb', '#dbe8fe'],
@@ -71,6 +72,7 @@ class GenerateServiceCovers extends Command
         'pest-control' => 'غلاف خدمة مكافحة الحشرات من فايب كلين برو — رسم توضيحي لدرع حماية',
         'cleaning-contracts' => 'غلاف خدمة عقود النظافة الدورية من فايب كلين برو — رسم توضيحي لجدول زيارات',
         'courtyard-cleaning' => 'غلاف خدمة تنظيف الأحواش والممرات من فايب كلين برو — رسم توضيحي لبلاط انترلوك',
+        'glass-cleaning' => 'غلاف خدمة تنظيف الزجاج من فايب كلين برو — رسم توضيحي لنافذة ذات ألواح زجاجية',
         'sofa-cleaning' => 'غلاف خدمة تنظيف الكنب من فايب كلين برو — رسم توضيحي لكنبة',
         'water-tank-cleaning' => 'غلاف خدمة تنظيف خزانات المياه من فايب كلين برو — رسم توضيحي لخزان مياه',
         'disinfection' => 'غلاف خدمة التعقيم والتطهير من فايب كلين برو — رسم توضيحي لأداة رش وقطرات',
@@ -164,6 +166,7 @@ class GenerateServiceCovers extends Command
             'shield' => $this->shield($canvas, $ink, $soft, $solid),
             'calendar' => $this->calendar($canvas, $ink, $soft, $solid),
             'pavers' => $this->pavers($canvas, $ink, $soft, $solid),
+            'window' => $this->window($canvas, $ink, $soft, $solid),
             'sofa' => $this->sofa($canvas, $ink, $soft, $solid),
             'tank' => $this->tank($canvas, $ink, $soft, $solid),
             'spray' => $this->spray($canvas, $ink, $soft, $solid),
@@ -335,6 +338,24 @@ class GenerateServiceCovers extends Command
                 imagefilledrectangle($canvas, $x, $y, $x + 96, $y + 48, ($row + $column) % 3 === 0 ? $solid : (($row + $column) % 3 === 1 ? $ink : $soft));
             }
         }
+    }
+
+    /**
+     * A four-pane window with a squeegee streak across it: the subject of
+     * this service is the glass itself, not a building.
+     */
+    private function window(GdImage $canvas, int $ink, int $soft, int $solid): void
+    {
+        imagefilledrectangle($canvas, 600, 260, 1000, 660, $soft);
+
+        foreach ([[624, 284, 792, 456], [808, 284, 976, 456], [624, 472, 792, 636], [808, 472, 976, 636]] as [$x1, $y1, $x2, $y2]) {
+            imagefilledrectangle($canvas, $x1, $y1, $x2, $y2, $ink);
+        }
+
+        // The clean streak: a diagonal band left behind by the blade.
+        imagefilledpolygon($canvas, [660, 636, 812, 284, 884, 284, 732, 636], $solid);
+
+        imagefilledrectangle($canvas, 560, 676, 1040, 692, $solid);
     }
 
     private function sofa(GdImage $canvas, int $ink, int $soft, int $solid): void

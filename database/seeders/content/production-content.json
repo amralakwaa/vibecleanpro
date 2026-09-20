@@ -725,7 +725,8 @@
                 "post-construction-cleaning",
                 "facade-cleaning",
                 "cleaning-contracts",
-                "shop-cleaning"
+                "shop-cleaning",
+                "glass-cleaning"
             ]
         },
         {
@@ -748,7 +749,8 @@
                 "office-cleaning",
                 "facade-cleaning",
                 "cleaning-contracts",
-                "post-construction-cleaning"
+                "post-construction-cleaning",
+                "glass-cleaning"
             ]
         },
         {
@@ -1099,7 +1101,8 @@
                 "office-cleaning",
                 "post-construction-cleaning",
                 "villa-cleaning",
-                "shop-cleaning"
+                "shop-cleaning",
+                "glass-cleaning"
             ]
         },
         {
@@ -1529,6 +1532,29 @@
                 "villa-cleaning",
                 "home-cleaning",
                 "facade-cleaning"
+            ]
+        },
+        {
+            "slug": "glass-cleaning",
+            "name": "تنظيف الزجاج والنوافذ",
+            "category": "business",
+            "capability": "available",
+            "sort_order": 19,
+            "is_featured": false,
+            "page": {
+                "title": "تنظيف الزجاج بالرياض",
+                "meta_title": "تنظيف زجاج بالرياض — نوافذ وقواطع ومحلات | فايب كلين برو",
+                "meta_description": "تنظيف الزجاج بالرياض بلا خطوط ولا آثار: نوافذ، قواطع مكاتب، أبواب زجاجية، وزجاج المحلات. إزالة الترسبات والملصقات، وعرض سعر مكتوب بعد المعاينة."
+            },
+            "short_description": "تنظيف الزجاج بالرياض: النوافذ والقواطع والأبواب الزجاجية وزجاج المحلات، من الوجهين مع الإطارات والمجاري.",
+            "featured_media_file": null,
+            "blocks": [],
+            "faqs": [],
+            "links": [
+                "office-cleaning",
+                "shop-cleaning",
+                "facade-cleaning",
+                "post-construction-cleaning"
             ]
         }
     ],

@@ -15,9 +15,9 @@
  *   commercial    - comparing scope or price before hiring
  *   informational - wants to understand the work first
  *
- * Held services (pools, pest control, periodic contracts) keep their
- * entry: the map describes the catalogue, and their pages return once
- * the owner confirms the operational facts behind them.
+ * Every service in the catalogue is published (owner decision,
+ * 2026-09-20), so every slug here owns its queries in the live site -
+ * pools, pest control and periodic contracts included.
  *
  * @return array<string, array{primary: string, secondary: list<string>, intent: string, related: list<string>, articles: list<string>}>
  */
@@ -50,7 +50,7 @@ return [
         'primary' => 'تنظيف مكاتب بالرياض',
         'secondary' => ['شركة تنظيف شركات', 'تنظيف مقرات إدارية', 'نطاق عمل تنظيف المكاتب', 'تنظيف مكاتب خارج الدوام'],
         'intent' => 'transactional',
-        'related' => ['cleaning-contracts', 'shop-cleaning', 'disinfection', 'carpet-cleaning'],
+        'related' => ['cleaning-contracts', 'glass-cleaning', 'shop-cleaning', 'disinfection', 'carpet-cleaning'],
         'articles' => ['office-cleaning-scope-of-work', 'how-to-choose-cleaning-company-riyadh', 'cleaning-prices-riyadh'],
     ],
 
@@ -58,8 +58,20 @@ return [
         'primary' => 'تنظيف واجهات المباني بالرياض',
         'secondary' => ['تنظيف زجاج المباني', 'تنظيف واجهات زجاجية', 'تنظيف واجهات بالحبال', 'تكلفة تنظيف الواجهات'],
         'intent' => 'transactional',
-        'related' => ['shop-cleaning', 'office-cleaning', 'post-construction-cleaning', 'courtyard-cleaning'],
+        'related' => ['glass-cleaning', 'shop-cleaning', 'office-cleaning', 'post-construction-cleaning', 'courtyard-cleaning'],
         'articles' => ['facade-cleaning-cost-riyadh', 'facade-access-rope-lift-scaffold', 'streak-free-glass-cleaning-riyadh'],
+    ],
+
+    // Glass owns the pane; the facade owns the building. The split is
+    // deliberate: "تنظيف زجاج المباني" stays with facade-cleaning because
+    // that search wants height access, while this page takes the window,
+    // partition and shopfront queries it was losing to it.
+    'glass-cleaning' => [
+        'primary' => 'تنظيف زجاج بالرياض',
+        'secondary' => ['شركة تنظيف زجاج بالرياض', 'تنظيف نوافذ بالرياض', 'تنظيف قواطع زجاجية', 'تنظيف زجاج المحلات', 'تنظيف زجاج داخلي'],
+        'intent' => 'transactional',
+        'related' => ['facade-cleaning', 'office-cleaning', 'shop-cleaning', 'post-construction-cleaning'],
+        'articles' => ['streak-free-glass-cleaning-riyadh'],
     ],
 
     'post-construction-cleaning' => [
@@ -122,7 +134,7 @@ return [
         'primary' => 'تنظيف محلات بالرياض',
         'secondary' => ['تنظيف معارض', 'تنظيف واجهة محل', 'تنظيف محلات بعد الدوام', 'تنظيف معارض سيارات'],
         'intent' => 'transactional',
-        'related' => ['office-cleaning', 'facade-cleaning', 'cleaning-contracts', 'marble-polishing'],
+        'related' => ['office-cleaning', 'glass-cleaning', 'facade-cleaning', 'cleaning-contracts', 'marble-polishing'],
         'articles' => ['office-cleaning-scope-of-work'],
     ],
 
