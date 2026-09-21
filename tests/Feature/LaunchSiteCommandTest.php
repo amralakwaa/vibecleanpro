@@ -107,7 +107,9 @@ class LaunchSiteCommandTest extends TestCase
         $this->assertCount(19, $manifest->publishServices);
         $this->assertSame(['warranty', 'terms', 'privacy', 'about'], $manifest->publishPages);
         $this->assertCount(10, $manifest->publishArticles);
-        $this->assertCount(7, $manifest->publishProjectRefs);
+        // The 47 library groups became case studies: 34 publish, and the
+        // rest wait on photographs or on a privacy review, never on copy.
+        $this->assertCount(34, $manifest->publishProjectRefs);
         $this->assertCount(10, $manifest->articleServices);
         $this->assertEmpty(array_diff($manifest->publishProjectRefs, $manifest->confirmProjectRefs));
         $this->assertNull($manifest->homepageHeroMediaFile);

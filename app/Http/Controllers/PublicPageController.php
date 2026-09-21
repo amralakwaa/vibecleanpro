@@ -365,7 +365,18 @@ class PublicPageController extends Controller
             ? $project->area
             : null;
 
-        $relatedServices = $project->services()->whereHas('page', fn ($query) => $query->published())->with('page')->get();
+        // The primary service is the reason the case study exists, so it
+        // leads the facts rail, the quote link and the schema.
+        $relatedServices = $project->services()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->with('page')
+            ->orderByPivot('is_primary', 'desc')
+            ->get();
+
+        // Neighbours by district when the district is known, and by shared
+        // service when it is not. Without the fallback a case study would
+        // link to nothing at all, because no project carries an area yet.
+        $serviceIds = $relatedServices->pluck('id');
 
         $relatedProjects = $project->area
             ? Project::query()
@@ -375,7 +386,29 @@ class PublicPageController extends Controller
                 ->with(['media', 'page'])
                 ->limit(3)
                 ->get()
-            : collect();
+            : Project::query()
+                ->whereKeyNot($project->id)
+                ->when(
+                    // Cluster first: a facade job belongs beside another
+                    // facade job, not beside whatever shares its service.
+                    filled($project->cluster),
+                    fn ($query) => $query->where('cluster', $project->cluster),
+                    fn ($query) => $query->whereHas('services', fn ($inner) => $inner->whereIn('services.id', $serviceIds)),
+                )
+                ->whereHas('page', fn ($query) => $query->published())
+                ->with(['media', 'page'])
+                ->limit(3)
+                ->get();
+
+        // Article -> Service -> Project: the supporting reading for this
+        // case study is whatever explains the service it evidences. No new
+        // table - the relation already exists through the service.
+        $relatedArticles = $serviceIds->isEmpty() ? collect() : Article::query()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->whereHas('services', fn ($query) => $query->whereIn('services.id', $serviceIds))
+            ->with('page')
+            ->limit(3)
+            ->get();
 
         return response()->view('pages.project', [
             'page' => $page,
@@ -386,6 +419,13 @@ class PublicPageController extends Controller
             'linkedArea' => $linkedArea,
             'relatedServices' => $relatedServices,
             'relatedProjects' => $relatedProjects,
+            'relatedArticles' => $relatedArticles,
+            'relatedProjectsAreByArea' => (bool) $project->area,
+            'relatedProjectsLabel' => match (true) {
+                (bool) $project->area => 'مشاريع أخرى في نفس المنطقة',
+                filled($project->cluster) => 'مشاريع أخرى من النوع نفسه',
+                default => 'مشاريع أخرى في نفس الخدمة',
+            },
         ], 200);
     }
 

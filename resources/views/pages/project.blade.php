@@ -235,6 +235,28 @@
                             <p class="mt-2 text-neutral-700 leading-relaxed">{{ $project->outcome }}</p>
                         </div>
                     @endif
+
+                    {{-- The only part written for the reader who is deciding,
+                         rather than for the record. Three labelled parts,
+                         in the order a buyer asks them. --}}
+                    @php($buyerParts = array_filter([
+                        'المشكلة التي عالجناها' => $project->client_problem,
+                        'القيمة للعميل' => $project->client_benefit,
+                        'سبب اختلاف التنفيذ' => $project->execution_difference,
+                    ]))
+                    @if ($buyerParts !== [])
+                        <div class="rounded-2xl bg-white ring-1 ring-neutral-200 p-5 md:p-6 reveal">
+                            <h3 class="font-display text-lg font-medium text-ink-950">لماذا يهم هذا المشروع العميل؟</h3>
+                            <dl class="mt-4 space-y-4">
+                                @foreach ($buyerParts as $label => $body)
+                                    <div>
+                                        <dt class="text-sm font-medium text-primary-700">{{ $label }}</dt>
+                                        <dd class="mt-1 text-neutral-700 leading-relaxed">{{ $body }}</dd>
+                                    </div>
+                                @endforeach
+                            </dl>
+                        </div>
+                    @endif
                 </div>
             </x-public.container>
         </section>
@@ -306,33 +328,11 @@
                         <h3 class="text-sm font-medium tracking-wide text-neutral-500 mb-4">قبل وبعد</h3>
                         <div @class(['grid gap-8 md:gap-10', 'md:grid-cols-2' => $pairs->count() > 1])>
                             @foreach ($pairs as $pair)
-                                <figure>
-                                    <div class="relative rounded-2xl overflow-hidden ring-1 ring-ink-950/5 shadow-sm">
-                                        <div class="grid grid-cols-2 gap-0.5 bg-white">
-                                            <div class="relative bg-neutral-100">
-                                                <img src="{{ $pair['before']->url() }}" alt="{{ $pair['before']->alt_text ?? 'قبل التنفيذ - '.$project->title }}" loading="lazy"
-                                                    width="{{ $pair['before']->width ?: 800 }}" height="{{ $pair['before']->height ?: 600 }}"
-                                                    class="w-full aspect-[3/4] md:aspect-[4/3] object-cover">
-                                                <span class="absolute top-3 start-3 inline-flex items-center rounded-full bg-ink-950/70 px-3 py-1 text-xs font-medium tracking-wide text-white backdrop-blur-sm">قبل</span>
-                                            </div>
-                                            <div class="relative bg-neutral-100">
-                                                <img src="{{ $pair['after']->url() }}" alt="{{ $pair['after']->alt_text ?? 'بعد التنفيذ - '.$project->title }}" loading="lazy"
-                                                    width="{{ $pair['after']->width ?: 800 }}" height="{{ $pair['after']->height ?: 600 }}"
-                                                    class="w-full aspect-[3/4] md:aspect-[4/3] object-cover">
-                                                <span class="absolute top-3 start-3 inline-flex items-center gap-1 rounded-full bg-primary-600 px-3 py-1 text-xs font-medium tracking-wide text-white shadow-sm">
-                                                    <x-public.icon name="check" class="w-3 h-3" />
-                                                    بعد
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-9 h-9 rounded-full bg-white text-primary-700 shadow-md ring-1 ring-ink-950/5" aria-hidden="true">
-                                            <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />
-                                        </span>
-                                    </div>
-                                    @if ($pair['after']->caption || $pair['before']->caption)
-                                        <figcaption class="mt-2 text-xs text-neutral-500">{{ $pair['after']->caption ?? $pair['before']->caption }}</figcaption>
-                                    @endif
-                                </figure>
+                                <x-public.before-after-slider
+                                    :before="$pair['before']"
+                                    :after="$pair['after']"
+                                    :title="$project->title"
+                                />
                             @endforeach
                         </div>
                     </div>
@@ -370,7 +370,7 @@
                 <div class="flex flex-wrap items-end justify-between gap-6 reveal">
                     <div>
                         <p class="text-sm font-medium tracking-wide text-primary-700">أعمال قريبة</p>
-                        <h2 id="project-related" class="mt-2 font-display text-2xl md:text-4xl font-medium tracking-tight text-ink-950 text-balance">مشاريع أخرى في نفس المنطقة</h2>
+                        <h2 id="project-related" class="mt-2 font-display text-2xl md:text-4xl font-medium tracking-tight text-ink-950 text-balance">{{ $relatedProjectsLabel ?? 'مشاريع أخرى' }}</h2>
                     </div>
                     @if ($linkedArea)
                         <a href="{{ $urlResolver->urlForPage($linkedArea->page) }}" class="inline-flex items-center gap-2 min-h-11 font-medium text-primary-700 underline-offset-4 hover:underline">
@@ -415,6 +415,25 @@
                                     {{ $related->title }}
                                 </a>
                             @endif
+                        </li>
+                    @endforeach
+                </ul>
+            </x-public.container>
+        </section>
+    @endif
+
+    {{-- ===== Supporting reading: Article -> Service -> Project ===== --}}
+    @if (($relatedArticles ?? collect())->isNotEmpty())
+        <section class="py-12 md:py-16" aria-labelledby="project-articles">
+            <x-public.container>
+                <h2 id="project-articles" class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950">اقرأ أكثر عن هذه الخدمة</h2>
+                <ul class="mt-6 grid gap-4 md:grid-cols-3">
+                    @foreach ($relatedArticles as $relatedArticle)
+                        <li>
+                            <a href="{{ $urlResolver->urlForPage($relatedArticle->page) }}"
+                               class="group flex min-h-11 items-start rounded-2xl bg-white ring-1 ring-neutral-200 p-4 transition-colors hover:ring-primary-300">
+                                <span class="font-medium text-ink-950 group-hover:text-primary-700 transition-colors">{{ $relatedArticle->page->title }}</span>
+                            </a>
                         </li>
                     @endforeach
                 </ul>

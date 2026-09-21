@@ -2,7 +2,7 @@
     "version": 1,
     "decided_by": "owner",
     "decided_at": "2026-09-20",
-    "notes": "Owner-approved launch decisions. The site:launch command applies only what is listed here, and every publish goes through the Publishing Gate. Run the content seeders (media import, ProductionContentSeeder, ArticleContentSeeder, ServiceContentSeeder) and `php artisan media:service-covers` first. Owner decided on 2026-09-20 that every service in the catalogue is one the company can actually perform, so all 18 publish: a missing photo or a secondary operational detail is never a reason to hold a page at Review. Pools, pest control and periodic contracts moved from Review to Published under that decision; anything an owner may want to change later (scope wording, contract terms) is editable from the panel.",
+    "notes": "Owner-approved launch decisions. The site:launch command applies only what is listed here, and every publish goes through the Publishing Gate. Rebuild order, and it matters: `php artisan media:import-library`, then ProductionContentSeeder, ArticleContentSeeder, ServiceContentSeeder, ProjectCaseStudySeeder, then `php artisan media:backfill-alt-text` and `php artisan media:service-covers`, and only then site:launch. Skipping ProjectCaseStudySeeder leaves every case study with the importer's generic title and description, which is duplicate metadata across 34 pages. Owner decided on 2026-09-20 that every service in the catalogue is one the company can actually perform, so all 18 publish: a missing photo or a secondary operational detail is never a reason to hold a page at Review. Pools, pest control and periodic contracts moved from Review to Published under that decision; anything an owner may want to change later (scope wording, contract terms) is editable from the panel. Projects: on 2026-09-21 the 47 library groups became case studies. The 35 with cleared photographs publish (Tier 1 indexable, Tier 2 noindex until more media exists); the 12 with no cleared photograph stay drafts, because a proof page with nothing to show proves nothing.",
     "confirm_projects": {
         "decision": "Owner confirmed in chat on 2026-09-19 that all 47 library project groups are the company's own work. No district, date or results were confirmed.",
         "source_refs": [
@@ -137,17 +137,45 @@
             "about"
         ],
         "projects": [
-            "CAND-20260614-CHANDELIER-01",
-            "CAND-20260614-OFFICE-01",
-            "CAND-20260614-OFFICE-E",
-            "CAND-20260730-INDUSTRIAL-C",
-            "CAND-20260730-FACADE-B",
+            "CAND-20260507-LUXURY-INTERIOR",
             "CAND-20260507-MODERN-VILLA",
-            "CAND-20260614-VILLA-01"
+            "CAND-20260523-BLUE-FACADE-01",
+            "CAND-20260523-CORRIDOR-01",
+            "CAND-20260523-FACADE-01",
+            "CAND-20260523-GLASS-EXTERIOR-01",
+            "CAND-20260523-GLASS-INTERIOR-01",
+            "CAND-20260523-PARKING-01",
+            "CAND-20260614-CHANDELIER-01",
+            "CAND-20260614-FACADE-D",
+            "CAND-20260614-FLOOR-D",
+            "CAND-20260614-INSTITUTIONAL-C",
+            "CAND-20260614-OFFICE-01",
+            "CAND-20260614-OFFICE-C",
+            "CAND-20260614-OFFICE-E",
+            "CAND-20260614-OFFICE-G",
+            "CAND-20260614-POSTCON-B",
+            "CAND-20260614-VILLA-01",
+            "CAND-20260614-VILLA-A",
+            "CAND-20260726-SITE",
+            "CAND-20260729-FACADE-A",
+            "CAND-20260730-FACADE-B",
+            "CAND-20260730-INDUSTRIAL-C",
+            "CAND-20260730-PAVERS-D",
+            "CAND-20260731-COMMERCIAL",
+            "CAND-20260801-FACADE-B",
+            "CAND-20260801-VILLA-A",
+            "CAND-20260801-VILLA-C",
+            "CAND-20260821-GLASS-A",
+            "CAND-20260822-INTERIOR",
+            "CAND-20260909-OFFICE-A",
+            "PRJ-CAND-20260305-01",
+            "PRJ-CAND-20260313-01",
+            "PRJ-CAND-20260507-01"
         ]
     },
     "homepage_hero_media_file": null,
     "_excluded_pending_decision": {
-        "homepage_hero": "The preferred first-party photo is unverified (privacy status, no verified description, no alt text); the licensed stock hero stays until a Media Manager clears a replacement."
+        "homepage_hero": "The preferred first-party photo is unverified (privacy status, no verified description, no alt text); the licensed stock hero stays until a Media Manager clears a replacement.",
+        "CAND-20260523-MALL-01": "Case study written and ready, held out of publishing: its three photographs are privacy_status = unverified (a public shopping-mall floor, where visitors and third-party brands may be identifiable). Publish once a Media Manager clears the privacy review; nothing else about the project is blocking."
     }
 }

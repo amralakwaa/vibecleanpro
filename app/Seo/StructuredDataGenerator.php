@@ -7,6 +7,7 @@ use App\Enums\ServicePricingMode;
 use App\Models\Article;
 use App\Models\BusinessProfile;
 use App\Models\Page;
+use App\Models\Project;
 use App\Models\Service;
 use App\Support\Pricing\PublicPrice;
 
@@ -78,6 +79,7 @@ class StructuredDataGenerator
         $typed = match ($page->type) {
             PageType::Service => $page->pageable instanceof Service ? $this->service($page, $page->pageable) : null,
             PageType::Article => $page->pageable instanceof Article ? $this->article($page, $page->pageable) : null,
+            PageType::Project => $page->pageable instanceof Project ? $this->caseStudy($page, $page->pageable) : null,
             default => null,
         };
 
@@ -329,6 +331,75 @@ class StructuredDataGenerator
     /**
      * @return array<string, mixed>
      */
+    /**
+     * A project page is a case study: a documented piece of work, not an
+     * editorial article and not a service listing. CreativeWork says that
+     * accurately, and `about` is what ties the proof to the service it
+     * supports.
+     *
+     * It deliberately carries only what the WebPage block does not: the
+     * date the work was carried out, the service it evidences, and the
+     * photographs that are the evidence. Repeating name, description and
+     * publication dates here would just duplicate the block above it.
+     *
+     * @return array<string, mixed>
+     */
+    private function caseStudy(Page $page, Project $project): array
+    {
+        $photos = $project->media
+            ->filter(fn ($media) => $media->status?->isPublishable())
+            ->take(6)
+            ->map(fn ($media) => array_filter([
+                '@type' => 'ImageObject',
+                'contentUrl' => $media->url(),
+                'name' => $media->alt_text,
+                'caption' => $media->caption,
+            ]))
+            ->values()
+            ->all();
+
+        $services = $project->services
+            ->sortByDesc(fn (Service $service) => (int) ($service->pivot->is_primary ?? 0))
+            ->filter(fn (Service $service) => $service->page !== null)
+            ->map(fn (Service $service) => [
+                '@type' => 'Service',
+                'name' => $service->name,
+                'url' => $this->canonical->resolve($service->page),
+            ])
+            ->values()
+            ->all();
+
+        // Location intelligence, ready and unused: the moment an editor
+        // sets the district on a project, the case study starts declaring
+        // where the work happened. Nothing is guessed - no area, no
+        // contentLocation, because a district we cannot evidence is a
+        // fabricated local signal.
+        $location = ($project->area || $project->city || $project->neighborhood || $project->landmark)
+            ? array_filter([
+                '@type' => 'Place',
+                'name' => $project->landmark ?: ($project->neighborhood ?: $project->area?->name),
+                'address' => array_filter([
+                    '@type' => 'PostalAddress',
+                    'addressLocality' => $project->area?->name ?: $project->neighborhood,
+                    'addressRegion' => $project->city ?: 'منطقة الرياض',
+                    'addressCountry' => 'SA',
+                ]),
+            ])
+            : null;
+
+        return array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'CreativeWork',
+            'name' => $page->title,
+            'url' => $this->canonical->resolve($page),
+            'dateCreated' => $project->completed_at?->toDateString(),
+            'about' => $services,
+            'contentLocation' => $location,
+            'image' => $photos,
+            'publisher' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],
+        ]);
+    }
+
     private function article(Page $page, Article $article): array
     {
         $data = array_filter([
