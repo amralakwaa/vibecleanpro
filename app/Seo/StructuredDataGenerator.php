@@ -6,10 +6,12 @@ use App\Enums\PageType;
 use App\Enums\ServicePricingMode;
 use App\Models\Article;
 use App\Models\BusinessProfile;
+use App\Models\Faq;
 use App\Models\Page;
 use App\Models\Project;
 use App\Models\Service;
 use App\Support\Pricing\PublicPrice;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Central JSON-LD builder. Every block is built only from real data
@@ -85,6 +87,11 @@ class StructuredDataGenerator
 
         if ($typed) {
             $blocks[] = $typed;
+        }
+
+        $faqs = $page->faqs()->where('is_active', true)->orderBy('sort_order')->get();
+        if ($faqs->isNotEmpty()) {
+            $blocks[] = $this->faqPage($faqs);
         }
 
         return $blocks;
@@ -425,5 +432,22 @@ class StructuredDataGenerator
         }
 
         return $data;
+    }
+
+    /** @param Collection<int, Faq> $faqs */
+    private function faqPage(Collection $faqs): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => $faqs->map(fn ($faq) => [
+                '@type' => 'Question',
+                'name' => $faq->question,
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => $faq->answer,
+                ],
+            ])->values()->all(),
+        ];
     }
 }

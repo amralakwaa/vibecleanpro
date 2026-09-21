@@ -6,6 +6,7 @@ use App\Enums\PageStatus;
 use App\Enums\PageType;
 use App\Models\BusinessProfile;
 use App\Models\ContentBlock;
+use App\Models\Faq;
 use App\Models\Media;
 use App\Models\Page;
 use App\Seo\StructuredDataGenerator;
@@ -205,5 +206,43 @@ class StructuredDataTest extends TestCase
         $this->assertSame(1, $breadcrumbList['itemListElement'][0]['position']);
         $this->assertSame('الرئيسية', $breadcrumbList['itemListElement'][0]['name']);
         $this->assertArrayNotHasKey('item', $breadcrumbList['itemListElement'][1], 'The current page itself must not link to itself in the breadcrumb trail.');
+    }
+
+    public function test_faq_page_schema_is_emitted_when_an_area_page_has_active_faqs(): void
+    {
+        $page = $this->createCompliantAreaPage();
+        Faq::factory()->for($page)->create(['question' => 'ما هي خدماتكم؟', 'answer' => 'نقدم خدمات التنظيف المنزلي.', 'sort_order' => 1]);
+        Faq::factory()->for($page)->create(['question' => 'هل تعملون في الرياض؟', 'answer' => 'نعم، نغطي جميع أحياء الرياض.', 'sort_order' => 2]);
+
+        $faqPage = collect($this->generator->forPage($page->fresh()))->firstWhere('@type', 'FAQPage');
+
+        $this->assertNotNull($faqPage);
+        $this->assertCount(2, $faqPage['mainEntity']);
+        $this->assertSame('Question', $faqPage['mainEntity'][0]['@type']);
+        $this->assertSame('ما هي خدماتكم؟', $faqPage['mainEntity'][0]['name']);
+        $this->assertSame('Answer', $faqPage['mainEntity'][0]['acceptedAnswer']['@type']);
+        $this->assertSame('نقدم خدمات التنظيف المنزلي.', $faqPage['mainEntity'][0]['acceptedAnswer']['text']);
+    }
+
+    public function test_faq_page_schema_is_absent_when_a_page_has_no_faqs(): void
+    {
+        $page = $this->createCompliantAreaPage();
+
+        $types = collect($this->generator->forPage($page))->pluck('@type');
+
+        $this->assertFalse($types->contains('FAQPage'));
+    }
+
+    public function test_faq_page_schema_excludes_inactive_faqs(): void
+    {
+        $page = $this->createCompliantAreaPage();
+        Faq::factory()->for($page)->create(['question' => 'سؤال نشط؟', 'answer' => 'جواب نشط.', 'sort_order' => 1, 'is_active' => true]);
+        Faq::factory()->for($page)->create(['question' => 'سؤال معطل؟', 'answer' => 'جواب معطل.', 'sort_order' => 2, 'is_active' => false]);
+
+        $faqPage = collect($this->generator->forPage($page->fresh()))->firstWhere('@type', 'FAQPage');
+
+        $this->assertNotNull($faqPage);
+        $this->assertCount(1, $faqPage['mainEntity']);
+        $this->assertSame('سؤال نشط؟', $faqPage['mainEntity'][0]['name']);
     }
 }

@@ -82,9 +82,22 @@ class AreaContentSeeder extends Seeder
                 ]);
             }
 
+            // FAQ position marker — activates the FAQ section in the template.
+            $page->contentBlocks()->create([
+                'type' => 'faq',
+                'position' => count($blockTemplate) + 1,
+                'is_active' => true,
+                'data' => [
+                    'heading' => 'أسئلة شائعة',
+                    '_key' => 'faq',
+                    '_version' => self::VERSION,
+                    '_author' => self::AUTHOR,
+                ],
+            ]);
+
             $page->contentBlocks()->create([
                 'type' => 'cta',
-                'position' => count($blockTemplate) + 1,
+                'position' => count($blockTemplate) + 2,
                 'is_active' => true,
                 'data' => [
                     'heading' => $data['cta_heading'],
