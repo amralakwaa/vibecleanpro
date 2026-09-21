@@ -227,6 +227,14 @@ class ProjectDetailTest extends TestCase
     {
         $project = Project::factory()->create(array_filter([
             'area_id' => $area?->id,
+            // Passing an area in a test means the project genuinely is
+            // there, so it is verified - an unverified location never
+            // renders (PublicPageController::renderProject).
+            'location_status' => $area !== null ? 'verified' : 'draft',
+            'location_confidence' => $area !== null ? 4 : 0,
+            'location_source' => $area !== null ? 'internal_record' : null,
+            'location_evidence_type' => $area !== null ? 'site_report' : null,
+            'location_evidence_reference' => $area !== null ? 'site-report-01' : null,
             'title' => $title,
         ]));
 

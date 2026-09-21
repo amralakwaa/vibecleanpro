@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\LocationConfidence;
+use App\Enums\LocationEvidenceType;
+use App\Enums\LocationSource;
+use App\Enums\LocationStatus;
 use App\Enums\MediaStage;
 use App\Models\Concerns\HasPage;
 use App\Observers\ProjectObserver;
@@ -15,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['source_ref', 'area_id', 'title', 'summary', 'challenge', 'site_condition', 'execution_steps', 'outcome', 'completed_at', 'owner_confirmed_at', 'is_featured', 'sort_order'])]
+#[Fillable(['source_ref', 'area_id', 'title', 'summary', 'challenge', 'site_condition', 'execution_steps', 'outcome', 'client_problem', 'client_benefit', 'execution_difference', 'focus_keyword', 'cluster', 'city', 'neighborhood', 'landmark', 'location_note', 'location_source', 'location_evidence_type', 'location_confidence', 'location_evidence_reference', 'location_status', 'verified_at', 'verified_by', 'completed_at', 'owner_confirmed_at', 'is_featured', 'sort_order'])]
 #[ObservedBy(ProjectObserver::class)]
 class Project extends Model
 {
@@ -28,6 +32,11 @@ class Project extends Model
             'completed_at' => 'date',
             'owner_confirmed_at' => 'datetime',
             'is_featured' => 'boolean',
+            'location_source' => LocationSource::class,
+            'location_evidence_type' => LocationEvidenceType::class,
+            'location_confidence' => LocationConfidence::class,
+            'location_status' => LocationStatus::class,
+            'verified_at' => 'datetime',
             'execution_steps' => 'array',
         ];
     }
@@ -74,5 +83,53 @@ class Project extends Model
     public function projectMedia(): HasMany
     {
         return $this->hasMany(ProjectMedia::class)->orderBy('sort_order');
+    }
+
+    public function locationHistory(): HasMany
+    {
+        return $this->hasMany(ProjectLocationHistory::class)->latest('created_at');
+    }
+
+    public function verifiedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    /**
+     * The place fields as one array - what a history row snapshots and
+     * what the observer compares to detect a change.
+     *
+     * @return array<string, mixed>
+     */
+    public function locationSnapshot(): array
+    {
+        return [
+            'area_id' => $this->area_id,
+            'city' => $this->city,
+            'neighborhood' => $this->neighborhood,
+            'landmark' => $this->landmark,
+            'location_note' => $this->location_note,
+            'location_source' => $this->location_source?->value,
+            'location_evidence_type' => $this->location_evidence_type?->value,
+            'location_confidence' => $this->location_confidence?->value,
+            'location_status' => $this->location_status?->value,
+            'location_evidence_reference' => $this->location_evidence_reference,
+        ];
+    }
+
+    /**
+     * May this project's location power SEO? Every condition must hold:
+     * status Verified, confidence at least MediaEvidence (3), an evidence
+     * type AND a reference to the artefact, and a place actually set.
+     * Miss any one and the district stays invisible to search - the gate
+     * wants a decision backed by a document, not a decision alone.
+     */
+    public function hasVerifiedLocation(): bool
+    {
+        return $this->location_status === LocationStatus::Verified
+            && $this->location_confidence?->meetsSeoThreshold() === true
+            && $this->location_evidence_type !== null
+            && filled($this->location_evidence_reference)
+            && ($this->area_id || filled($this->neighborhood) || filled($this->city) || filled($this->landmark));
     }
 }

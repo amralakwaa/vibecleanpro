@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\Projects;
 
+use App\Enums\LocationConfidence;
+use App\Enums\LocationEvidenceType;
+use App\Enums\LocationSource;
+use App\Enums\LocationStatus;
 use App\Enums\MediaStage;
 use App\Enums\PageStatus;
 use App\Enums\PageType;
@@ -74,11 +78,6 @@ class ProjectResource extends Resource
                             Section::make()
                                 ->schema([
                                     TextInput::make('title')->label('العنوان')->required()->maxLength(255),
-                                    Select::make('area_id')
-                                        ->label('المنطقة')
-                                        ->relationship('area', 'name')
-                                        ->searchable()
-                                        ->preload(),
                                     Textarea::make('summary')->label('ملخص المشروع')->rows(3)->columnSpanFull(),
                                     TextInput::make('focus_keyword')
                                         ->label('الكلمة المفتاحية المستهدفة')
@@ -204,16 +203,62 @@ class ProjectResource extends Resource
                                         ->columnSpanFull(),
                                 ]),
 
-                            Section::make('الموقع الجغرافي')
-                                ->description('جاهز وفارغ. لا يُملأ إلا بما تعرفه فعلًا — الحي المخترع إشارة محلية زائفة.')
+                            Section::make('دليل الموقع (Location Evidence)')
+                                ->description('لا يُستخدم الموقع في السيو إلا إذا فُعِّل «موثَّق». الحي المخترع إشارة محلية زائفة.')
                                 ->collapsed()
                                 ->schema([
-                                    TextInput::make('city')->label('المدينة')->maxLength(120),
+                                    Select::make('area_id')
+                                        ->label('المنطقة (الحي)')
+                                        ->relationship('area', 'name')
+                                        ->searchable()
+                                        ->preload()
+                                        ->helperText('حي الرياض الرسمي المرتبط بالمشروع — يربطه بصفحة الحي عند ترقيتها.'),
+                                    TextInput::make('city')->label('المدينة')->maxLength(120)->default('الرياض'),
                                     TextInput::make('neighborhood')->label('المجاورة / الجزء من الحي')->maxLength(120),
-                                    TextInput::make('landmark')->label('معلم قريب')->maxLength(160)
-                                        ->helperText('يُستخدم في الوصف المحلي فقط، ولا يُنشر إن كان يكشف هوية العميل.'),
+                                    TextInput::make('landmark')->label('معلم قريب')->maxLength(160),
+                                    Textarea::make('location_note')
+                                        ->label('وصف موقع المشروع')
+                                        ->rows(2)
+                                        ->maxLength(400)
+                                        ->helperText('وصف داخلي للموقع. لا يُنشر إن كان يكشف هوية العميل.')
+                                        ->columnSpanFull(),
+                                    Select::make('location_source')
+                                        ->label('مصدر المعلومة')
+                                        ->options(LocationSource::options())
+                                        ->native(false)
+                                        ->helperText('القناة التي وصل بها الموقع.'),
+                                    Select::make('location_evidence_type')
+                                        ->label('نوع الدليل')
+                                        ->options(LocationEvidenceType::options())
+                                        ->native(false)
+                                        ->live()
+                                        ->helperText(fn (?string $state) => $state && $t = LocationEvidenceType::tryFrom($state)
+                                            ? $t->description()
+                                            : 'نوع المستند الذي يثبت الموقع — مطلوب للاعتماد.'),
+                                    Select::make('location_confidence')
+                                        ->label('مستوى الثقة')
+                                        ->options(LocationConfidence::options())
+                                        ->default(0)
+                                        ->native(false)
+                                        ->helperText('لا يُستخدم الموقع في السيو إلا عند المستوى 3 (دليل مصوَّر) فأعلى.'),
+                                    TextInput::make('location_evidence_reference')
+                                        ->label('مرجع الإثبات')
+                                        ->maxLength(255)
+                                        ->helperText('اسم ملف الصورة، أو مستند، أو ملاحظة تحقق.'),
+                                    Select::make('location_status')
+                                        ->label('حالة التحقق')
+                                        ->options(LocationStatus::options())
+                                        ->default('draft')
+                                        ->native(false)
+                                        ->helperText('الاعتماد يتطلب: ثقة ≥ 3 + نوع دليل + مرجع. كل تغيير حالة يُسجَّل في التاريخ.'),
+                                    Placeholder::make('verification_stamp')
+                                        ->label('توقيع الاعتماد')
+                                        ->content(fn (?Project $record) => $record?->verified_at
+                                            ? ($record->verifiedBy?->name ?? 'غير معروف').' — '.$record->verified_at->format('Y-m-d H:i')
+                                            : 'لم يُعتمد بعد.')
+                                        ->columnSpanFull(),
                                 ])
-                                ->columns(3),
+                                ->columns(2),
 
                             Section::make('تأكيد المالك')
                                 ->description('لا تُنشر صفحة مشروع قبل أن يؤكد المالك أن العمل نُفّذ كما هو موصوف: الخدمة، الحي، التاريخ، والصور.')

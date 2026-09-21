@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[ObservedBy(AreaObserver::class)]
-#[Fillable(['area_group_id', 'tier', 'promoted_at', 'promotion_reason', 'name', 'slug', 'sort_order'])]
+#[Fillable(['area_group_id', 'tier', 'promoted_at', 'promotion_reason', 'promoted_by', 'name', 'slug', 'sort_order'])]
 class Area extends Model
 {
     /** @use HasFactory<AreaFactory> */
@@ -33,6 +33,11 @@ class Area extends Model
     public function group(): BelongsTo
     {
         return $this->belongsTo(AreaGroup::class, 'area_group_id');
+    }
+
+    public function promotedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'promoted_by');
     }
 
     public function services(): BelongsToMany

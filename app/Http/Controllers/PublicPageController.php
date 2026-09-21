@@ -358,11 +358,17 @@ class PublicPageController extends Controller
         $project = $page->pageable;
         $project->load(['area.page', 'media']);
 
-        // Only a genuinely reachable Area is ever linked - $project->area
-        // itself always renders as plain text (see pages/project.blade.php).
-        $areaPage = $project->area?->page;
+        // An unverified district is a fabricated local signal, so it is
+        // never exposed - not in the facts rail, not as a related-by-area
+        // link, not in the schema (gated separately in the generator).
+        // Only a verified location may drive any of that.
+        $displayArea = $project->hasVerifiedLocation() ? $project->area : null;
+
+        // Only a genuinely reachable Area is ever linked; a verified but
+        // unpublished area still renders as plain text.
+        $areaPage = $displayArea?->page;
         $linkedArea = $areaPage && $areaPage->status === PageStatus::Published && (! $areaPage->published_at || $areaPage->published_at->isPast())
-            ? $project->area
+            ? $displayArea
             : null;
 
         // The primary service is the reason the case study exists, so it
@@ -378,7 +384,7 @@ class PublicPageController extends Controller
         // link to nothing at all, because no project carries an area yet.
         $serviceIds = $relatedServices->pluck('id');
 
-        $relatedProjects = $project->area
+        $relatedProjects = $displayArea
             ? Project::query()
                 ->whereKeyNot($project->id)
                 ->where('area_id', $project->area_id)
@@ -416,13 +422,14 @@ class PublicPageController extends Controller
             'businessProfile' => $businessProfile,
             'project' => $project,
             'faqs' => $faqs,
+            'displayArea' => $displayArea,
             'linkedArea' => $linkedArea,
             'relatedServices' => $relatedServices,
             'relatedProjects' => $relatedProjects,
             'relatedArticles' => $relatedArticles,
-            'relatedProjectsAreByArea' => (bool) $project->area,
+            'relatedProjectsAreByArea' => (bool) $displayArea,
             'relatedProjectsLabel' => match (true) {
-                (bool) $project->area => 'مشاريع أخرى في نفس المنطقة',
+                (bool) $displayArea => 'مشاريع أخرى في نفس المنطقة',
                 filled($project->cluster) => 'مشاريع أخرى من النوع نفسه',
                 default => 'مشاريع أخرى في نفس الخدمة',
             },

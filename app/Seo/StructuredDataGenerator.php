@@ -369,12 +369,12 @@ class StructuredDataGenerator
             ->values()
             ->all();
 
-        // Location intelligence, ready and unused: the moment an editor
-        // sets the district on a project, the case study starts declaring
-        // where the work happened. Nothing is guessed - no area, no
-        // contentLocation, because a district we cannot evidence is a
-        // fabricated local signal.
-        $location = ($project->area || $project->city || $project->neighborhood || $project->landmark)
+        // Location powers SEO only when it is verified. An unverified
+        // place field is stored and shown in the panel, but never emitted
+        // here - a district we cannot stand behind is a fabricated local
+        // signal, and hasVerifiedLocation() is the single gate that
+        // decides it.
+        $location = $project->hasVerifiedLocation()
             ? array_filter([
                 '@type' => 'Place',
                 'name' => $project->landmark ?: ($project->neighborhood ?: $project->area?->name),

@@ -58,7 +58,7 @@
     $unpairedAfter = $afterImages->slice($pairCount)->values();
 
     $hasEvidence = $project->media->isNotEmpty();
-    $hasContext = $relatedServices->isNotEmpty() || $project->area || $project->completed_at;
+    $hasContext = $relatedServices->isNotEmpty() || $displayArea || $project->completed_at;
     $hasRelatedPhotos = $relatedProjects->contains(fn ($related) => $related->media->isNotEmpty());
 
     $hasFaqSection = $faqs->isNotEmpty() && $page->contentBlocks->contains(fn ($block) => $block->type === 'faq' && $block->is_active);
@@ -120,14 +120,14 @@
                                 </dd>
                             </div>
                         @endif
-                        @if ($project->area)
+                        @if ($displayArea)
                             <div>
                                 <dt class="text-neutral-500">المنطقة</dt>
                                 <dd class="mt-1 font-medium text-ink-950">
                                     @if ($linkedArea)
-                                        <a href="{{ $urlResolver->urlForPage($linkedArea->page) }}" class="inline-flex min-h-11 items-center gap-1.5 hover:text-primary-700 underline-offset-4 hover:underline transition-colors"><x-public.icon name="map-pin" class="w-4 h-4 text-primary-600" />{{ $project->area->name }}</a>
+                                        <a href="{{ $urlResolver->urlForPage($linkedArea->page) }}" class="inline-flex min-h-11 items-center gap-1.5 hover:text-primary-700 underline-offset-4 hover:underline transition-colors"><x-public.icon name="map-pin" class="w-4 h-4 text-primary-600" />{{ $displayArea->name }}</a>
                                     @else
-                                        <span class="inline-flex min-h-11 items-center gap-1.5"><x-public.icon name="map-pin" class="w-4 h-4 text-primary-600" />{{ $project->area->name }}</span>
+                                        <span class="inline-flex min-h-11 items-center gap-1.5"><x-public.icon name="map-pin" class="w-4 h-4 text-primary-600" />{{ $displayArea->name }}</span>
                                     @endif
                                 </dd>
                             </div>
