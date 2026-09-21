@@ -52,21 +52,16 @@ class ProjectObserver
                 $errors['location_evidence_reference'] = 'الاعتماد يتطلب مرجع الإثبات (اسم ملف أو مستند).';
             }
 
+            if ($project->verified_at === null) {
+                $errors['verified_at'] = 'الاعتماد يتطلب تاريخ الاعتماد (تتم إدارته عبر الـ Workflow).';
+            }
+
+            if ($project->verified_by === null) {
+                $errors['verified_by'] = 'الاعتماد يتطلب تحديد من قام بالاعتماد (تتم إدارته عبر الـ Workflow).';
+            }
+
             if ($errors !== []) {
                 throw ValidationException::withMessages($errors);
-            }
-        }
-
-        // Stamp who verified it and when, the moment status becomes
-        // Verified - and clear the stamp if it ever leaves that state, so
-        // a stale signature cannot linger on a downgraded claim.
-        if ($project->isDirty('location_status')) {
-            if ($project->location_status === LocationStatus::Verified) {
-                $project->verified_at = $project->verified_at ?? now();
-                $project->verified_by = $project->verified_by ?? Auth::id();
-            } else {
-                $project->verified_at = null;
-                $project->verified_by = null;
             }
         }
     }
@@ -103,7 +98,7 @@ class ProjectObserver
             'old_location' => $old,
             'new_location' => $project->locationSnapshot(),
             'source' => $project->location_source?->value,
-            'changed_by' => Auth::id(),
+            'changed_by' => $project->location_changed_by ?? Auth::id(),
             'created_at' => now(),
         ]);
     }

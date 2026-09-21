@@ -26,6 +26,11 @@ class Project extends Model
     /** @use HasFactory<ProjectFactory> */
     use HasFactory, HasPage, SoftDeletes;
 
+    /**
+     * Transient property to pass actor context to observers for history tracking.
+     */
+    public ?int $location_changed_by = null;
+
     protected function casts(): array
     {
         return [
