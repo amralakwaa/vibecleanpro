@@ -179,7 +179,7 @@ class AboutPageTest extends TestCase
         $html = $this->get('/about')->assertOk()->getContent();
 
         $this->assertStringContainsString('كتلة-إضافية-من-المحرر', $html);
-        $this->assertSame(1, substr_count($html, 'سؤال-عن-الشركة؟'));
+        $this->assertSame(1, substr_count($this->stripScripts($html), 'سؤال-عن-الشركة؟'));
         $this->assertLessThan(mb_strpos($html, 'كتلة-إضافية-من-المحرر'), mb_strpos($html, 'مؤسس-قبل-الكتل'));
     }
 

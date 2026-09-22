@@ -57,6 +57,21 @@
         ->filter()
         ->mapWithKeys(fn ($page) => [$legalPageTitles[$page->slug]['title'] => app(\App\Seo\UrlResolver::class)->urlForPage($page)])
         ->all();
+
+    // Trust & policy hub links for the footer column.
+    $trustPolicyTitles = [
+        'trust'               => ['title' => 'مركز الثقة', 'type' => \App\Enums\PageType::Trust],
+        'complaints'          => ['title' => 'الشكاوى والتعويضات', 'type' => \App\Enums\PageType::Legal],
+        'cancellation'        => ['title' => 'الإلغاء والمدفوعات', 'type' => \App\Enums\PageType::Legal],
+        'service-scope'       => ['title' => 'نطاق الخدمة', 'type' => \App\Enums\PageType::Legal],
+        'licenses-compliance' => ['title' => 'الامتثال والتراخيص', 'type' => \App\Enums\PageType::Legal],
+    ];
+    $trustLinks = collect($trustPolicyTitles)
+        ->map(fn (array $meta, string $slug) => \App\Models\Page::query()
+            ->where('slug', $slug)->where('type', $meta['type'])->published()->first())
+        ->filter()
+        ->mapWithKeys(fn ($page) => [$trustPolicyTitles[$page->slug]['title'] => app(\App\Seo\UrlResolver::class)->urlForPage($page)])
+        ->all();
 @endphp
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -129,7 +144,7 @@
         {{ $slot }}
     </main>
 
-    <x-public.footer :business-profile="$businessProfile" :nav-items="$navItems" :legal-links="$legalLinks" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
+    <x-public.footer :business-profile="$businessProfile" :nav-items="$navItems" :legal-links="$legalLinks" :trust-links="$trustLinks" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
 
     @if ($mobileBar)
         <x-public.mobile-cta-bar :quote-url="route('public.quote')" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />

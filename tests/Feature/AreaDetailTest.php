@@ -299,9 +299,10 @@ class AreaDetailTest extends TestCase
         Faq::factory()->for($page)->create(['question' => 'هل تخدمون يوميًا؟', 'answer' => 'نعم طوال الأسبوع.']);
 
         $content = $this->get('/areas/area-faq-placement')->assertOk()->getContent();
+        $body = $this->stripScripts($content);
 
-        $this->assertSame(1, substr_count($content, 'أسئلة عن هذا الحي'));
-        $this->assertSame(1, substr_count($content, 'هل تخدمون يوميًا؟'));
+        $this->assertSame(1, substr_count($body, 'أسئلة عن هذا الحي'));
+        $this->assertSame(1, substr_count($body, 'هل تخدمون يوميًا؟'));
         $this->assertStringContainsString('نعم طوال الأسبوع.', $content);
         $this->assertLessThan(
             mb_strpos($content, 'تحتاج خدمة تنظيف في '),

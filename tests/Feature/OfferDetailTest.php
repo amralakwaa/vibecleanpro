@@ -112,9 +112,10 @@ class OfferDetailTest extends TestCase
         Faq::factory()->for($offer->page)->create(['question' => 'هل يشمل الضريبة؟', 'answer' => 'نعم.']);
 
         $content = $this->get('/offers/faq-offer')->assertOk()->getContent();
+        $body = $this->stripScripts($content);
 
-        $this->assertSame(1, substr_count($content, 'أسئلة عن هذا العرض'));
-        $this->assertSame(1, substr_count($content, 'هل يشمل الضريبة؟'));
+        $this->assertSame(1, substr_count($body, 'أسئلة عن هذا العرض'));
+        $this->assertSame(1, substr_count($body, 'هل يشمل الضريبة؟'));
         $this->assertLessThan(
             mb_strpos($content, 'جاهز للاستفادة من العرض'),
             mb_strpos($content, 'أسئلة عن هذا العرض'),

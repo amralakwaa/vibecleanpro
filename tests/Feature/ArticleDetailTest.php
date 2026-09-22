@@ -95,9 +95,10 @@ class ArticleDetailTest extends TestCase
         Faq::factory()->for($article->page)->create(['question' => 'سؤال المقال؟', 'answer' => 'إجابة المقال.']);
 
         $content = $this->get('/blog/with-faq')->assertOk()->getContent();
+        $body = $this->stripScripts($content);
 
-        $this->assertSame(1, substr_count($content, 'أسئلة عن هذا الموضوع'));
-        $this->assertSame(1, substr_count($content, 'سؤال المقال؟'));
+        $this->assertSame(1, substr_count($body, 'أسئلة عن هذا الموضوع'));
+        $this->assertSame(1, substr_count($body, 'سؤال المقال؟'));
         $this->assertStringContainsString('إجابة المقال.', $content);
         $this->assertLessThan(
             mb_strpos($content, 'تفضّل أن يقوم بذلك فريق متخصص'),

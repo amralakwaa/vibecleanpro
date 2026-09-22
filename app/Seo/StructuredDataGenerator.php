@@ -2,8 +2,10 @@
 
 namespace App\Seo;
 
+use App\Enums\AreaTier;
 use App\Enums\PageType;
 use App\Enums\ServicePricingMode;
+use App\Models\Area;
 use App\Models\Article;
 use App\Models\BusinessProfile;
 use App\Models\Faq;
@@ -90,7 +92,7 @@ class StructuredDataGenerator
         }
 
         $faqs = $page->faqs()->where('is_active', true)->orderBy('sort_order')->get();
-        if ($faqs->isNotEmpty()) {
+        if ($faqs->isNotEmpty() && $page->type !== PageType::Service) {
             $blocks[] = $this->faqPage($faqs);
         }
 
@@ -152,7 +154,21 @@ class StructuredDataGenerator
         // when the editor entered a name and kept the section visible, and
         // nothing else about the person is asserted (no awards, no dates).
         if ($profile->city) {
-            $data['areaServed'] = ['@type' => 'City', 'name' => $profile->city];
+            // Lead with the city, then add Tier-A neighbourhoods that have
+            // a published page — real destinations, not invented coverage claims.
+            $tierAreas = Area::query()
+                ->where('tier', AreaTier::A)
+                ->whereHas('page', fn ($q) => $q->published())
+                ->get(['name']);
+
+            if ($tierAreas->isNotEmpty()) {
+                $data['areaServed'] = array_merge(
+                    [['@type' => 'City', 'name' => $profile->city]],
+                    $tierAreas->map(fn ($a) => ['@type' => 'Place', 'name' => $a->name])->all(),
+                );
+            } else {
+                $data['areaServed'] = ['@type' => 'City', 'name' => $profile->city];
+            }
         }
 
         if ($hours = $this->openingHours($profile)) {

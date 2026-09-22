@@ -11,6 +11,7 @@ use App\Models\Faq;
 use App\Models\Media;
 use App\Models\Page;
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Concerns\AssertsNoEmptyState;
@@ -172,9 +173,10 @@ class ProjectDetailTest extends TestCase
         Faq::factory()->for($page)->create(['question' => 'كم استغرق؟', 'answer' => 'يومان.']);
 
         $content = $this->get('/projects/villa-faq')->assertOk()->getContent();
+        $body = $this->stripScripts($content);
 
-        $this->assertSame(1, substr_count($content, 'أسئلة عن هذا المشروع'));
-        $this->assertSame(1, substr_count($content, 'كم استغرق؟'));
+        $this->assertSame(1, substr_count($body, 'أسئلة عن هذا المشروع'));
+        $this->assertSame(1, substr_count($body, 'كم استغرق؟'));
         $this->assertStringContainsString('يومان.', $content);
         $this->assertLessThan(
             mb_strpos($content, 'نتيجة مشابهة لمساحتك'),
@@ -235,6 +237,8 @@ class ProjectDetailTest extends TestCase
             'location_source' => $area !== null ? 'internal_record' : null,
             'location_evidence_type' => $area !== null ? 'site_report' : null,
             'location_evidence_reference' => $area !== null ? 'site-report-01' : null,
+            'verified_at' => $area !== null ? now() : null,
+            'verified_by' => $area !== null ? User::factory() : null,
             'title' => $title,
         ]));
 

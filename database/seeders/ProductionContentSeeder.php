@@ -283,10 +283,12 @@ class ProductionContentSeeder extends Seeder
         $page->seoMetadata()->create([
             'meta_title' => $metaTitle,
             'meta_description' => $metaDescription,
-            // Tier B areas are noindex by rule; project pages stay noindex
-            // until the owner adds their district, date and scope, because
-            // until then their text is near-identical from one to the next.
-            'robots_index' => ! ($owner instanceof Project || ($owner instanceof Area && $owner->tier === AreaTier::B)),
+            // Project pages stay noindex until the owner confirms their
+            // district, date and scope, because until then their text is
+            // near-identical from one to the next. All other page types
+            // start indexable; actual indexing is gated by page status
+            // (Draft is never indexed) and the PublishingGate.
+            'robots_index' => ! ($owner instanceof Project),
             'robots_follow' => true,
         ]);
 

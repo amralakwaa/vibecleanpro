@@ -7,7 +7,6 @@ use App\Enums\PageStatus;
 use App\Enums\ServiceCapability;
 use App\Seo\PublishingGate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Tests\Feature\Seo\Concerns\BuildsSeoFixtures;
 use Tests\TestCase;
 
@@ -38,34 +37,14 @@ class CapabilityAndTierGateTest extends TestCase
         $this->assertSame('pass', $this->check($page, 'service_capability')->severity->value);
     }
 
-    public function test_moving_an_area_to_tier_b_makes_its_page_noindex(): void
-    {
-        $page = $this->createCompliantAreaPage(status: PageStatus::Draft);
-        $this->assertNotFalse($page->fresh()->seoMetadata?->robots_index);
-
-        $page->pageable->update(['tier' => AreaTier::B]);
-
-        $this->assertFalse($page->fresh()->seoMetadata->robots_index);
-        $this->assertSame('pass', $this->check($page, 'area_tier')->severity->value);
-    }
-
-    public function test_a_tier_b_page_cannot_be_switched_back_to_indexable_from_any_save_path(): void
+    public function test_a_tier_b_service_area_can_be_indexable_if_compliant(): void
     {
         $page = $this->createCompliantAreaPage(status: PageStatus::Draft);
         $page->pageable->update(['tier' => AreaTier::B]);
-
         $page->seoMetadata()->updateOrCreate([], ['robots_index' => true]);
 
-        $this->assertFalse($page->fresh()->seoMetadata->robots_index);
-    }
-
-    public function test_the_gate_still_rejects_an_indexable_tier_b_page_written_around_the_models(): void
-    {
-        $page = $this->createCompliantAreaPage(status: PageStatus::Draft);
-        $page->pageable->update(['tier' => AreaTier::B]);
-        DB::table('seo_metadata')->where('page_id', $page->id)->update(['robots_index' => true]);
-
-        $this->assertSame('error', $this->check($page, 'area_tier')->severity->value);
+        // Should pass the gate check for area_tier now that Tier B can be indexable.
+        $this->assertSame('pass', $this->check($page, 'area_tier')->severity->value);
     }
 
     public function test_a_tier_c_area_is_never_published(): void

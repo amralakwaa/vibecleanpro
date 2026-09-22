@@ -7,13 +7,14 @@
     'businessProfile',
     'navItems' => [],
     'legalLinks' => [],
+    'trustLinks' => [],
     'whatsappUrl' => null,
     'phoneUrl' => null,
 ])
 
 <footer class="bg-ink-950 text-ink-200">
     <x-public.container width="wide" class="py-14">
-        <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
             <div>
                 <div class="flex items-center gap-2.5 font-bold text-white">
                     @if ($businessProfile?->logo)
@@ -57,6 +58,17 @@
                     <p class="text-sm font-semibold text-white mb-3">روابط سريعة</p>
                     <ul class="space-y-2 text-sm">
                         @foreach ($navItems as $label => $url)
+                            <li><a href="{{ $url }}" class="hover:text-white transition-colors">{{ $label }}</a></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if ($trustLinks)
+                <div>
+                    <p class="text-sm font-semibold text-white mb-3">الثقة والسياسات</p>
+                    <ul class="space-y-2 text-sm">
+                        @foreach ($trustLinks as $label => $url)
                             <li><a href="{{ $url }}" class="hover:text-white transition-colors">{{ $label }}</a></li>
                         @endforeach
                     </ul>

@@ -39,6 +39,29 @@ class ServicesIndexController extends Controller
 
         $canonicalPath = '/services'.($services->currentPage() > 1 ? '?page='.$services->currentPage() : '');
 
+        $itemList = [
+            '@context' => 'https://schema.org',
+            '@type' => 'ItemList',
+            'name' => 'خدمات التنظيف في الرياض',
+            'numberOfItems' => $services->total(),
+            'itemListElement' => $services->values()->map(fn (Service $service, int $i) => array_filter([
+                '@type' => 'ListItem',
+                'position' => $services->firstItem() + $i,
+                'name' => $service->name,
+                'url' => $service->page ? $this->urlResolver->absoluteUrl('/services/'.$service->page->slug) : null,
+                'description' => $service->short_description ?: null,
+            ]))->values()->all(),
+        ];
+
+        $breadcrumbList = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'الرئيسية', 'item' => $this->urlResolver->absoluteUrl('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'خدماتنا'],
+            ],
+        ];
+
         $seo = new SeoHeadData(
             title: 'خدمات التنظيف | '.($businessProfile?->name ?? config('app.name')),
             metaDescription: 'تصفح جميع خدمات التنظيف المتاحة لدينا في الرياض.',
@@ -51,7 +74,7 @@ class ServicesIndexController extends Controller
                 'url' => $this->urlResolver->absoluteUrl('/services'),
                 'type' => 'website',
             ],
-            structuredData: [],
+            structuredData: [$itemList, $breadcrumbList],
             breadcrumbs: [
                 new BreadcrumbItem('الرئيسية', '/'),
                 new BreadcrumbItem('خدماتنا', null),

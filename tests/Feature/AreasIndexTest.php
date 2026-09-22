@@ -96,9 +96,12 @@ class AreasIndexTest extends TestCase
         $this->publishedArea('grouped-area', $group);
 
         $mixed = $this->get('/areas')->assertOk()->getContent();
+        // Strip JSON-LD blocks before position checks — the schema may list
+        // areas in a different order than the visual HTML grouping.
+        $mixedBody = preg_replace('/<script type="application\/ld\+json">.*?<\/script>/su', '', $mixed);
         $this->assertStringContainsString('مناطق أخرى', $mixed);
-        $this->assertLessThan(mb_strpos($mixed, 'مناطق أخرى'), mb_strpos($mixed, 'مجموعة-حقيقية'));
-        $this->assertLessThan(mb_strpos($mixed, 'lonely-ungrouped'), mb_strpos($mixed, 'مناطق أخرى'));
+        $this->assertLessThan(mb_strpos($mixedBody, 'مناطق أخرى'), mb_strpos($mixedBody, 'مجموعة-حقيقية'));
+        $this->assertLessThan(mb_strpos($mixedBody, 'lonely-ungrouped'), mb_strpos($mixedBody, 'مناطق أخرى'));
     }
 
     public function test_service_counts_are_real_and_absent_when_zero(): void

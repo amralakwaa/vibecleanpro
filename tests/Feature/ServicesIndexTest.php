@@ -80,13 +80,16 @@ class ServicesIndexTest extends TestCase
         $this->publishedService('uncategorised-svc', ['sort_order' => 9]);
 
         $html = $this->get('/services')->assertOk()->getContent();
+        // Strip JSON-LD blocks before position checks — the schema may list
+        // services in a different order than the visual HTML grouping.
+        $body = preg_replace('/<script type="application\/ld\+json">.*?<\/script>/su', '', $html);
 
         $this->assertMatchesRegularExpression('/<h2[^>]*>فئة-مبكرة<\/h2>/u', $html);
-        $this->assertLessThan(mb_strpos($html, 'فئة-متأخرة'), mb_strpos($html, 'فئة-مبكرة'));
-        $this->assertLessThan(mb_strpos($html, 'later-cat-svc'), mb_strpos($html, 'earlier-cat-svc'));
+        $this->assertLessThan(mb_strpos($body, 'فئة-متأخرة'), mb_strpos($body, 'فئة-مبكرة'));
+        $this->assertLessThan(mb_strpos($body, 'later-cat-svc'), mb_strpos($body, 'earlier-cat-svc'));
         // Uncategorised services close the list under a neutral heading,
         // and a category heading is never a link to a page that does not exist.
-        $this->assertLessThan(mb_strpos($html, 'uncategorised-svc'), mb_strpos($html, 'خدمات أخرى'));
+        $this->assertLessThan(mb_strpos($body, 'uncategorised-svc'), mb_strpos($body, 'خدمات أخرى'));
         $this->assertDoesNotMatchRegularExpression('/<a[^>]*>\s*فئة-مبكرة\s*</u', $html);
     }
 

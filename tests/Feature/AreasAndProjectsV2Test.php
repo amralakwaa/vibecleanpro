@@ -12,6 +12,7 @@ use App\Models\ContentBlock;
 use App\Models\Media;
 use App\Models\Page;
 use App\Models\Project;
+use App\Models\User;
 use Database\Seeders\InitialMediaSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -109,7 +110,7 @@ class AreasAndProjectsV2Test extends TestCase
         $this->seed(InitialMediaSeeder::class);
         $areaPage = $this->createCompliantAreaPage(slug: 'case-area');
         $service = $this->createCompliantServicePage(slug: 'case-svc')->pageable;
-        $project = $this->publishedProject('case-study', ['title' => 'دراسة-الحالة', 'area_id' => $areaPage->pageable->id, 'location_status' => 'verified', 'location_confidence' => 4, 'location_source' => 'internal_record', 'location_evidence_type' => 'site_report', 'location_evidence_reference' => 'site-report-01', 'completed_at' => '2026-03-01', 'summary' => 'خلاصة-من-الإدارة']);
+        $project = $this->publishedProject('case-study', ['title' => 'دراسة-الحالة', 'area_id' => $areaPage->pageable->id, 'location_status' => 'verified', 'location_confidence' => 4, 'location_source' => 'internal_record', 'location_evidence_type' => 'site_report', 'location_evidence_reference' => 'site-report-01', 'completed_at' => '2026-03-01', 'summary' => 'خلاصة-من-الإدارة', 'verified_at' => now(), 'verified_by' => User::factory()]);
         $project->services()->attach($service);
         $after = Media::factory()->create(['alt_text' => 'النتيجة-الحقيقية']);
         $project->media()->attach($after->id, ['stage' => MediaStage::After->value, 'sort_order' => 0]);

@@ -17,4 +17,10 @@ abstract class TestCase extends BaseTestCase
         // this one job is faked - ResponsiveImagesTest runs it explicitly.
         Bus::fake([GenerateMediaVariants::class]);
     }
+
+    /** Strip all <script> blocks so substr_count assertions skip JSON-LD content. */
+    protected function stripScripts(string $html): string
+    {
+        return preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html);
+    }
 }

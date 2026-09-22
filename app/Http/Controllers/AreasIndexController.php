@@ -53,6 +53,30 @@ class AreasIndexController extends Controller
 
         $businessProfileName = $businessProfile?->name ?? config('app.name');
 
+        $publishedAreas = $areas->filter(fn (Area $area) => $area->page !== null)->values();
+
+        $itemList = [
+            '@context' => 'https://schema.org',
+            '@type' => 'ItemList',
+            'name' => 'مناطق تغطية خدمات التنظيف في الرياض',
+            'numberOfItems' => $publishedAreas->count(),
+            'itemListElement' => $publishedAreas->values()->map(fn (Area $area, int $i) => array_filter([
+                '@type' => 'ListItem',
+                'position' => $i + 1,
+                'name' => $area->name,
+                'url' => $this->urlResolver->absoluteUrl('/areas/'.$area->page->slug),
+            ]))->values()->all(),
+        ];
+
+        $breadcrumbList = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'الرئيسية', 'item' => $this->urlResolver->absoluteUrl('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'مناطق التغطية'],
+            ],
+        ];
+
         $seo = new SeoHeadData(
             title: 'مناطق التغطية | '.$businessProfileName,
             metaDescription: 'تعرف على المناطق التي نقدم فيها خدمات التنظيف في الرياض.',
@@ -65,7 +89,7 @@ class AreasIndexController extends Controller
                 'url' => $this->urlResolver->absoluteUrl('/areas'),
                 'type' => 'website',
             ],
-            structuredData: [],
+            structuredData: [$itemList, $breadcrumbList],
             breadcrumbs: [
                 new BreadcrumbItem('الرئيسية', '/'),
                 new BreadcrumbItem('مناطق التغطية', null),

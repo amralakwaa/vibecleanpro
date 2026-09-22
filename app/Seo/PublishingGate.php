@@ -322,7 +322,6 @@ class PublishingGate
 
         return match (true) {
             $area->tier === AreaTier::C => $this->error('area_tier', 'حي من الطبقة C سجل فقط - لا تُنشر له صفحة. رقِّه إلى B أو A أولًا.'),
-            $area->tier === AreaTier::B && $page->seoMetadata?->robots_index !== false => $this->error('area_tier', 'صفحة حي من الطبقة B يجب أن تكون noindex - صفحات التغطية لا تدخل فهرس Google (منع صفحات Doorway).'),
             default => $this->pass('area_tier', "طبقة الحي: {$area->tier->label()}."),
         };
     }

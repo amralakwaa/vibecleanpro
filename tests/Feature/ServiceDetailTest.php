@@ -138,12 +138,13 @@ class ServiceDetailTest extends TestCase
         Faq::factory()->for($page)->create(['question' => 'هل يوجد ضمان؟', 'answer' => 'نلتزم بمراجعة النتيجة معك.']);
 
         $content = $this->get('/services/service-faq-single-pass')->assertOk()->getContent();
+        $body = $this->stripScripts($content);
 
         // The page renders <x-public.blocks> twice (except=faq, then
         // only=faq); the two passes must be disjoint, so neither the FAQ
         // heading nor a question may appear more than once.
-        $this->assertSame(1, substr_count($content, 'أسئلة تظهر مرة واحدة فقط'));
-        $this->assertSame(1, substr_count($content, 'هل يوجد ضمان؟'));
+        $this->assertSame(1, substr_count($body, 'أسئلة تظهر مرة واحدة فقط'));
+        $this->assertSame(1, substr_count($body, 'هل يوجد ضمان؟'));
         $this->assertStringContainsString('نلتزم بمراجعة النتيجة معك.', $content);
     }
 

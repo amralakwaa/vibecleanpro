@@ -3,10 +3,22 @@
 namespace App\Enums;
 
 /**
- * Indexing tier of a district page (RIYADH_AREAS_MASTER_MAP §1). Only Tier A
- * - proven search demand plus content written for that district - may be
- * indexed; Tier B is a noindex coverage page, so a long list of similar
- * district pages can never become doorway pages in Google's index.
+ * Operational tier of a district page.
+ *
+ * Tier A ("Evidence-Rich Local Authority") has verified local projects,
+ * project evidence, local media and case studies - it is a full local
+ * authority page backed by real executed work.
+ *
+ * Tier B ("Service Area") may still be published and indexable when its
+ * content passes the PublishingGate quality checks (unique SEO metadata,
+ * genuine useful content, not a doorway page). A verified project is NOT
+ * a prerequisite for Tier B indexability.
+ *
+ * Tier C is a record-only entry with no publishable page.
+ *
+ * Promotion from B to A is a deliberate human step via areas:promote,
+ * recorded with who/when/why. A Tier B page becoming indexable does NOT
+ * auto-promote it to A.
  */
 enum AreaTier: string
 {
@@ -17,8 +29,8 @@ enum AreaTier: string
     public function label(): string
     {
         return match ($this) {
-            self::A => 'A — صفحة محلية كاملة (تُفهرس)',
-            self::B => 'B — صفحة تغطية (noindex)',
+            self::A => 'A — سلطة محلية بأدلة حقيقية',
+            self::B => 'B — صفحة خدمة منطقة',
             self::C => 'C — سجل فقط (بلا صفحة منشورة)',
         };
     }

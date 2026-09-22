@@ -46,13 +46,15 @@ class ProductionContentSeederTest extends TestCase
         $this->assertTrue(Page::query()->where('slug', 'privacy')->exists());
     }
 
-    public function test_tiers_decide_the_page_and_its_indexing(): void
+    public function test_tiers_decide_the_page_and_its_content(): void
     {
         $this->seed(ProductionContentSeeder::class);
 
         $tierB = Area::query()->where('slug', 'hittin')->first();
         $this->assertSame(AreaTier::B, $tierB->tier);
-        $this->assertFalse($tierB->page->seoMetadata->robots_index);
+        // Tier B pages start indexable — actual indexing is gated by page
+        // status (Draft) and the PublishingGate, not the tier itself.
+        $this->assertTrue($tierB->page->seoMetadata->robots_index);
         $this->assertSame(2, $tierB->page->contentBlocks()->count());
 
         $tierA = Area::query()->where('slug', 'al-olaya')->first();

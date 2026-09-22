@@ -31,6 +31,8 @@ class AreaPromotionTest extends TestCase
             'location_confidence' => 4,
             'location_evidence_type' => 'contract',
             'location_evidence_reference' => 'contract-1',
+            'verified_at' => now(),
+            'verified_by' => User::factory(),
         ]);
         $page = Page::factory()->create(['type' => PageType::Project, 'slug' => 'p-'.$area->id, 'status' => PageStatus::Draft]);
         $project->page()->save($page);

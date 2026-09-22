@@ -83,14 +83,14 @@ class StandalonePagesTest extends TestCase
         $this->assertStringContainsString('سؤال-عام-من-المخزون؟', $html);
         $this->assertStringNotContainsString('سؤال-عام-معطل؟', $html);
         $this->assertLessThan(mb_strpos($html, 'سؤال-عام-من-المخزون؟'), mb_strpos($html, 'سؤال-عام-أول؟'));
-        $this->assertSame(1, substr_count($html, 'سؤال-عام-أول؟'));
+        $this->assertSame(1, substr_count($this->stripScripts($html), 'سؤال-عام-أول؟'));
 
         // A page-specific FAQ on the hub itself does not get merged in:
         // the block's source decides, one set at a time.
         Faq::factory()->for($hub)->create(['question' => 'سؤال-خاص-بالمركز؟', 'answer' => 'إجابة.']);
         $again = $this->get('/faq')->getContent();
         $this->assertStringContainsString('سؤال-عام-من-المخزون؟', $again);
-        $this->assertStringNotContainsString('سؤال-خاص-بالمركز؟', $again);
+        $this->assertStringNotContainsString('سؤال-خاص-بالمركز؟', $this->stripScripts($again));
     }
 
     public function test_a_faq_block_left_on_page_source_never_pulls_the_pool_in_even_with_no_page_faqs(): void
@@ -116,8 +116,9 @@ class StandalonePagesTest extends TestCase
 
         $html = $this->get('/service-guarantee')->assertOk()->getContent();
 
-        $this->assertSame(1, substr_count($html, 'سؤال-خاص-بالضمان؟'));
-        $this->assertStringNotContainsString('سؤال-عام-لا-يظهر؟', $html);
+        $body = $this->stripScripts($html);
+        $this->assertSame(1, substr_count($body, 'سؤال-خاص-بالضمان؟'));
+        $this->assertStringNotContainsString('سؤال-عام-لا-يظهر؟', $body);
     }
 
     public function test_a_standalone_page_without_a_faq_block_never_pulls_the_pool_in(): void

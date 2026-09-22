@@ -9,6 +9,7 @@ use App\Models\ContentBlock;
 use App\Models\Page;
 use App\Models\Project;
 use App\Models\ProjectLocationHistory;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
@@ -102,6 +103,8 @@ class ProjectLocationEvidenceTest extends TestCase
             'location_source' => 'image_metadata',
             'location_evidence_type' => 'photo_metadata',
             'location_evidence_reference' => 'project-photo-01.webp',
+            'verified_at' => now(),
+            'verified_by' => User::factory(),
         ]);
 
         $this->assertTrue($this->locationInSchema('media-evidence'), 'verified + confidence 3 must emit contentLocation');
@@ -128,7 +131,7 @@ class ProjectLocationEvidenceTest extends TestCase
         $this->expectException(ValidationException::class);
 
         // Verified needs confidence >= 3; the model refuses the combination.
-        $project->update(['location_status' => 'verified', 'location_confidence' => 1]);
+        $project->update(['location_status' => 'verified', 'location_confidence' => 1, 'verified_at' => now(), 'verified_by' => User::factory()->create()->id]);
     }
 
     public function test_verified_requires_evidence_type_and_reference(): void
@@ -140,7 +143,7 @@ class ProjectLocationEvidenceTest extends TestCase
 
         // Confidence is high enough, but no evidence type or reference -
         // verification must still be refused.
-        $project->update(['location_status' => 'verified', 'location_confidence' => 4]);
+        $project->update(['location_status' => 'verified', 'location_confidence' => 4, 'verified_at' => now(), 'verified_by' => User::factory()->create()->id]);
     }
 
     public function test_verifying_stamps_who_and_when(): void
@@ -154,13 +157,15 @@ class ProjectLocationEvidenceTest extends TestCase
             'location_confidence' => 3,
             'location_evidence_type' => 'contract',
             'location_evidence_reference' => 'contract-123',
+            'verified_at' => now(),
+            'verified_by' => User::factory()->create()->id,
         ]);
 
         $this->assertNotNull($project->fresh()->verified_at, 'verified_at is stamped on verification');
 
         // Leaving Verified clears the stamp so it cannot go stale on a
         // downgraded claim.
-        $project->update(['location_status' => 'pending_review']);
+        $project->update(['location_status' => 'pending_review', 'verified_at' => null, 'verified_by' => null]);
         $this->assertNull($project->fresh()->verified_at, 'the stamp clears when it leaves Verified');
     }
 
@@ -202,6 +207,8 @@ class ProjectLocationEvidenceTest extends TestCase
             'location_confidence' => 3,
             'location_evidence_type' => 'site_report',
             'location_evidence_reference' => 'report-2026',
+            'verified_at' => now(),
+            'verified_by' => User::factory()->create()->id,
         ]);
 
         $rows = ProjectLocationHistory::where('project_id', $project->id)->get();
