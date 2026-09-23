@@ -7,6 +7,7 @@ use App\Enums\LocationEvidenceType;
 use App\Enums\LocationSource;
 use App\Enums\LocationStatus;
 use App\Enums\MediaStage;
+use App\Enums\MediaStatus;
 use App\Models\Concerns\HasPage;
 use App\Observers\ProjectObserver;
 use Database\Factories\ProjectFactory;
@@ -68,11 +69,19 @@ class Project extends Model
         return $this->belongsToMany(Service::class, 'project_service')->withTimestamps();
     }
 
+    /**
+     * PUBLIC display media only. A published case study must never surface a
+     * pending or privacy-held photo (that is the exact leak the Publishing
+     * Gate guards against), so this relation - used solely by the public
+     * templates and controllers - is constrained to publishable statuses.
+     * Filament manages the full set through {@see projectMedia()} instead.
+     */
     public function media(): BelongsToMany
     {
         return $this->belongsToMany(Media::class, 'project_media')
             ->withPivot(['stage', 'sort_order'])
-            ->withTimestamps();
+            ->withTimestamps()
+            ->whereIn('media.status', MediaStatus::publishableValues());
     }
 
     public function mediaByStage(MediaStage $stage): BelongsToMany

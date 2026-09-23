@@ -43,6 +43,29 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="m9.5 12 1.75 1.75L14.75 10" />
             @break
 
+        @case('lock')
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 0h10.5a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5H6.75a1.5 1.5 0 0 1-1.5-1.5v-6a1.5 1.5 0 0 1 1.5-1.5Z" />
+            @break
+
+        @case('scale')
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3.75v16.5m0 0c-1.35 0-2.64.24-3.83.69M12 20.25c1.35 0 2.64.24 3.83.69M5.25 5.25c2.2-.31 4.46-.47 6.75-.47s4.55.16 6.75.47" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 5 4.25 13c.6.5 1.4.8 2.5.8s1.9-.3 2.5-.8L6.75 5ZM17.25 5l-2.5 8c.6.5 1.4.8 2.5.8s1.9-.3 2.5-.8L17.25 5Z" />
+            @break
+
+        @case('calendar')
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3.75 8.25h16.5M4.5 5.25h15a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75h-15a.75.75 0 0 1-.75-.75V6a.75.75 0 0 1 .75-.75Z" />
+            @break
+
+        @case('clipboard')
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5.25H7.5A1.5 1.5 0 0 0 6 6.75v12a1.5 1.5 0 0 0 1.5 1.5h9a1.5 1.5 0 0 0 1.5-1.5v-12a1.5 1.5 0 0 0-1.5-1.5H15" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5.25A1.5 1.5 0 0 1 10.5 3.75h3A1.5 1.5 0 0 1 15 5.25V6H9v-.75Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 13 1.75 1.75L14.75 11" />
+            @break
+
+        @case('badge-check')
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-6.286A11.96 11.96 0 0 1 3.6 6 12 12 0 0 0 3 9.75c0 5.59 3.82 10.29 9 11.62 5.18-1.33 9-6.03 9-11.62 0-1.31-.21-2.57-.6-3.75h-.15c-3.2 0-6.1-1.25-8.25-3.286Z" />
+            @break
+
         @case('sparkles')
             <path stroke-linecap="round" stroke-linejoin="round" d="M9.5 3.5 10.8 7l3.7 1.5-3.7 1.5-1.3 3.5-1.3-3.5L4 8.5l3.7-1.5 1.8-3.5ZM18 13l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2Z" />
             @break

@@ -17,7 +17,7 @@
     @endif
 
     <div class="min-w-0">
-        <p class="font-semibold text-neutral-900">{{ $name }}</p>
+        <p class="font-semibold text-ink-950">{{ $name }}</p>
         <p class="text-sm text-neutral-500">{{ $issuer }}</p>
 
         @if ($description)

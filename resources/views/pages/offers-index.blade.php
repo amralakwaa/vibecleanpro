@@ -176,8 +176,19 @@
             </section>
         @endif
     @else
-        <x-public.container width="wide" class="py-16">
-            <p class="text-neutral-600">لا توجد عروض متاحة حاليًا.</p>
-        </x-public.container>
+        <section class="bg-white">
+            <x-public.container width="narrow" class="py-16 md:py-24">
+                <div class="surface-tint relative overflow-hidden rounded-3xl ring-1 ring-primary-200/60 p-8 md:p-10 reveal">
+                    <div class="glow-primary absolute -top-16 -end-16 w-56 h-56 opacity-70" aria-hidden="true"></div>
+                    <h2 class="relative font-display text-xl md:text-3xl font-medium tracking-tight text-ink-950">لا توجد عروض متاحة حاليًا</h2>
+                    <p class="relative mt-3 text-neutral-600 leading-relaxed">نعمل على تقديم عروض حقيقية بشروط واضحة. تابعنا أو تواصل معنا لمعرفة ما هو متاح.</p>
+                    @if ($businessProfile?->whatsappUrl())
+                        <div class="relative mt-6">
+                            <x-public.button :href="$businessProfile->whatsappUrl('مرحبًا، أرغب في معرفة العروض المتاحة')" external variant="whatsapp" icon="whatsapp">اسأل عبر واتساب</x-public.button>
+                        </div>
+                    @endif
+                </div>
+            </x-public.container>
+        </section>
     @endif
 </x-layouts.public>

@@ -4,7 +4,7 @@
 @props(['question', 'answer'])
 
 <details {{ $attributes->class(['group py-4']) }}>
-    <summary class="flex items-center justify-between gap-3 cursor-pointer font-medium text-neutral-900 list-none">
+    <summary class="flex items-center justify-between gap-3 cursor-pointer font-medium text-ink-950 list-none">
         {{ $question }}
         <x-public.icon name="chevron-down" class="w-4 h-4 text-neutral-400 transition-transform group-open:rotate-180 shrink-0" />
     </summary>

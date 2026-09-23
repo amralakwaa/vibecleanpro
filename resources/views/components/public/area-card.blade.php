@@ -6,7 +6,7 @@
     </div>
 
     <div class="grow">
-        <h3 class="font-semibold text-neutral-900">
+        <h3 class="font-semibold text-ink-950">
             <a href="{{ $url }}" class="hover:text-primary-700 transition-colors">
                 <span class="absolute inset-0"></span>
                 {{ $area->name }}

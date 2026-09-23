@@ -96,7 +96,7 @@ class Media extends Model
      */
     public function scopePublishable(Builder $query): void
     {
-        $query->whereIn('status', [MediaStatus::Ready, MediaStatus::Replace]);
+        $query->whereIn('status', MediaStatus::publishableValues());
     }
 
     /**

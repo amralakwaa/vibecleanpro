@@ -22,8 +22,8 @@ use Tests\TestCase;
  * is a request and not a paid booking, contact and quote share one form
  * system with focusable error summaries, the About page never puts a
  * stock face or a stock crew on the page and falls back to a monogram of
- * the stored name, and a legal page is a calm shell that adds no legal
- * wording of its own.
+ * the stored name, and a legal page shows only the editor's wording on the
+ * shared Trust Center reading surface, inventing no policy content of its own.
  */
 class ConversionPagesV2Test extends TestCase
 {
@@ -120,7 +120,7 @@ class ConversionPagesV2Test extends TestCase
         $this->assertNoCustomerFacingEmptyState($html);
     }
 
-    public function test_a_legal_page_is_a_calm_shell_that_adds_no_legal_wording_of_its_own(): void
+    public function test_a_legal_page_shows_only_editor_wording_on_the_trust_center_surface(): void
     {
         BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'phone' => '+966500000000']);
         $legal = Page::factory()->create(['type' => PageType::Legal, 'slug' => 'privacy', 'title' => 'سياسة الخصوصية']);
@@ -136,16 +136,20 @@ class ConversionPagesV2Test extends TestCase
         $trustHtml = $this->get('/guarantee')->assertOk()->getContent();
 
         $legalMain = mb_substr($legalHtml, mb_strpos($legalHtml, '<main'), mb_strpos($legalHtml, '</main>') - mb_strpos($legalHtml, '<main'));
-        foreach (['surface-tint', 'surface-atmos', 'surface-offer', 'glow-primary'] as $loud) {
-            $this->assertStringNotContainsString($loud, $legalMain, 'no gradient near legal text');
-        }
+
+        // The Trust Center redesign opens legal and trust pages on the shared
+        // atmospheric hero and sets the policy prose on a white reading panel.
+        // The enduring guarantees this test protects: the page shows the
+        // editor's words, the reading surface is a plain readable prose panel,
+        // the template invents no policy wording of its own, and there is one
+        // H1. (The full design family is verified in TrustLegalPagesTest.)
         $this->assertStringContainsString('نص-السياسة-من-المحرر.', $legalHtml);
+        $this->assertStringContainsString('prose prose-legal', $legalMain, 'legal prose sits on the readable white reading panel');
         $this->assertDoesNotMatchRegularExpression('/الاحتفاظ|الأساس القانوني|ملفات تعريف الارتباط|طرف ثالث|مسؤول حماية البيانات|نقل البيانات|نجمع بياناتك/u', $legalMain, 'the template invents no policy content');
         $this->assertSame(1, substr_count($legalHtml, '<h1'));
 
-        $this->assertStringContainsString('surface-tint', $trustHtml, 'a trust page keeps the readable V2 opening');
+        $this->assertStringContainsString('surface-atmos', $trustHtml, 'a trust page opens on the shared Trust Center hero');
         $this->assertStringContainsString('شروط-الضمان-من-المحرر.', $trustHtml);
-        $this->assertStringNotContainsString('surface-atmos', $trustHtml, 'and is not a heavy landing page');
     }
 
     public function test_the_header_marks_exactly_one_contact_item_current_by_path_and_business_query(): void

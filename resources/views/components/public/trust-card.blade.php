@@ -12,7 +12,7 @@
         <x-public.icon :name="$icon" class="w-6 h-6" />
     </span>
     <div>
-        <p class="font-medium text-neutral-900">{{ $title }}</p>
+        <p class="font-medium text-ink-950">{{ $title }}</p>
         @if ($description)
             <p class="mt-0.5 text-sm text-neutral-600 leading-relaxed">{{ $description }}</p>
         @endif

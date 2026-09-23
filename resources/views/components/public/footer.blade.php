@@ -12,7 +12,88 @@
     'phoneUrl' => null,
 ])
 
+@once
+    {{-- Leaflet is self-hosted (public/vendor/leaflet) rather than pulled
+         from a CDN: no render-blocking third-party request on every page and
+         no visitor IP handed to a CDN. Map tiles still load from OpenStreetMap
+         at runtime. --}}
+    <link rel="stylesheet" href="{{ asset('vendor/leaflet/leaflet.css') }}">
+    <script src="{{ asset('vendor/leaflet/leaflet.js') }}" defer></script>
+@endonce
+
 <footer class="bg-ink-950 text-ink-200">
+    {{-- Interactive coverage map --}}
+    <div class="relative w-full h-48 md:h-60 overflow-hidden" aria-label="خريطة منطقة الخدمة في الرياض" role="img">
+        <div id="footer-map" class="absolute inset-0 z-0"></div>
+        <script>
+            (function () {
+                function initMap() {
+                    if (typeof L === 'undefined' || document.getElementById('footer-map')._leaflet_id) return;
+                    var map = L.map('footer-map', {
+                        center: [24.7136, 46.6753],
+                        zoom: 11,
+                        zoomControl: false,
+                        attributionControl: false,
+                        dragging: false,
+                        scrollWheelZoom: false,
+                        doubleClickZoom: false,
+                        touchZoom: false,
+                        keyboard: false,
+                    });
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
+                    L.circle([24.7136, 46.6753], {
+                        radius: 26000,
+                        color: '#22c55e',
+                        fillColor: '#16a34a',
+                        fillOpacity: 0.15,
+                        weight: 2,
+                    }).addTo(map);
+                    var icon = L.divIcon({
+                        className: '',
+                        html: '<div style="background:#16a34a;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>',
+                        iconSize: [14, 14],
+                        iconAnchor: [7, 7],
+                    });
+                    L.marker([24.7136, 46.6753], { icon })
+                        .addTo(map)
+                        .bindTooltip('الرياض — منطقة الخدمة', { permanent: true, direction: 'top', className: 'leaflet-vcp-tooltip' });
+                }
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', initMap);
+                } else {
+                    initMap();
+                }
+            })();
+        </script>
+        {{-- dark gradient overlay so the map blends into the footer --}}
+        <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-ink-950 to-transparent pointer-events-none z-10" aria-hidden="true"></div>
+        {{-- CTA overlay --}}
+        @if ($whatsappUrl)
+            <a href="{{ $whatsappUrl }}"
+               target="_blank" rel="noopener noreferrer"
+               class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-lg transition-colors whitespace-nowrap"
+            >
+                <x-public.icon name="map-pin" class="w-3.5 h-3.5" />
+                نخدم كامل أحياء الرياض — اطلب الآن
+            </a>
+        @endif
+    </div>
+
+    <style>
+        .leaflet-vcp-tooltip {
+            background: rgba(22, 163, 74, 0.9);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: inherit;
+            padding: 3px 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.3);
+            white-space: nowrap;
+        }
+        .leaflet-vcp-tooltip::before { display: none; }
+    </style>
+
     <x-public.container width="wide" class="py-14">
         <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
             <div>

@@ -34,7 +34,27 @@ enum MediaStatus: string
      */
     public function isPublishable(): bool
     {
-        return $this === self::Ready || $this === self::Replace;
+        return in_array($this, self::publishableCases(), true);
+    }
+
+    /**
+     * The single source of truth for "may appear on a public page" - used by
+     * both the Media `publishable` query scope and the public media relations
+     * so a render can never serve a pending or privacy-held file.
+     *
+     * @return array<int, self>
+     */
+    public static function publishableCases(): array
+    {
+        return [self::Ready, self::Replace];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function publishableValues(): array
+    {
+        return array_map(fn (self $status): string => $status->value, self::publishableCases());
     }
 
     /**
