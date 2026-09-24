@@ -136,8 +136,8 @@ class HomeController extends Controller
         $publishedProjects = Project::query()->whereHas('page', fn ($query) => $query->published())->count();
 
         $title = $profile?->name
-            ? "{$profile->name} - خدمات تنظيف احترافية في الرياض"
-            : 'خدمات تنظيف احترافية في الرياض';
+            ? "{$profile->name} | شركة تنظيف احترافية في الرياض"
+            : 'شركة تنظيف احترافية في الرياض';
 
         $seo = new SeoHeadData(
             title: $title,

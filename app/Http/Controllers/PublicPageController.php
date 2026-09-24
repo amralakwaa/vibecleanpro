@@ -290,14 +290,21 @@ class PublicPageController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        // 'media' eager-loaded so the view never triggers a query per
-        // project to decide before/after vs. after-only rendering (see
-        // pages/area.blade.php and the identical rule in renderService()).
-        $projects = $area->projects()
+        // $localProjects: confirmed physical location in this area (area_id FK).
+        // $supportingProjects: area_project_support pivot (no location claim).
+        // These are kept separate so the view can label them honestly.
+        $localProjects = $area->projects()
             ->whereHas('page', fn ($query) => $query->published())
             ->with(['media', 'page'])
             ->orderByDesc('is_featured')
             ->orderByDesc('completed_at')
+            ->limit(6)
+            ->get();
+
+        $supportingProjects = $area->supportingProjects()
+            ->wherePivot('is_active', true)
+            ->whereHas('page', fn ($query) => $query->published())
+            ->with(['media', 'page'])
             ->limit(6)
             ->get();
 
@@ -344,7 +351,8 @@ class PublicPageController extends Controller
             'area' => $area,
             'faqs' => $faqs,
             'services' => $services,
-            'projects' => $projects,
+            'localProjects' => $localProjects,
+            'supportingProjects' => $supportingProjects,
             'nearbyAreas' => $nearbyAreas,
             'offers' => $offers,
             'testimonials' => $testimonials,

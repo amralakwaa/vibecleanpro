@@ -39,7 +39,7 @@ class OffersIndexController extends Controller
             ->values();
 
         $seo = new SeoHeadData(
-            title: 'العروض | '.($businessProfile?->name ?? config('app.name')),
+            title: 'عروض وباقات التنظيف بالرياض | '.($businessProfile?->name ?? config('app.name')),
             metaDescription: 'العروض المتاحة حاليًا على خدمات التنظيف لدينا.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/offers'),
             robotsContent: 'index, follow',

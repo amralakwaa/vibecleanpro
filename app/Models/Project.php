@@ -64,6 +64,13 @@ class Project extends Model
         return $this->belongsTo(Area::class);
     }
 
+    public function supportedAreas(): BelongsToMany
+    {
+        return $this->belongsToMany(Area::class, 'area_project_support')
+            ->withPivot(['support_type', 'sort_order', 'is_active'])
+            ->withTimestamps();
+    }
+
     public function services(): BelongsToMany
     {
         return $this->belongsToMany(Service::class, 'project_service')->withTimestamps();

@@ -1645,7 +1645,9 @@
             "dominant": "villa-cleaning",
             "services": [
                 "villa-cleaning",
-                "home-cleaning"
+                "home-cleaning",
+                "sofa-cleaning",
+                "majlis-cleaning"
             ]
         },
         {
@@ -1710,7 +1712,73 @@
             "sort_order": 18,
             "page_title": "خدمات التنظيف في حي التعاون بالرياض",
             "dominant": null,
-            "services": []
+            "services": [],
+            "blocks": [
+                {
+                    "type": "rich_text",
+                    "data": {
+                        "content": "<p>حي التعاون شمال الرياض وجهة تجارية متكاملة — شوارعه الرئيسية تضم مكاتب إدارية وشركات وصالات عرض ومحلات تجارية بجوار مجمعات سكنية عائلية. هذا المزيج يخلق حاجة حقيقية لشركة تنظيف تفهم الفرق بين نظافة المنشأة التجارية ونظافة المسكن: جداول مختلفة، معايير مختلفة، وطريقة تسليم مختلفة.</p><p>فايب كلين برو تعمل في التعاون على كلا النطاقين: عقود نظافة دورية للمنشآت التجارية والمكاتب، وخدمات تنظيف عميق أو دوري للمساكن في نفس الحي. الهدف واحد: مستوى نظافة ثابت يعكس صورة المنشأة أو يريح ساكن المنزل.</p>"
+                    }
+                },
+                {
+                    "type": "rich_text",
+                    "data": {
+                        "content": "<p>المكاتب الإدارية والشركات في التعاون تتراوح بين المكتب الصغير والشركة متوسطة الحجم والمجمع التجاري الكامل. لكل حجم احتياج مختلف — المكتب الصغير يحتاج تنظيفاً أسبوعياً أو ثلاثاً في الأسبوع. الشركة الكبيرة تحتاج فريقاً يومياً. المعرض التجاري يحتاج تنظيفاً دقيقاً للواجهات الزجاجية وصالة العرض قبل الفتح.</p><p>ما نقدمه لمنشآت التعاون يشمل: الأرضيات والممرات، مداخل المباني والمصاعد، دورات المياه، مناطق الاستقبال والانتظار، وغرف المؤتمرات. خارج ساعات العمل — صباحاً أو مساءً أو في العطل — بحسب ما يناسب جدول عملك.</p>"
+                    }
+                },
+                {
+                    "type": "rich_text",
+                    "data": {
+                        "content": "<p>التعاون ليس حياً سكنياً بحتاً، وهذا يجعل احتياج الخدمة مختلفاً. المحلات التجارية وصالات العرض تحتاج تنظيف واجهات زجاجية وأرضيات صالة بمواصفات احترافية. المجمعات التجارية تحتاج خطة نظافة للمساحات المشتركة وأماكن الوقوف. المكاتب التي تستقبل عملاء يومياً تحتاج مظهراً ثابتاً.</p><p>خدماتنا التجارية المقدمة في التعاون تشمل: تنظيف المكاتب والشركات بعقود دورية مرنة، تنظيف المحلات والمعارض وصالات العرض، تنظيف واجهات المباني والنوافذ التجارية، تنظيف المرافق والممرات المشتركة، وتنظيف مواقف السيارات التجارية. المساكن في الحي تستفيد من نفس الفريق بمسار خدمة منفصل.</p>"
+                    }
+                },
+                {
+                    "type": "rich_text",
+                    "data": {
+                        "content": "<p>قبل أي عقد، نقوم بزيارة تقييمية للمنشأة في التعاون: نحدد المساحة الفعلية، وعدد الأدوار والغرف، ومستوى الاستخدام اليومي، والجدول الزمني المناسب. بناءً على ذلك نقترح خطة تنظيف بتكلفة واضحة مسبقاً — بدون رسوم مفاجئة.</p><p>عوامل تؤثر في تكلفة تنظيف المنشآت: حجم المساحة (بالمتر المربع)، وتيرة الخدمة (يومي / أسبوعي / شهري)، نوع الأرضيات والتشطيب، عدد دورات المياه ومناطق الاستقبال، وما إذا كانت الخدمة تشمل توريد المستهلكات (ورق، صابون، معقمات). نقدم عرض سعر مكتوباً بعد الزيارة — وليس رقماً عاماً على الهاتف.</p>"
+                    }
+                },
+                {
+                    "type": "rich_text",
+                    "data": {
+                        "content": "<p>الفريق الذي ينجز العمل في منشآت التعاون مدرب على بيئات العمل التجارية: الالتزام بمواعيد التسليم، التعامل المهني مع موظفي المنشأة، والحفاظ على سرية بيئة المكتب. لدينا مشاريع منجزة في مكاتب إدارية، مجمعات تجارية، صالات عرض، ومنشآت خدمية في الرياض — يمكنك الاطلاع عليها في قسم المشاريع أدناه.</p><p>عقد النظافة ليس وعداً بدون رقابة — هو اتفاقية بنطاق عمل محدد وجدول زيارات موثق. إذا كانت زيارة ما دون المستوى المتفق عليه، نعيد الخدمة بدون تكلفة إضافية. هذا ليس شعاراً — هو شرط مكتوب في العقد.</p>"
+                    }
+                },
+                {
+                    "type": "faq",
+                    "data": {
+                        "heading": "أسئلة شائعة"
+                    }
+                },
+                {
+                    "type": "cta",
+                    "data": {
+                        "heading": "ابدأ عقد نظافة منشأتك في حي التعاون",
+                        "subheading": "تواصل للحصول على زيارة تقييمية مجانية وعرض سعر مكتوب",
+                        "button_label": "اطلب عرض سعر مكتوب",
+                        "button_url": "{whatsapp}"
+                    }
+                }
+            ],
+            "faqs": [
+                {
+                    "question": "هل يمكنكم تنظيف المكتب خارج ساعات الدوام الرسمي في التعاون؟",
+                    "answer": "نعم، هذا أحد أهم مميزاتنا. نقوم بالتنظيف في المساء أو الصباح الباكر أو في عطل نهاية الأسبوع لعدم تعطيل سير العمل."
+                },
+                {
+                    "question": "ما هي أقل مدة لعقد النظافة الدورية للمنشآت؟",
+                    "answer": "نوفر عقوداً تبدأ من شهر واحد قابلة للتجديد. نفضل العقود الربع سنوية أو السنوية لأنها تتيح أسعاراً أفضل وتخطيطاً أدق."
+                },
+                {
+                    "question": "هل تشمل خدمة تنظيف المعارض تلميع الواجهات الزجاجية الخارجية؟",
+                    "answer": "نعم، تنظيف واجهات المعارض الزجاجية خدمة أساسية ضمن باقات تنظيف المحلات لضمان مظهر مشرق واحترافي."
+                }
+            ],
+            "articles": [
+                "cleaning-prices-riyadh",
+                "how-to-choose-cleaning-company-riyadh",
+                "office-cleaning-scope-of-work"
+            ]
         },
         {
             "name": "العارض",
@@ -1766,7 +1834,7 @@
     "projects": [
         {
             "source_ref": "CAND-20260507-MODERN-VILLA",
-            "title": "تنظيف ما بعد البناء — الرياض",
+            "title": "تنظيف شامل بعد التشطيب — وحدة سكنية",
             "service": "post-construction-cleaning",
             "slug": "post-construction-cleaning-modern-villa",
             "batch": 1,
@@ -1839,7 +1907,7 @@
         },
         {
             "source_ref": "CAND-20260801-FACADE-B",
-            "title": "تنظيف واجهة مبنى — الرياض",
+            "title": "تنظيف واجهة زجاجية لمبنى تجاري",
             "service": "facade-cleaning",
             "slug": "facade-cleaning-facade-b",
             "batch": 1,
@@ -1888,7 +1956,7 @@
         },
         {
             "source_ref": "CAND-20260614-VILLA-01",
-            "title": "تنظيف فيلا — الرياض",
+            "title": "تنظيف شامل لفيلا سكنية — أعمال كاملة",
             "service": "villa-cleaning",
             "slug": "villa-cleaning-villa-01",
             "batch": 1,
@@ -2001,7 +2069,7 @@
         },
         {
             "source_ref": "PRJ-CAND-20260305-01",
-            "title": "تنظيف حوش ومداخل خارجية — الرياض",
+            "title": "تنظيف أحواش ومداخل فيلا — إنترلوك وأرضيات",
             "service": "villa-cleaning",
             "slug": "villa-cleaning-01",
             "batch": 1,
@@ -2066,7 +2134,7 @@
         },
         {
             "source_ref": "CAND-20260730-PAVERS-D",
-            "title": "تنظيف حوش ومداخل خارجية — الرياض",
+            "title": "تنظيف أحواش وممرات خارجية — قبل الاستخدام",
             "service": "villa-cleaning",
             "slug": "villa-cleaning-pavers-d",
             "batch": 1,
@@ -2103,7 +2171,7 @@
         },
         {
             "source_ref": "PRJ-CAND-20260507-01",
-            "title": "تنظيف ما بعد البناء — الرياض",
+            "title": "تنظيف بعد البناء لمشروع سكني — أرضيات ومرافق",
             "service": "post-construction-cleaning",
             "slug": "post-construction-cleaning-01",
             "batch": 2,
@@ -2176,7 +2244,7 @@
         },
         {
             "source_ref": "PRJ-CAND-20260313-01",
-            "title": "تنظيف حمامات — الرياض",
+            "title": "تنظيف حمامات وأرضيات — منزل وبيئة عمل",
             "service": "home-cleaning",
             "slug": "home-cleaning-01",
             "batch": 2,
@@ -2201,7 +2269,7 @@
         },
         {
             "source_ref": "CAND-20260730-FACADE-B",
-            "title": "تنظيف واجهة مبنى — الرياض",
+            "title": "تنظيف واجهة مبنى — طوابق متعددة",
             "service": "facade-cleaning",
             "slug": "facade-cleaning-facade-b-2",
             "batch": 2,
@@ -2306,7 +2374,7 @@
         },
         {
             "source_ref": "CAND-20260909-OFFICE-A",
-            "title": "تنظيف مكاتب — الرياض",
+            "title": "تنظيف مكاتب إدارية — بيئة عمل احترافية",
             "service": "office-cleaning",
             "slug": "office-cleaning-office-a",
             "batch": 2,
@@ -2375,7 +2443,7 @@
         },
         {
             "source_ref": "CAND-20260729-FACADE-A",
-            "title": "تنظيف واجهة مبنى — الرياض",
+            "title": "تنظيف واجهة زجاجية لمبنى — محيط تجاري",
             "service": "facade-cleaning",
             "slug": "facade-cleaning-facade-a",
             "batch": 2,
@@ -2480,7 +2548,7 @@
         },
         {
             "source_ref": "CAND-20260523-GLASS-INTERIOR-01",
-            "title": "تنظيف زجاج مبنى — الرياض",
+            "title": "تنظيف زجاج الواجهات الداخلية والخارجية",
             "service": "facade-cleaning",
             "slug": "facade-cleaning-glass-interior-01",
             "batch": 3,
@@ -2513,7 +2581,7 @@
         },
         {
             "source_ref": "CAND-20260614-OFFICE-G",
-            "title": "تنظيف مكاتب — الرياض",
+            "title": "تنظيف مكاتب وصالة استقبال",
             "service": "office-cleaning",
             "slug": "office-cleaning-office-g",
             "batch": 3,
@@ -2562,7 +2630,7 @@
         },
         {
             "source_ref": "CAND-20260614-VILLA-A",
-            "title": "تنظيف حوش ومداخل خارجية — الرياض",
+            "title": "تنظيف أحواش وممرات فيلا — بلاط وجرانيت",
             "service": "villa-cleaning",
             "slug": "villa-cleaning-villa-a",
             "batch": 4,
@@ -2647,7 +2715,7 @@
         },
         {
             "source_ref": "CAND-20260801-VILLA-C",
-            "title": "تنظيف حوش ومداخل خارجية — الرياض",
+            "title": "تنظيف حوش ومدخل فيلا",
             "service": "villa-cleaning",
             "slug": "villa-cleaning-villa-c",
             "batch": 4,
@@ -2728,7 +2796,7 @@
         },
         {
             "source_ref": "CAND-20260614-INSTITUTIONAL-C",
-            "title": "تنظيف دورات مياه منشأة — الرياض",
+            "title": "تنظيف دورات مياه في منشأة خدمية",
             "service": "office-cleaning",
             "slug": "office-cleaning-institutional-c",
             "batch": 4,
@@ -2753,7 +2821,7 @@
         },
         {
             "source_ref": "CAND-20260801-VILLA-A",
-            "title": "تنظيف فيلا — الرياض",
+            "title": "تنظيف فيلا سكنية — داخلي شامل",
             "service": "villa-cleaning",
             "slug": "villa-cleaning-villa-a-2",
             "batch": 4,
@@ -2822,7 +2890,7 @@
         },
         {
             "source_ref": "CAND-20260614-OFFICE-E",
-            "title": "تنظيف مكاتب — الرياض",
+            "title": "تنظيف مكاتب إدارية — طابق كامل",
             "service": "office-cleaning",
             "slug": "office-cleaning-office-e",
             "batch": 4,
@@ -2863,7 +2931,7 @@
         },
         {
             "source_ref": "CAND-20260614-HALL-F",
-            "title": "تنظيف ارتفاعات داخلية — الرياض",
+            "title": "تنظيف الارتفاعات والأسقف الداخلية",
             "service": null,
             "slug": "project-hall-f",
             "batch": 4,
@@ -2900,7 +2968,7 @@
         },
         {
             "source_ref": "CAND-20260821-GLASS-A",
-            "title": "تنظيف زجاج مبنى — الرياض",
+            "title": "تنظيف زجاج خارجي لمبنى تجاري",
             "service": "facade-cleaning",
             "slug": "facade-cleaning-glass-a",
             "batch": 4,
@@ -2937,7 +3005,7 @@
         },
         {
             "source_ref": "CAND-20260507-LUXURY-INTERIOR",
-            "title": "تنظيف أرضيات — الرياض",
+            "title": "تنظيف وجلي أرضيات رخام — فيلا",
             "service": null,
             "slug": "project-luxury-interior",
             "batch": 4,
@@ -2970,7 +3038,7 @@
         },
         {
             "source_ref": "CAND-20260523-CORRIDOR-01",
-            "title": "تنظيف أرضيات — الرياض",
+            "title": "تنظيف ممرات وأرضيات مبنى إداري",
             "service": null,
             "slug": "project-corridor-01",
             "batch": 4,
@@ -3003,7 +3071,7 @@
         },
         {
             "source_ref": "CAND-20260614-POSTCON-B",
-            "title": "تنظيف ما بعد البناء — الرياض",
+            "title": "تنظيف بعد التشطيب — مشروع سكني صغير",
             "service": "post-construction-cleaning",
             "slug": "post-construction-cleaning-postcon-b",
             "batch": 4,
@@ -3024,7 +3092,7 @@
         },
         {
             "source_ref": "CAND-20260614-OFFICE-C",
-            "title": "تنظيف مكاتب — الرياض",
+            "title": "تنظيف مكتب — فضاء مفتوح",
             "service": "office-cleaning",
             "slug": "office-cleaning-office-c",
             "batch": 4,
@@ -3049,7 +3117,7 @@
         },
         {
             "source_ref": "CAND-20260523-PARKING-01",
-            "title": "تنظيف مواقف منشأة — الرياض",
+            "title": "تنظيف مواقف السيارات في منشأة تجارية",
             "service": "office-cleaning",
             "slug": "office-cleaning-parking-01",
             "batch": 4,
@@ -3070,7 +3138,7 @@
         },
         {
             "source_ref": "CAND-20260523-MALL-01",
-            "title": "تنظيف مجمع تجاري — الرياض",
+            "title": "تنظيف مجمع تجاري ومحلات",
             "service": "shop-cleaning",
             "slug": "shop-cleaning-mall-01",
             "batch": 4,
@@ -3091,7 +3159,7 @@
         },
         {
             "source_ref": "CAND-20260614-FACADE-D",
-            "title": "تنظيف واجهة مبنى — الرياض",
+            "title": "تنظيف واجهة مبنى سكني",
             "service": "facade-cleaning",
             "slug": "facade-cleaning-facade-d",
             "batch": 4,
@@ -3112,7 +3180,7 @@
         },
         {
             "source_ref": "CAND-20260731-COMMERCIAL",
-            "title": "تنظيف مرافق منشأة — الرياض",
+            "title": "تنظيف مرافق منشأة تجارية — ممرات مشتركة",
             "service": "office-cleaning",
             "slug": "office-cleaning-commercial",
             "batch": 4,
@@ -3133,7 +3201,7 @@
         },
         {
             "source_ref": "CAND-20260523-GLASS-EXTERIOR-01",
-            "title": "تنظيف زجاج مبنى — الرياض",
+            "title": "تنظيف زجاج خارجي لمبنى",
             "service": "facade-cleaning",
             "slug": "facade-cleaning-glass-exterior-01",
             "batch": 4,
@@ -3150,7 +3218,7 @@
         },
         {
             "source_ref": "CAND-20260614-KITCHEN-E",
-            "title": "تنظيف مطبخ — الرياض",
+            "title": "تنظيف مطبخ شامل — منزل سكني",
             "service": "home-cleaning",
             "slug": "home-cleaning-kitchen-e",
             "batch": 4,
@@ -3167,7 +3235,7 @@
         },
         {
             "source_ref": "CAND-20260823-INTERIOR",
-            "title": "تنظيف حمامات — الرياض",
+            "title": "تنظيف حمامات في وحدة سكنية",
             "service": "home-cleaning",
             "slug": "home-cleaning-interior",
             "batch": 4,
@@ -3184,7 +3252,7 @@
         },
         {
             "source_ref": "CAND-20260523-FACADE-01",
-            "title": "تنظيف واجهة مبنى — الرياض",
+            "title": "تنظيف واجهة مبنى — خارجي أ",
             "service": "facade-cleaning",
             "slug": "facade-cleaning-facade-01",
             "batch": 4,
@@ -3197,7 +3265,7 @@
         },
         {
             "source_ref": "CAND-20260523-BLUE-FACADE-01",
-            "title": "تنظيف واجهة مبنى — الرياض",
+            "title": "تنظيف واجهة زجاجية زرقاء — مبنى تجاري",
             "service": "facade-cleaning",
             "slug": "facade-cleaning-blue-facade-01",
             "batch": 4,
@@ -3210,7 +3278,7 @@
         },
         {
             "source_ref": "CAND-20260614-CHANDELIER-01",
-            "title": "تنظيف ثريا — الرياض",
+            "title": "تنظيف الثريات والإضاءة الداخلية — فيلا",
             "service": "villa-cleaning",
             "slug": "villa-cleaning-chandelier-01",
             "batch": 4,
@@ -3223,7 +3291,7 @@
         },
         {
             "source_ref": "CAND-20260614-OFFICE-01",
-            "title": "تنظيف مكاتب — الرياض",
+            "title": "تنظيف مكاتب — بيئة عمل",
             "service": "office-cleaning",
             "slug": "office-cleaning-office-01",
             "batch": 4,
@@ -3236,7 +3304,7 @@
         },
         {
             "source_ref": "CAND-20260614-FLOOR-D",
-            "title": "جلي أرضيات — الرياض",
+            "title": "جلي وتلميع رخام — أرضيات وأسطح",
             "service": "marble-polishing",
             "slug": "marble-polishing-floor-d",
             "batch": 4,
@@ -3249,7 +3317,7 @@
         },
         {
             "source_ref": "CAND-20260726-SITE",
-            "title": "تنظيف خارجي — الرياض",
+            "title": "تنظيف واجهة مبنى — خارجي ب",
             "service": null,
             "slug": "project-site",
             "batch": 4,
@@ -3262,7 +3330,7 @@
         },
         {
             "source_ref": "CAND-20260730-INDUSTRIAL-C",
-            "title": "تنظيف منشأة صناعية — الرياض",
+            "title": "تنظيف مكتب — ما بعد التشطيب",
             "service": "office-cleaning",
             "slug": "office-cleaning-industrial-c",
             "batch": 4,
@@ -3275,7 +3343,7 @@
         },
         {
             "source_ref": "CAND-20260822-INTERIOR",
-            "title": "تنظيف درج — الرياض",
+            "title": "تنظيف منزل شامل مع التسليم",
             "service": "home-cleaning",
             "slug": "home-cleaning-interior-2",
             "batch": 4,
@@ -3288,7 +3356,7 @@
         },
         {
             "source_ref": "CAND-20260507-VILLA-A",
-            "title": "تنظيف ما بعد البناء — الرياض",
+            "title": "تنظيف بعد البناء — وحدة سكنية",
             "service": "post-construction-cleaning",
             "slug": "post-construction-cleaning-villa-a",
             "batch": 4,
@@ -3296,7 +3364,7 @@
         },
         {
             "source_ref": "CAND-20260507-EXTERIOR-B",
-            "title": "تنظيف حوش ومداخل خارجية — الرياض",
+            "title": "تنظيف فيلا",
             "service": "villa-cleaning",
             "slug": "villa-cleaning-exterior-b",
             "batch": 4,
@@ -3304,7 +3372,7 @@
         },
         {
             "source_ref": "CAND-20260516-COMMERCIAL",
-            "title": "تنظيف خارجي — الرياض",
+            "title": "تنظيف عام",
             "service": null,
             "slug": "project-commercial",
             "batch": 4,
@@ -3312,7 +3380,7 @@
         },
         {
             "source_ref": "CAND-20260523-EXTERIOR-A",
-            "title": "تنظيف حوش ومداخل خارجية — الرياض",
+            "title": "تنظيف حوش ومداخل فيلا",
             "service": "villa-cleaning",
             "slug": "villa-cleaning-exterior-a",
             "batch": 4,
@@ -3320,7 +3388,7 @@
         },
         {
             "source_ref": "CAND-20260523-FACADE-B",
-            "title": "تنظيف واجهة مبنى — الرياض",
+            "title": "تنظيف واجهة مبنى — خارجي ج",
             "service": "facade-cleaning",
             "slug": "facade-cleaning-facade-b-3",
             "batch": 4,
@@ -3328,7 +3396,7 @@
         },
         {
             "source_ref": "CAND-20260723-INTERIOR",
-            "title": "تنظيف أرضيات — الرياض",
+            "title": "تنظيف وتلميع أرضيات",
             "service": null,
             "slug": "project-interior",
             "batch": 4,
@@ -3336,7 +3404,7 @@
         },
         {
             "source_ref": "CAND-20260801-INSTITUTIONAL",
-            "title": "تنظيف دورات مياه منشأة — الرياض",
+            "title": "تنظيف دورات مياه منشأة",
             "service": "office-cleaning",
             "slug": "office-cleaning-institutional",
             "batch": 4,
@@ -3344,7 +3412,7 @@
         },
         {
             "source_ref": "CAND-20260801-OFFICE",
-            "title": "تنظيف مكاتب — الرياض",
+            "title": "تنظيف مكاتب — مبنى إداري",
             "service": "office-cleaning",
             "slug": "office-cleaning-office",
             "batch": 4,
@@ -3352,7 +3420,7 @@
         },
         {
             "source_ref": "CAND-20260916-VILLA-B",
-            "title": "تنظيف فيلا — الرياض",
+            "title": "تنظيف فيلا سكنية",
             "service": "villa-cleaning",
             "slug": "villa-cleaning-villa-b",
             "batch": 4,
@@ -3387,6 +3455,524 @@
             "title": "الشروط والأحكام",
             "meta_title": "الشروط والأحكام | فايب كلين برو",
             "meta_description": null
+        }
+    ],
+    "area_project_support": [
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260909-OFFICE-A",
+            "support_type": "primary",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260614-OFFICE-G",
+            "support_type": "primary",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260614-INSTITUTIONAL-C",
+            "support_type": "primary",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260614-OFFICE-E",
+            "support_type": "primary",
+            "sort_order": 4
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260523-CORRIDOR-01",
+            "support_type": "primary",
+            "sort_order": 5
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260614-OFFICE-C",
+            "support_type": "primary",
+            "sort_order": 6
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260523-PARKING-01",
+            "support_type": "primary",
+            "sort_order": 7
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260523-MALL-01",
+            "support_type": "primary",
+            "sort_order": 8
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260731-COMMERCIAL",
+            "support_type": "primary",
+            "sort_order": 9
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260614-OFFICE-01",
+            "support_type": "primary",
+            "sort_order": 10
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260730-INDUSTRIAL-C",
+            "support_type": "primary",
+            "sort_order": 11
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260801-INSTITUTIONAL",
+            "support_type": "primary",
+            "sort_order": 12
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260801-OFFICE",
+            "support_type": "primary",
+            "sort_order": 13
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260821-GLASS-A",
+            "support_type": "supporting",
+            "sort_order": 14
+        },
+        {
+            "area_slug": "al-taawun",
+            "project_ref": "CAND-20260523-BLUE-FACADE-01",
+            "support_type": "supporting",
+            "sort_order": 15
+        },
+        {
+            "area_slug": "al-munsiyah",
+            "project_ref": "CAND-20260801-FACADE-B",
+            "support_type": "primary",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-munsiyah",
+            "project_ref": "CAND-20260730-FACADE-B",
+            "support_type": "primary",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-munsiyah",
+            "project_ref": "CAND-20260729-FACADE-A",
+            "support_type": "primary",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-munsiyah",
+            "project_ref": "CAND-20260821-GLASS-A",
+            "support_type": "primary",
+            "sort_order": 4
+        },
+        {
+            "area_slug": "al-munsiyah",
+            "project_ref": "CAND-20260523-FACADE-01",
+            "support_type": "primary",
+            "sort_order": 5
+        },
+        {
+            "area_slug": "al-munsiyah",
+            "project_ref": "CAND-20260523-BLUE-FACADE-01",
+            "support_type": "primary",
+            "sort_order": 6
+        },
+        {
+            "area_slug": "al-munsiyah",
+            "project_ref": "CAND-20260726-SITE",
+            "support_type": "primary",
+            "sort_order": 7
+        },
+        {
+            "area_slug": "al-munsiyah",
+            "project_ref": "CAND-20260523-FACADE-B",
+            "support_type": "primary",
+            "sort_order": 8
+        },
+        {
+            "area_slug": "al-munsiyah",
+            "project_ref": "CAND-20260523-GLASS-INTERIOR-01",
+            "support_type": "supporting",
+            "sort_order": 9
+        },
+        {
+            "area_slug": "al-munsiyah",
+            "project_ref": "CAND-20260523-GLASS-EXTERIOR-01",
+            "support_type": "supporting",
+            "sort_order": 10
+        },
+        {
+            "area_slug": "al-malqa",
+            "project_ref": "CAND-20260614-VILLA-01",
+            "support_type": "primary",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-malqa",
+            "project_ref": "CAND-20260507-LUXURY-INTERIOR",
+            "support_type": "primary",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-malqa",
+            "project_ref": "CAND-20260614-FLOOR-D",
+            "support_type": "primary",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-malqa",
+            "project_ref": "CAND-20260723-INTERIOR",
+            "support_type": "primary",
+            "sort_order": 4
+        },
+        {
+            "area_slug": "al-malqa",
+            "project_ref": "CAND-20260801-VILLA-A",
+            "support_type": "supporting",
+            "sort_order": 5
+        },
+        {
+            "area_slug": "al-malqa",
+            "project_ref": "CAND-20260614-CHANDELIER-01",
+            "support_type": "supporting",
+            "sort_order": 6
+        },
+        {
+            "area_slug": "al-rabi",
+            "project_ref": "PRJ-CAND-20260305-01",
+            "support_type": "primary",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-rabi",
+            "project_ref": "CAND-20260730-PAVERS-D",
+            "support_type": "primary",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-rabi",
+            "project_ref": "CAND-20260614-VILLA-A",
+            "support_type": "primary",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-rabi",
+            "project_ref": "CAND-20260801-VILLA-C",
+            "support_type": "primary",
+            "sort_order": 4
+        },
+        {
+            "area_slug": "al-rabi",
+            "project_ref": "CAND-20260523-EXTERIOR-A",
+            "support_type": "primary",
+            "sort_order": 5
+        },
+        {
+            "area_slug": "al-rabi",
+            "project_ref": "CAND-20260614-VILLA-01",
+            "support_type": "supporting",
+            "sort_order": 6
+        },
+        {
+            "area_slug": "al-rabi",
+            "project_ref": "CAND-20260614-KITCHEN-E",
+            "support_type": "supporting",
+            "sort_order": 7
+        },
+        {
+            "area_slug": "al-arid",
+            "project_ref": "CAND-20260507-MODERN-VILLA",
+            "support_type": "primary",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-arid",
+            "project_ref": "PRJ-CAND-20260507-01",
+            "support_type": "primary",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-arid",
+            "project_ref": "CAND-20260614-POSTCON-B",
+            "support_type": "supporting",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-arid",
+            "project_ref": "CAND-20260507-VILLA-A",
+            "support_type": "supporting",
+            "sort_order": 4
+        },
+        {
+            "area_slug": "al-arid",
+            "project_ref": "CAND-20260730-PAVERS-D",
+            "support_type": "supporting",
+            "sort_order": 5
+        },
+        {
+            "area_slug": "al-arid",
+            "project_ref": "CAND-20260523-EXTERIOR-A",
+            "support_type": "supporting",
+            "sort_order": 6
+        },
+        {
+            "area_slug": "al-yasmin",
+            "project_ref": "PRJ-CAND-20260313-01",
+            "support_type": "primary",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-yasmin",
+            "project_ref": "CAND-20260801-VILLA-A",
+            "support_type": "primary",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-yasmin",
+            "project_ref": "CAND-20260614-KITCHEN-E",
+            "support_type": "primary",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-yasmin",
+            "project_ref": "CAND-20260822-INTERIOR",
+            "support_type": "primary",
+            "sort_order": 4
+        },
+        {
+            "area_slug": "al-yasmin",
+            "project_ref": "CAND-20260614-VILLA-01",
+            "support_type": "supporting",
+            "sort_order": 5
+        },
+        {
+            "area_slug": "al-yasmin",
+            "project_ref": "CAND-20260801-VILLA-C",
+            "support_type": "supporting",
+            "sort_order": 6
+        },
+        {
+            "area_slug": "al-yasmin",
+            "project_ref": "CAND-20260507-EXTERIOR-B",
+            "support_type": "supporting",
+            "sort_order": 7
+        },
+        {
+            "area_slug": "al-yasmin",
+            "project_ref": "CAND-20260723-INTERIOR",
+            "support_type": "supporting",
+            "sort_order": 8
+        },
+        {
+            "area_slug": "al-sahafa",
+            "project_ref": "CAND-20260523-GLASS-INTERIOR-01",
+            "support_type": "primary",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-sahafa",
+            "project_ref": "CAND-20260614-FACADE-D",
+            "support_type": "primary",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-sahafa",
+            "project_ref": "CAND-20260523-GLASS-EXTERIOR-01",
+            "support_type": "primary",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-sahafa",
+            "project_ref": "CAND-20260823-INTERIOR",
+            "support_type": "primary",
+            "sort_order": 4
+        },
+        {
+            "area_slug": "al-sahafa",
+            "project_ref": "CAND-20260729-FACADE-A",
+            "support_type": "supporting",
+            "sort_order": 5
+        },
+        {
+            "area_slug": "al-sahafa",
+            "project_ref": "CAND-20260523-FACADE-B",
+            "support_type": "supporting",
+            "sort_order": 6
+        },
+        {
+            "area_slug": "hittin",
+            "project_ref": "CAND-20260614-HALL-F",
+            "support_type": "primary",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "hittin",
+            "project_ref": "CAND-20260614-CHANDELIER-01",
+            "support_type": "primary",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-qirawan",
+            "project_ref": "CAND-20260614-POSTCON-B",
+            "support_type": "primary",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-qirawan",
+            "project_ref": "CAND-20260507-VILLA-A",
+            "support_type": "primary",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-qirawan",
+            "project_ref": "CAND-20260507-MODERN-VILLA",
+            "support_type": "supporting",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-qirawan",
+            "project_ref": "PRJ-CAND-20260507-01",
+            "support_type": "supporting",
+            "sort_order": 4
+        },
+        {
+            "area_slug": "al-ghadir",
+            "project_ref": "CAND-20260516-COMMERCIAL",
+            "support_type": "primary",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-ghadir",
+            "project_ref": "PRJ-CAND-20260313-01",
+            "support_type": "supporting",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-ghadir",
+            "project_ref": "CAND-20260916-VILLA-B",
+            "support_type": "supporting",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-narjis",
+            "project_ref": "CAND-20260507-EXTERIOR-B",
+            "support_type": "primary",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-narjis",
+            "project_ref": "CAND-20260916-VILLA-B",
+            "support_type": "primary",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-narjis",
+            "project_ref": "CAND-20260614-FACADE-D",
+            "support_type": "supporting",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-olaya",
+            "project_ref": "CAND-20260801-FACADE-B",
+            "support_type": "supporting",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-olaya",
+            "project_ref": "CAND-20260730-FACADE-B",
+            "support_type": "supporting",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-olaya",
+            "project_ref": "CAND-20260909-OFFICE-A",
+            "support_type": "supporting",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-olaya",
+            "project_ref": "CAND-20260614-OFFICE-G",
+            "support_type": "supporting",
+            "sort_order": 4
+        },
+        {
+            "area_slug": "al-olaya",
+            "project_ref": "CAND-20260614-OFFICE-E",
+            "support_type": "supporting",
+            "sort_order": 5
+        },
+        {
+            "area_slug": "al-olaya",
+            "project_ref": "CAND-20260523-CORRIDOR-01",
+            "support_type": "supporting",
+            "sort_order": 6
+        },
+        {
+            "area_slug": "al-olaya",
+            "project_ref": "CAND-20260614-OFFICE-C",
+            "support_type": "supporting",
+            "sort_order": 7
+        },
+        {
+            "area_slug": "al-olaya",
+            "project_ref": "CAND-20260523-MALL-01",
+            "support_type": "supporting",
+            "sort_order": 8
+        },
+        {
+            "area_slug": "al-olaya",
+            "project_ref": "CAND-20260614-OFFICE-01",
+            "support_type": "supporting",
+            "sort_order": 9
+        },
+        {
+            "area_slug": "al-olaya",
+            "project_ref": "CAND-20260801-OFFICE",
+            "support_type": "supporting",
+            "sort_order": 10
+        },
+        {
+            "area_slug": "al-nakheel",
+            "project_ref": "CAND-20260614-HALL-F",
+            "support_type": "supporting",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-nakheel",
+            "project_ref": "CAND-20260507-LUXURY-INTERIOR",
+            "support_type": "supporting",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-nakheel",
+            "project_ref": "CAND-20260614-FLOOR-D",
+            "support_type": "supporting",
+            "sort_order": 3
+        },
+        {
+            "area_slug": "al-rimal",
+            "project_ref": "CAND-20260523-FACADE-01",
+            "support_type": "supporting",
+            "sort_order": 1
+        },
+        {
+            "area_slug": "al-rimal",
+            "project_ref": "CAND-20260726-SITE",
+            "support_type": "supporting",
+            "sort_order": 2
+        },
+        {
+            "area_slug": "al-muhammadiyah",
+            "project_ref": "CAND-20260516-COMMERCIAL",
+            "support_type": "supporting",
+            "sort_order": 1
         }
     ]
 }

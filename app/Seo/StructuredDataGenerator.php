@@ -92,7 +92,7 @@ class StructuredDataGenerator
         }
 
         $faqs = $page->faqs()->where('is_active', true)->orderBy('sort_order')->get();
-        if ($faqs->isNotEmpty() && $page->type !== PageType::Service) {
+        if ($faqs->isNotEmpty() && ! in_array($page->type, [PageType::Service, PageType::Area], true)) {
             $blocks[] = $this->faqPage($faqs);
         }
 

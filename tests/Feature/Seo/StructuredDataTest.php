@@ -208,20 +208,17 @@ class StructuredDataTest extends TestCase
         $this->assertArrayNotHasKey('item', $breadcrumbList['itemListElement'][1], 'The current page itself must not link to itself in the breadcrumb trail.');
     }
 
-    public function test_faq_page_schema_is_emitted_when_an_area_page_has_active_faqs(): void
+    public function test_faq_page_schema_is_absent_for_area_pages_with_faqs(): void
     {
+        // Area pages show FAQs to users but do NOT emit FAQPage JSON-LD:
+        // Google limits FAQ rich results to authoritative sites; area pages are excluded.
         $page = $this->createCompliantAreaPage();
         Faq::factory()->for($page)->create(['question' => 'ما هي خدماتكم؟', 'answer' => 'نقدم خدمات التنظيف المنزلي.', 'sort_order' => 1]);
         Faq::factory()->for($page)->create(['question' => 'هل تعملون في الرياض؟', 'answer' => 'نعم، نغطي جميع أحياء الرياض.', 'sort_order' => 2]);
 
-        $faqPage = collect($this->generator->forPage($page->fresh()))->firstWhere('@type', 'FAQPage');
+        $types = collect($this->generator->forPage($page->fresh()))->pluck('@type');
 
-        $this->assertNotNull($faqPage);
-        $this->assertCount(2, $faqPage['mainEntity']);
-        $this->assertSame('Question', $faqPage['mainEntity'][0]['@type']);
-        $this->assertSame('ما هي خدماتكم؟', $faqPage['mainEntity'][0]['name']);
-        $this->assertSame('Answer', $faqPage['mainEntity'][0]['acceptedAnswer']['@type']);
-        $this->assertSame('نقدم خدمات التنظيف المنزلي.', $faqPage['mainEntity'][0]['acceptedAnswer']['text']);
+        $this->assertFalse($types->contains('FAQPage'));
     }
 
     public function test_faq_page_schema_is_absent_when_a_page_has_no_faqs(): void
@@ -233,9 +230,11 @@ class StructuredDataTest extends TestCase
         $this->assertFalse($types->contains('FAQPage'));
     }
 
-    public function test_faq_page_schema_excludes_inactive_faqs(): void
+    public function test_faq_page_schema_excludes_inactive_faqs_for_non_area_non_service_page(): void
     {
-        $page = $this->createCompliantAreaPage();
+        // Other page types (e.g. Landing) still emit FAQPage with only active FAQs.
+        $page = Page::factory()->create(['type' => PageType::Landing, 'status' => PageStatus::Published, 'published_at' => now()->subDay()]);
+        $page->seoMetadata()->create(['meta_title' => 'Test', 'robots_index' => true, 'robots_follow' => true]);
         Faq::factory()->for($page)->create(['question' => 'سؤال نشط؟', 'answer' => 'جواب نشط.', 'sort_order' => 1, 'is_active' => true]);
         Faq::factory()->for($page)->create(['question' => 'سؤال معطل؟', 'answer' => 'جواب معطل.', 'sort_order' => 2, 'is_active' => false]);
 

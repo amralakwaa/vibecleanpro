@@ -63,7 +63,7 @@ class ServicesIndexController extends Controller
         ];
 
         $seo = new SeoHeadData(
-            title: 'خدمات التنظيف | '.($businessProfile?->name ?? config('app.name')),
+            title: 'خدمات التنظيف في الرياض | '.($businessProfile?->name ?? config('app.name')),
             metaDescription: 'تصفح جميع خدمات التنظيف المتاحة لدينا في الرياض.',
             canonicalUrl: $this->urlResolver->absoluteUrl($canonicalPath),
             robotsContent: 'index, follow',

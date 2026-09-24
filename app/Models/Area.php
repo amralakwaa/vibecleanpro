@@ -52,6 +52,14 @@ class Area extends Model
         return $this->hasMany(Project::class);
     }
 
+    public function supportingProjects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'area_project_support')
+            ->withPivot(['support_type', 'sort_order', 'is_active'])
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
+    }
+
     public function articles(): BelongsToMany
     {
         return $this->belongsToMany(Article::class, 'article_area')->withTimestamps();

@@ -36,11 +36,20 @@
     $urlResolver = app(\App\Seo\UrlResolver::class);
     $quoteUrl = route('public.quote', ['area' => $area->id]);
 
+    // $localProjects = confirmed location in this area (projects.area_id).
+    // $supportingProjects = from area_project_support pivot (city-level only).
+    $projects = $localProjects;
     $projectShowcases = $projects->filter(
         fn ($project) => $project->media->firstWhere('pivot.stage', 'before') && $project->media->firstWhere('pivot.stage', 'after')
     );
     $projectCards = $projects->reject(fn ($project) => $projectShowcases->contains($project));
     $hasProjectPhotos = $projectShowcases->isNotEmpty() || $projectCards->contains(fn ($project) => $project->media->isNotEmpty());
+
+    $supportShowcases = $supportingProjects->filter(
+        fn ($project) => $project->media->firstWhere('pivot.stage', 'before') && $project->media->firstWhere('pivot.stage', 'after')
+    );
+    $supportCards = $supportingProjects->reject(fn ($project) => $supportShowcases->contains($project));
+    $hasSupportPhotos = $supportShowcases->isNotEmpty() || $supportCards->contains(fn ($project) => $project->media->isNotEmpty());
     $leadTestimonial = $testimonials->first();
     $leadOffer = $offers->first();
 
@@ -97,13 +106,13 @@
                 </h1>
 
                 {{-- Real local cues only - each line is a relation that has rows. --}}
-                @if ($services->isNotEmpty() || $projects->isNotEmpty() || $nearbyAreas->isNotEmpty())
+                @if ($services->isNotEmpty() || $projects->isNotEmpty() || $supportingProjects->isNotEmpty() || $nearbyAreas->isNotEmpty())
                     <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-neutral-600">
                         @if ($services->isNotEmpty())
                             <li class="flex items-center gap-2"><x-public.icon name="check-circle" class="w-4 h-4 text-primary-600 shrink-0" /> هذه المنطقة ضمن نطاق خدمتنا</li>
                         @endif
-                        @if ($projects->isNotEmpty())
-                            <li class="flex items-center gap-2"><x-public.icon name="briefcase" class="w-4 h-4 text-primary-600 shrink-0" /> لدينا أعمال منفذة هنا</li>
+                        @if ($projects->isNotEmpty() || $supportingProjects->isNotEmpty())
+                            <li class="flex items-center gap-2"><x-public.icon name="briefcase" class="w-4 h-4 text-primary-600 shrink-0" /> نماذج من أعمالنا متاحة</li>
                         @endif
                         @if ($nearbyAreas->isNotEmpty())
                             <li class="flex items-center gap-2"><x-public.icon name="map-pin" class="w-4 h-4 text-primary-600 shrink-0" /> ونخدم المناطق المجاورة لها</li>
@@ -121,7 +130,7 @@
             </div>
         </x-public.container>
 
-        <x-public.wave shape="curve" position="bottom" :class="$projects->isNotEmpty() ? 'text-white' : 'text-background'" />
+        <x-public.wave shape="curve" position="bottom" :class="($projects->isNotEmpty() || $supportingProjects->isNotEmpty()) ? 'text-white' : 'text-background'" />
     </section>
 
     {{-- ===== 2. Real work done in THIS area - the page's centre =====
@@ -194,6 +203,72 @@
                                         @if ($project->completed_at)
                                             <span class="text-neutral-500 font-normal">· {{ $project->completed_at->translatedFormat('F Y') }}</span>
                                         @endif
+                                    </a>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </x-public.container>
+        </section>
+    @endif
+
+    {{-- ===== 2b. Supporting projects (city-level, no neighbourhood claim) =====
+         Only shown when there are no confirmed local projects. Honest label:
+         never implies the work was done in this specific area. --}}
+    @if ($projects->isEmpty() && $supportingProjects->isNotEmpty())
+        <section class="bg-white" aria-labelledby="area-portfolio">
+            <x-public.container width="wide" @class(['py-16 md:py-24' => $hasSupportPhotos, 'py-12 md:py-16' => ! $hasSupportPhotos])>
+                <div class="flex flex-wrap items-end justify-between gap-6 reveal">
+                    <div class="max-w-2xl">
+                        <p class="text-sm font-medium tracking-wide text-primary-700">نماذج من أعمال فايب كلين برو في الرياض</p>
+                        <h2 id="area-portfolio" @class(['mt-2 font-display font-medium tracking-tight text-ink-950 text-balance', 'text-3xl md:text-5xl md:leading-[1.1]' => $hasSupportPhotos, 'text-2xl md:text-3xl' => ! $hasSupportPhotos])>
+                            معرض الأعمال
+                        </h2>
+                    </div>
+                    <a href="{{ route('public.projects.index') }}" class="inline-flex items-center gap-2 min-h-11 font-medium text-primary-700 underline-offset-4 hover:underline">
+                        جميع الأعمال
+                        <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />
+                    </a>
+                </div>
+
+                @if ($supportShowcases->isNotEmpty())
+                    <div @class(['mt-10 grid gap-10 md:gap-12 reveal', 'md:grid-cols-2' => $supportShowcases->count() > 1])>
+                        @foreach ($supportShowcases as $project)
+                            <x-public.evidence-band
+                                :project="$project"
+                                :url="$urlResolver->urlForPage($project->page)"
+                                :before="$project->media->firstWhere('pivot.stage', 'before')"
+                                :after="$project->media->firstWhere('pivot.stage', 'after')"
+                            />
+                        @endforeach
+                    </div>
+                @endif
+
+                @if ($supportCards->isNotEmpty())
+                    <ul @class(['reveal', 'grid sm:grid-cols-2 lg:grid-cols-3 gap-5' => $hasSupportPhotos, 'flex flex-wrap gap-2.5' => ! $hasSupportPhotos, 'mt-12' => $supportShowcases->isNotEmpty(), 'mt-10' => $supportShowcases->isEmpty() && $hasSupportPhotos, 'mt-6' => ! $hasSupportPhotos])>
+                        @foreach ($supportCards as $project)
+                            @php($cover = $project->media->firstWhere('pivot.stage', 'after') ?? $project->media->first())
+                            <li>
+                                @if ($cover)
+                                    <a href="{{ $urlResolver->urlForPage($project->page) }}"
+                                        class="group relative isolate flex flex-col justify-end overflow-hidden rounded-2xl text-white aspect-[4/3] shadow-sm hover:shadow-xl hover:shadow-primary-900/15 transition-shadow duration-300">
+                                        <img src="{{ $cover->url() }}" srcset="{{ $cover->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $cover->alt_text ?? $project->title }}" loading="lazy"
+                                            width="{{ $cover->width ?: 800 }}" height="{{ $cover->height ?: 600 }}"
+                                            class="tile-media absolute inset-0 -z-20 w-full h-full object-cover">
+                                        <div class="tile-scrim absolute inset-0 -z-10" aria-hidden="true"></div>
+                                        <div class="p-5">
+                                            <p class="font-display text-lg font-medium tracking-tight text-white">{{ $project->title }}</p>
+                                            @if ($project->completed_at)
+                                                <p class="mt-1 text-sm text-white/80">{{ $project->completed_at->translatedFormat('F Y') }}</p>
+                                            @endif
+                                        </div>
+                                    </a>
+                                @else
+                                    <a href="{{ $urlResolver->urlForPage($project->page) }}"
+                                        class="group inline-flex items-center gap-2 min-h-11 rounded-full bg-neutral-50 ring-1 ring-ink-950/10 px-4 text-sm font-medium text-ink-950 transition-[box-shadow,color] hover:ring-primary-400 hover:text-primary-700">
+                                        <x-public.icon name="briefcase" class="w-4 h-4 text-primary-600" />
+                                        {{ $project->title }}
                                     </a>
                                 @endif
                             </li>

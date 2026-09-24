@@ -10,6 +10,7 @@ use App\Enums\ServiceCapability;
 use App\Enums\ServicePricingMode;
 use App\Models\Area;
 use App\Models\AreaGroup;
+use App\Models\Article;
 use App\Models\BusinessProfile;
 use App\Models\InternalLink;
 use App\Models\Media;
@@ -18,6 +19,7 @@ use App\Models\Project;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Loads the approved production structure (database/seeders/content/
@@ -73,6 +75,10 @@ class ProductionContentSeeder extends Seeder
 
         foreach ($content['trust_pages'] as $data) {
             $this->trustPage($data);
+        }
+
+        if (isset($content['area_project_support'])) {
+            $this->areaProjectSupport($content['area_project_support']);
         }
     }
 
@@ -170,7 +176,11 @@ class ProductionContentSeeder extends Seeder
 
         $page = $this->draftPage($area, PageType::Area, $data['slug'], $data['page_title'], $data['page_title'].self::BRAND, null);
 
-        if ($page && $area->tier === AreaTier::B) {
+        if ($page && ! empty($data['blocks'])) {
+            foreach ($data['blocks'] as $position => $block) {
+                $page->contentBlocks()->create(['type' => $block['type'], 'data' => $this->blockData($block), 'position' => $position + 1, 'is_active' => true]);
+            }
+        } elseif ($page && $area->tier === AreaTier::B) {
             $group = AreaGroup::query()->find($groups[$data['group']])?->name;
             $page->contentBlocks()->create(['type' => 'rich_text', 'position' => 1, 'is_active' => true, 'data' => ['content' => sprintf(
                 '<p>تغطي فايب كلين برو حي %s ضمن %s. اختر الخدمة التي تحتاجها من القائمة أدناه، وأرسل لنا صورة المكان وموقعه عبر واتساب؛ نرتب المعاينة ونرسل لك عرض سعر مكتوبًا قبل التنفيذ. لا يتم الدفع عبر الموقع.</p>',
@@ -182,6 +192,21 @@ class ProductionContentSeeder extends Seeder
                 'button_label' => 'اطلب عرض سعر',
                 'button_url' => route('public.quote', ['area' => $area->id]),
             ]]);
+        }
+
+        if ($page && ! empty($data['faqs'])) {
+            foreach ($data['faqs'] as $position => $faq) {
+                $page->faqs()->create(['question' => $faq['question'], 'answer' => $faq['answer'], 'sort_order' => $position + 1, 'is_active' => true]);
+            }
+        }
+
+        if (! empty($data['articles'])) {
+            foreach ($data['articles'] as $slug) {
+                $article = Article::query()->whereHas('page', fn ($q) => $q->where('slug', $slug))->first();
+                if ($article) {
+                    $area->articles()->syncWithoutDetaching([$article->id]);
+                }
+            }
         }
     }
 
@@ -248,6 +273,27 @@ class ProductionContentSeeder extends Seeder
                 'button_label' => 'تفاصيل الخدمة',
                 'button_url' => url('/services/'.$service->page->slug),
             ]]);
+        }
+    }
+
+    /**
+     * @param  list<array{area_slug: string, project_ref: string, support_type: string, sort_order: int}>  $rows
+     */
+    private function areaProjectSupport(array $rows): void
+    {
+        foreach ($rows as $row) {
+            $areaId = Area::query()->where('slug', $row['area_slug'])->value('id');
+            $projectId = Project::query()->where('source_ref', $row['project_ref'])->value('id');
+
+            if (! $areaId || ! $projectId) {
+                continue;
+            }
+
+            DB::table('area_project_support')->upsert(
+                [['area_id' => $areaId, 'project_id' => $projectId, 'support_type' => $row['support_type'], 'sort_order' => $row['sort_order'], 'is_active' => true, 'created_at' => now(), 'updated_at' => now()]],
+                ['area_id', 'project_id'],
+                ['support_type', 'sort_order', 'is_active', 'updated_at'],
+            );
         }
     }
 

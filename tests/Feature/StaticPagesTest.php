@@ -291,7 +291,10 @@ class StaticPagesTest extends TestCase
 
         $html = $this->get('/services/villa-cleaning')->assertOk()->getContent();
 
+        // FAQ text must remain visible to users — content stays, schema does not
         $this->assertStringContainsString('كم يستغرق التنظيف؟', $html);
+        // Service pages do not emit FAQPage JSON-LD: Google limits FAQ rich results
+        // to authoritative government/health sites; commercial cleaning pages are excluded
         $this->assertStringNotContainsString('FAQPage', $html);
         $this->assertStringNotContainsString('aggregateRating', $html);
     }
