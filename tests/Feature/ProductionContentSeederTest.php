@@ -50,20 +50,26 @@ class ProductionContentSeederTest extends TestCase
     {
         $this->seed(ProductionContentSeeder::class);
 
-        $tierB = Area::query()->where('slug', 'hittin')->first();
-        $this->assertSame(AreaTier::B, $tierB->tier);
+        // An area with no authored blocks in the JSON (al-muhammadiyah, a
+        // Tier B draft still awaiting real content) gets the generated
+        // two-block placeholder — a lead paragraph and a quote CTA.
+        $placeholder = Area::query()->where('slug', 'al-muhammadiyah')->first();
+        $this->assertSame(AreaTier::B, $placeholder->tier);
         // Tier B pages start indexable — actual indexing is gated by page
         // status (Draft) and the PublishingGate, not the tier itself.
-        $this->assertTrue($tierB->page->seoMetadata->robots_index);
-        $this->assertSame(2, $tierB->page->contentBlocks()->count());
+        $this->assertTrue($placeholder->page->seoMetadata->robots_index);
+        $this->assertSame(2, $placeholder->page->contentBlocks()->count());
 
-        $tierA = Area::query()->where('slug', 'al-olaya')->first();
-        $this->assertTrue($tierA->page->seoMetadata->robots_index);
-        $this->assertSame(0, $tierA->page->contentBlocks()->count());
+        // An area whose JSON carries authored content gets exactly those
+        // blocks and FAQs, with its custom meta applied.
+        $built = Area::query()->where('slug', 'al-olaya')->first();
+        $this->assertTrue($built->page->seoMetadata->robots_index);
+        $this->assertSame(7, $built->page->contentBlocks()->count());
+        $this->assertSame(3, $built->page->faqs()->count());
+        $this->assertStringContainsString('العليا', (string) $built->page->seoMetadata->meta_description);
 
         // All 15 approved areas are present; no extra areas seeded.
         $this->assertSame(15, Area::query()->count());
-        $this->assertTrue(Area::query()->where('slug', 'al-muhammadiyah')->exists());
     }
 
     public function test_areas_only_list_services_confirmed_as_available(): void
