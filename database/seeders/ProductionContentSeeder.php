@@ -174,7 +174,9 @@ class ProductionContentSeeder extends Seeder
             collect($slugs)->unique()->filter(fn (string $slug) => isset($available[$slug]))->mapWithKeys(fn (string $slug) => [$services[$slug]->id => ['is_active' => true]])->all()
         );
 
-        $page = $this->draftPage($area, PageType::Area, $data['slug'], $data['page_title'], $data['page_title'].self::BRAND, null);
+        $metaTitle = $data['meta_title'] ?? ($data['page_title'].self::BRAND);
+        $metaDescription = $data['meta_description'] ?? null;
+        $page = $this->draftPage($area, PageType::Area, $data['slug'], $data['page_title'], $metaTitle, $metaDescription);
 
         if ($page && ! empty($data['blocks'])) {
             foreach ($data['blocks'] as $position => $block) {
