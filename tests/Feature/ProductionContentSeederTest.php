@@ -50,23 +50,28 @@ class ProductionContentSeederTest extends TestCase
     {
         $this->seed(ProductionContentSeeder::class);
 
-        // An area with no authored blocks in the JSON (al-muhammadiyah, a
-        // Tier B draft still awaiting real content) gets the generated
-        // two-block placeholder — a lead paragraph and a quote CTA.
-        $placeholder = Area::query()->where('slug', 'al-muhammadiyah')->first();
-        $this->assertSame(AreaTier::B, $placeholder->tier);
+        // Every approved area now ships with authored content: the JSON
+        // carries its blocks, FAQs and meta, and the seeder writes them as-is.
         // Tier B pages start indexable — actual indexing is gated by page
         // status (Draft) and the PublishingGate, not the tier itself.
-        $this->assertTrue($placeholder->page->seoMetadata->robots_index);
-        $this->assertSame(2, $placeholder->page->contentBlocks()->count());
+        $tierB = Area::query()->where('slug', 'hittin')->first();
+        $this->assertSame(AreaTier::B, $tierB->tier);
+        $this->assertTrue($tierB->page->seoMetadata->robots_index);
+        $this->assertSame(7, $tierB->page->contentBlocks()->count());
+        $this->assertSame(3, $tierB->page->faqs()->count());
 
-        // An area whose JSON carries authored content gets exactly those
-        // blocks and FAQs, with its custom meta applied.
-        $built = Area::query()->where('slug', 'al-olaya')->first();
-        $this->assertTrue($built->page->seoMetadata->robots_index);
-        $this->assertSame(7, $built->page->contentBlocks()->count());
-        $this->assertSame(3, $built->page->faqs()->count());
-        $this->assertStringContainsString('العليا', (string) $built->page->seoMetadata->meta_description);
+        // A Tier A area applies its custom meta alongside its blocks.
+        $tierA = Area::query()->where('slug', 'al-olaya')->first();
+        $this->assertTrue($tierA->page->seoMetadata->robots_index);
+        $this->assertSame(7, $tierA->page->contentBlocks()->count());
+        $this->assertSame(3, $tierA->page->faqs()->count());
+        $this->assertStringContainsString('العليا', (string) $tierA->page->seoMetadata->meta_description);
+
+        // al-muhammadiyah, the last area to be built out, now carries its
+        // own authored content rather than a generated placeholder.
+        $muhammadiyah = Area::query()->where('slug', 'al-muhammadiyah')->first();
+        $this->assertSame(7, $muhammadiyah->page->contentBlocks()->count());
+        $this->assertSame(3, $muhammadiyah->page->faqs()->count());
 
         // All 15 approved areas are present; no extra areas seeded.
         $this->assertSame(15, Area::query()->count());
