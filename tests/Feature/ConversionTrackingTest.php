@@ -52,14 +52,14 @@ class ConversionTrackingTest extends TestCase
 
     public function test_a_phone_click_on_an_area_page_resolves_the_area(): void
     {
-        $page = $this->createCompliantAreaPage(slug: 'al-aqiq');
+        $page = $this->createCompliantAreaPage(slug: 'al-sahafa');
 
-        $this->beacon(['type' => 'phone_click', 'path' => '/areas/al-aqiq/'])->assertNoContent();
+        $this->beacon(['type' => 'phone_click', 'path' => '/areas/al-sahafa/'])->assertNoContent();
 
         $event = ConversionEvent::query()->sole();
         $this->assertSame($page->pageable_id, $event->area_id);
         $this->assertNull($event->service_id);
-        $this->assertSame('/areas/al-aqiq', $event->page_path);
+        $this->assertSame('/areas/al-sahafa', $event->page_path);
     }
 
     public function test_a_draft_page_or_a_slug_under_the_wrong_prefix_gets_no_page_context(): void

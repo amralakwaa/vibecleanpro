@@ -191,7 +191,7 @@ class AreaServicePageTest extends TestCase
         $this->seed(ProductionContentSeeder::class);
         $this->seed(AreaContentSeeder::class);
 
-        $wave1Slugs = ['al-olaya', 'al-malqa', 'al-narjis', 'al-yasmin', 'al-aqiq', 'diriyah', 'al-qirawan', 'hittin', 'al-yarmouk', 'al-rimal'];
+        $wave1Slugs = ['al-olaya', 'al-malqa', 'al-narjis', 'al-yasmin', 'al-qirawan', 'hittin', 'al-rimal'];
 
         $titles = [];
         $descriptions = [];

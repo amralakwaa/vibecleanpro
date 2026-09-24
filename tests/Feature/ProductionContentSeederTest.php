@@ -36,7 +36,7 @@ class ProductionContentSeederTest extends TestCase
         $this->seed(ProductionContentSeeder::class);
 
         $this->assertSame(19, Service::query()->count());
-        $this->assertSame(86, Area::query()->count());
+        $this->assertSame(15, Area::query()->count());
         $this->assertSame(47, Project::query()->count());
         $this->assertSame(0, Page::query()->where('status', '!=', PageStatus::Draft->value)->count());
         $this->assertSame(0, Project::query()->whereNotNull('owner_confirmed_at')->count());
@@ -61,7 +61,9 @@ class ProductionContentSeederTest extends TestCase
         $this->assertTrue($tierA->page->seoMetadata->robots_index);
         $this->assertSame(0, $tierA->page->contentBlocks()->count());
 
-        $this->assertNull(Area::query()->where('slug', 'banban')->first()->page);
+        // All 15 approved areas are present; no extra areas seeded.
+        $this->assertSame(15, Area::query()->count());
+        $this->assertTrue(Area::query()->where('slug', 'al-muhammadiyah')->exists());
     }
 
     public function test_areas_only_list_services_confirmed_as_available(): void
