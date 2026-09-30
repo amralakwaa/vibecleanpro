@@ -111,8 +111,15 @@
         <script type="application/ld+json">{!! json_encode($block, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
     @endforeach
 
+    {{-- Preload hints pushed from individual page components (e.g. hero image). --}}
+    @stack('preloads')
+
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
-    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=ibm-plex-sans-arabic:400,500,600,700|readex-pro:300,400,500&display=swap">
+    {{-- Load font CSS asynchronously so it never blocks the first paint.
+         The onload swap is the standard JS-free async-CSS pattern; the
+         <noscript> fallback covers the rare no-JS case. --}}
+    <link rel="preload" as="style" href="https://fonts.bunny.net/css?family=ibm-plex-sans-arabic:400,500,600,700|readex-pro:300,400,500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.bunny.net/css?family=ibm-plex-sans-arabic:400,500,600,700|readex-pro:300,400,500&display=swap"></noscript>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="vcp-track" content="{{ route('public.track') }}">
     @php($analytics = app(\App\Support\Analytics\AnalyticsSettings::class))

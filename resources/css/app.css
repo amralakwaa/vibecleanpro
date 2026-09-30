@@ -447,10 +447,14 @@
             linear-gradient(135deg, var(--color-primary-700) 0%, var(--color-primary-600) 45%, var(--color-ink-900) 100%);
     }
 
-    /* 4. Radial glow - a positioned decorative element, aria-hidden. */
+    /* 4. Radial glow - a positioned decorative element, aria-hidden.
+       will-change: filter promotes this to its own compositing layer so
+       any ancestor opacity/transform animation does not force a main-thread
+       repaint of the blur on every frame. */
     .glow-primary {
         background: radial-gradient(closest-side, color-mix(in oklab, var(--color-primary-500) 45%, transparent), transparent);
         filter: blur(24px);
+        will-change: filter;
     }
 
     /* Image tile: controlled hover motion and a readable gradient scrim.
