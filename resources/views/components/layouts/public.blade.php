@@ -114,7 +114,22 @@
     {{-- Preload hints pushed from individual page components (e.g. hero image). --}}
     @stack('preloads')
 
+    {{-- Preload Leaflet CSS so it is ready before the footer renders; without this
+         the browser downloads it mid-body and the map causes a layout shift (CLS). --}}
+    <link rel="preload" as="style" href="{{ asset('vendor/leaflet/leaflet.css') }}">
+
+    {{-- Preconnect first so the connection is ready before the font file preloads fire. --}}
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
+    {{-- Preload the key Arabic-subset font files so they are ready before first paint.
+         Without this, async font CSS loads after FCP and font-swap causes CLS.
+         IBM Plex Sans Arabic 400 is the LCP element (body text) — high priority.
+         Others use fetchpriority="low" to not compete with the hero image. --}}
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="https://fonts.bunny.net/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-400-normal.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin fetchpriority="low"
+        href="https://fonts.bunny.net/readex-pro/files/readex-pro-arabic-500-normal.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin fetchpriority="low"
+        href="https://fonts.bunny.net/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-700-normal.woff2">
     {{-- Load font CSS asynchronously so it never blocks the first paint.
          The onload swap is the standard JS-free async-CSS pattern; the
          <noscript> fallback covers the rare no-JS case. --}}
