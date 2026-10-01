@@ -83,11 +83,14 @@ class WarrantyAndTrustTest extends TestCase
         $this->assertStringContainsString('فريق سعودي مدرب', $home);
         $this->assertStringContainsString('ضمان يصل إلى 10 سنوات', $home);
 
-        // Editing the profile changes every surface at once. The negative
-        // assertion uses the point's description, not its title: the words
-        // "فريق سعودي مدرب" also appear in the profile's identity
+        // Editing the profile changes every surface at once. The edit goes
+        // through the model instance (as the admin panel does) so the public
+        // page cache is invalidated on save - a bare query-builder update
+        // would bypass the model events the cache listens to.
+        // The negative assertion uses the point's description, not its title:
+        // the words "فريق سعودي مدرب" also appear in the profile's identity
         // statement, which is a different field on the same page.
-        BusinessProfile::query()->update(['trust_points' => [['title' => 'نقطة محرّرة', 'description' => 'وصف']]]);
+        BusinessProfile::query()->sole()->update(['trust_points' => [['title' => 'نقطة محرّرة', 'description' => 'وصف']]]);
         $home = $this->get('/')->getContent();
         $this->assertStringContainsString('نقطة محرّرة', $home);
         $this->assertStringNotContainsString('الفريق الذي يصل إليك هو فريقنا', $home);
@@ -112,7 +115,9 @@ class WarrantyAndTrustTest extends TestCase
         $draftHtml = $this->get('/')->assertOk()->getContent();
         $this->assertStringNotContainsString(url('/warranty'), $draftHtml);
 
-        Page::query()->where('slug', 'warranty')->update(['status' => PageStatus::Published, 'published_at' => now()]);
+        // Publish through the model instance (as the admin panel does) so the
+        // cached layout chrome + homepage content are flushed on save.
+        Page::query()->where('slug', 'warranty')->sole()->update(['status' => PageStatus::Published, 'published_at' => now()]);
 
         $publishedHtml = $this->get('/')->getContent();
         $this->assertStringContainsString(url('/warranty'), $publishedHtml);

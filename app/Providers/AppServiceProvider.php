@@ -6,6 +6,7 @@ use App\Models\Area;
 use App\Models\AreaGroup;
 use App\Models\Article;
 use App\Models\ArticleCategory;
+use App\Models\BusinessProfile;
 use App\Models\Faq;
 use App\Models\InternalLink;
 use App\Models\Lead;
@@ -16,6 +17,7 @@ use App\Models\Project;
 use App\Models\Redirect;
 use App\Models\Service;
 use App\Models\ServiceCategory;
+use App\Models\SiteSetting;
 use App\Models\TeamMember;
 use App\Models\Testimonial;
 use App\Models\User;
@@ -40,6 +42,8 @@ use App\Policies\UserPolicy;
 use App\Seo\DuplicateSimilarityAnalyzer;
 use App\Support\Content\PublishedLinkFilter;
 use App\Support\Mail\MailSettings;
+use App\Support\PublicPageCache;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -71,6 +75,26 @@ class AppServiceProvider extends ServiceProvider
         Redirect::class => RedirectPolicy::class,
         User::class => UserPolicy::class,
         Role::class => RolePolicy::class,
+    ];
+
+    /**
+     * Models the cached homepage payload is built from. Saving or deleting
+     * any of them flushes the homepage cache so an edit shows immediately.
+     *
+     * @var list<class-string<Model>>
+     */
+    private const HOME_CACHE_DEPENDENCIES = [
+        Service::class,
+        ServiceCategory::class,
+        Area::class,
+        Project::class,
+        Testimonial::class,
+        Offer::class,
+        Faq::class,
+        SiteSetting::class,
+        Media::class,
+        BusinessProfile::class,
+        Page::class,
     ];
 
     /**
@@ -121,6 +145,18 @@ class AppServiceProvider extends ServiceProvider
 
         // Super Admin bypasses every Policy/Gate check outright.
         Gate::before(fn ($user, string $ability) => $user->hasRole('Super Admin') ? true : null);
+
+        // Event-driven invalidation for the cached public payloads (see
+        // PublicPageCache). The homepage cache is flushed when any model it is
+        // built from changes; the layout chrome (nav/legal/trust links) depends
+        // only on Page. Registered centrally here rather than in each model's
+        // observer so the full dependency set is visible in one place.
+        foreach (self::HOME_CACHE_DEPENDENCIES as $model) {
+            $model::saved(static fn () => PublicPageCache::flushHome());
+            $model::deleted(static fn () => PublicPageCache::flushHome());
+        }
+        Page::saved(static fn () => PublicPageCache::flushLayoutChrome());
+        Page::deleted(static fn () => PublicPageCache::flushLayoutChrome());
 
         // Mail credentials entered in the panel are applied here, unless the
         // environment already defines the transport (which always wins).

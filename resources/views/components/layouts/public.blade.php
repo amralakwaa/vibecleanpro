@@ -23,11 +23,59 @@
     // "للشركات" points at the existing business-context contact route
     // (see ContactController) - the B2B half of the business was
     // previously unreachable from the main navigation entirely.
-    // The About page is an editor-created Page (type About); it joins the
-    // navigation only once one is actually published, so the menu never
-    // links to a 404. One indexed lookup per request.
-    $aboutPage = \App\Models\Page::query()->where('type', \App\Enums\PageType::About)->published()->first();
-    $aboutUrl = $aboutPage ? app(\App\Seo\UrlResolver::class)->urlForPage($aboutPage) : null;
+    //
+    // The About / legal / trust links are all derived from Page lookups that
+    // are identical on every page and change only when a Page is saved, so
+    // the resolved URL maps are cached and flushed on Page save/delete (see
+    // PublicPageCache + AppServiceProvider) - ~9 queries per request become
+    // one cache read.
+    [$aboutUrl, $legalLinks, $trustLinks] = \Illuminate\Support\Facades\Cache::remember(
+        \App\Support\PublicPageCache::LAYOUT_CHROME,
+        \App\Support\PublicPageCache::TTL_SECONDS,
+        function () {
+            $urlResolver = app(\App\Seo\UrlResolver::class);
+
+            // The About page is an editor-created Page (type About); it joins
+            // the navigation only once one is actually published, so the menu
+            // never links to a 404.
+            $aboutPage = \App\Models\Page::query()->where('type', \App\Enums\PageType::About)->published()->first();
+            $aboutUrl = $aboutPage ? $urlResolver->urlForPage($aboutPage) : null;
+
+            // Legal pages are editor-created Pages at the reserved slugs
+            // "privacy" and "terms". Each link appears only once that page is
+            // actually published, so the footer never points at a draft (404).
+            // Slug AND type must both match: a Trust page sitting at the slug
+            // "privacy" is not the privacy policy, and must never be linked as one.
+            $legalPageTitles = [
+                'warranty' => ['title' => 'الضمان وشروط الخدمة', 'type' => \App\Enums\PageType::Trust],
+                'privacy' => ['title' => 'سياسة الخصوصية', 'type' => \App\Enums\PageType::Legal],
+                'terms' => ['title' => 'الشروط والأحكام', 'type' => \App\Enums\PageType::Legal],
+            ];
+            $legalLinks = collect($legalPageTitles)
+                ->map(fn (array $meta, string $slug) => \App\Models\Page::query()
+                    ->where('slug', $slug)->where('type', $meta['type'])->published()->first())
+                ->filter()
+                ->mapWithKeys(fn ($page) => [$legalPageTitles[$page->slug]['title'] => $urlResolver->urlForPage($page)])
+                ->all();
+
+            // Trust & policy hub links for the footer column.
+            $trustPolicyTitles = [
+                'trust'               => ['title' => 'مركز الثقة', 'type' => \App\Enums\PageType::Trust],
+                'complaints'          => ['title' => 'الشكاوى والتعويضات', 'type' => \App\Enums\PageType::Legal],
+                'cancellation'        => ['title' => 'الإلغاء والمدفوعات', 'type' => \App\Enums\PageType::Legal],
+                'service-scope'       => ['title' => 'نطاق الخدمة', 'type' => \App\Enums\PageType::Legal],
+                'licenses-compliance' => ['title' => 'الامتثال والتراخيص', 'type' => \App\Enums\PageType::Legal],
+            ];
+            $trustLinks = collect($trustPolicyTitles)
+                ->map(fn (array $meta, string $slug) => \App\Models\Page::query()
+                    ->where('slug', $slug)->where('type', $meta['type'])->published()->first())
+                ->filter()
+                ->mapWithKeys(fn ($page) => [$trustPolicyTitles[$page->slug]['title'] => $urlResolver->urlForPage($page)])
+                ->all();
+
+            return [$aboutUrl, $legalLinks, $trustLinks];
+        }
+    );
 
     $navItems = array_filter([
         'خدماتنا' => route('public.services.index'),
@@ -39,39 +87,6 @@
         'العروض' => route('public.offers.index'),
         'تواصل معنا' => route('public.contact'),
     ]);
-
-    // Legal pages are editor-created Pages at the reserved slugs "privacy"
-    // and "terms". Each link appears only once that page is actually
-    // published, so the footer never points at a draft (404). The footer
-    // omits the row entirely while both are drafts.
-    // Slug AND type must both match: a Trust page sitting at the slug
-    // "privacy" is not the privacy policy, and must never be linked as one.
-    $legalPageTitles = [
-        'warranty' => ['title' => 'الضمان وشروط الخدمة', 'type' => \App\Enums\PageType::Trust],
-        'privacy' => ['title' => 'سياسة الخصوصية', 'type' => \App\Enums\PageType::Legal],
-        'terms' => ['title' => 'الشروط والأحكام', 'type' => \App\Enums\PageType::Legal],
-    ];
-    $legalLinks = collect($legalPageTitles)
-        ->map(fn (array $meta, string $slug) => \App\Models\Page::query()
-            ->where('slug', $slug)->where('type', $meta['type'])->published()->first())
-        ->filter()
-        ->mapWithKeys(fn ($page) => [$legalPageTitles[$page->slug]['title'] => app(\App\Seo\UrlResolver::class)->urlForPage($page)])
-        ->all();
-
-    // Trust & policy hub links for the footer column.
-    $trustPolicyTitles = [
-        'trust'               => ['title' => 'مركز الثقة', 'type' => \App\Enums\PageType::Trust],
-        'complaints'          => ['title' => 'الشكاوى والتعويضات', 'type' => \App\Enums\PageType::Legal],
-        'cancellation'        => ['title' => 'الإلغاء والمدفوعات', 'type' => \App\Enums\PageType::Legal],
-        'service-scope'       => ['title' => 'نطاق الخدمة', 'type' => \App\Enums\PageType::Legal],
-        'licenses-compliance' => ['title' => 'الامتثال والتراخيص', 'type' => \App\Enums\PageType::Legal],
-    ];
-    $trustLinks = collect($trustPolicyTitles)
-        ->map(fn (array $meta, string $slug) => \App\Models\Page::query()
-            ->where('slug', $slug)->where('type', $meta['type'])->published()->first())
-        ->filter()
-        ->mapWithKeys(fn ($page) => [$trustPolicyTitles[$page->slug]['title'] => app(\App\Seo\UrlResolver::class)->urlForPage($page)])
-        ->all();
 @endphp
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">

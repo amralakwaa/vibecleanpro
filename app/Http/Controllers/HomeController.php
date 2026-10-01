@@ -15,7 +15,9 @@ use App\Models\Testimonial;
 use App\Seo\StructuredDataGenerator;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\SeoHeadData;
+use App\Support\PublicPageCache;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * The homepage is not backed by a Page model - see UrlResolver, which has
@@ -33,7 +35,75 @@ class HomeController extends Controller
 
     public function index(): Response
     {
+        // The homepage content and <head> data are identical for every visitor
+        // and change only when an editor saves content, so both are cached and
+        // flushed on those saves (see PublicPageCache + AppServiceProvider).
+        //
+        // The rendered content HTML is cached (a string) rather than the query
+        // results: Eloquent models cannot be unserialized from cache here by
+        // design (config/cache.php 'serializable_classes' => false), and the
+        // content carries no CSRF token (that lives in the layout <head>), so
+        // caching it never staleness-breaks forms or the tracking beacon.
+        // The layout itself still renders per request, keeping the CSRF token
+        // and any per-request state correct.
         $profile = BusinessProfile::query()->first();
+
+        $seo = new SeoHeadData(...Cache::remember(
+            PublicPageCache::HOME_SEO,
+            PublicPageCache::TTL_SECONDS,
+            fn (): array => $this->buildSeoArgs($profile),
+        ));
+
+        $content = Cache::remember(
+            PublicPageCache::HOME_CONTENT,
+            PublicPageCache::TTL_SECONDS,
+            fn (): string => view('partials.home-content', $this->buildContentData($profile))->render(),
+        );
+
+        return response()->view('home', [
+            'seo' => $seo,
+            'businessProfile' => $profile,
+            'homeContent' => $content,
+        ], 200);
+    }
+
+    /**
+     * Scalar <head> data (title, meta, Open Graph, structured data). Kept free
+     * of Eloquent objects so it is safe to cache under serializable_classes.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildSeoArgs(?BusinessProfile $profile): array
+    {
+        $title = $profile?->name
+            ? "{$profile->name} | شركة تنظيف احترافية في الرياض"
+            : 'شركة تنظيف احترافية في الرياض';
+
+        return [
+            'title' => $title,
+            'metaDescription' => 'خدمات تنظيف منزلي وتجاري احترافية في الرياض: فرق مدربة، مواعيد موثوقة، ونتائج تدوم.',
+            'canonicalUrl' => $this->urlResolver->absoluteUrl('/'),
+            'robotsContent' => 'index, follow',
+            'openGraph' => [
+                'title' => $title,
+                'description' => 'خدمات تنظيف منزلي وتجاري احترافية في الرياض.',
+                'image' => $profile?->logo?->url(),
+                'url' => $this->urlResolver->absoluteUrl('/'),
+                'type' => 'website',
+            ],
+            'structuredData' => $this->structuredData->sitewide(),
+            'breadcrumbs' => [],
+        ];
+    }
+
+    /**
+     * The homepage content collections, passed to the content partial. Only
+     * built on a cache miss (the rendered HTML is what is cached).
+     *
+     * @return array<string, mixed>
+     */
+    private function buildContentData(?BusinessProfile $profile): array
+    {
 
         // 'page' is eager-loaded on every list below purely because the
         // view resolves each item's URL through UrlResolver::urlForPage()
@@ -135,28 +205,7 @@ class HomeController extends Controller
         $publishedAreas = Area::query()->whereHas('page', fn ($query) => $query->published())->count();
         $publishedProjects = Project::query()->whereHas('page', fn ($query) => $query->published())->count();
 
-        $title = $profile?->name
-            ? "{$profile->name} | شركة تنظيف احترافية في الرياض"
-            : 'شركة تنظيف احترافية في الرياض';
-
-        $seo = new SeoHeadData(
-            title: $title,
-            metaDescription: 'خدمات تنظيف منزلي وتجاري احترافية في الرياض: فرق مدربة، مواعيد موثوقة، ونتائج تدوم.',
-            canonicalUrl: $this->urlResolver->absoluteUrl('/'),
-            robotsContent: 'index, follow',
-            openGraph: [
-                'title' => $title,
-                'description' => 'خدمات تنظيف منزلي وتجاري احترافية في الرياض.',
-                'image' => $profile?->logo?->url(),
-                'url' => $this->urlResolver->absoluteUrl('/'),
-                'type' => 'website',
-            ],
-            structuredData: $this->structuredData->sitewide(),
-            breadcrumbs: [],
-        );
-
-        return response()->view('home', [
-            'seo' => $seo,
+        return [
             'businessProfile' => $profile,
             'services' => $services,
             'areas' => $areas,
@@ -167,6 +216,6 @@ class HomeController extends Controller
             'publishedProjects' => $publishedProjects,
             'offers' => $offers,
             'faqs' => $faqs,
-        ], 200);
+        ];
     }
 }
