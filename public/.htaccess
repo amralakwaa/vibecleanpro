@@ -1,3 +1,19 @@
+# Cache lifetimes for static assets (Lighthouse: "efficient cache lifetimes").
+# These headers are honoured by the browser and by a CDN/edge in front of the
+# origin. Fingerprinted Vite build files (/build/...) carry a content hash in
+# their name and can never change under the same URL, so they are immutable for
+# a year; every other static asset gets a conservative month in case a file is
+# ever replaced under the same name. HTML (the front controller) is not matched
+# here, so Laravel keeps full control of its own caching.
+<IfModule mod_headers.c>
+    <If "%{REQUEST_URI} =~ m#^/build/#">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </If>
+    <ElseIf "%{REQUEST_URI} =~ m#\.(css|js|mjs|woff2?|ttf|otf|eot|svg|jpe?g|png|webp|avif|gif|ico)$#">
+        Header set Cache-Control "public, max-age=2592000"
+    </ElseIf>
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
