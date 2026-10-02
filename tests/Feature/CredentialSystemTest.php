@@ -116,6 +116,28 @@ class CredentialSystemTest extends TestCase
         $this->assertStringNotContainsString('ISO 9001', $html);
     }
 
+    public function test_the_homepage_trust_strip_links_to_the_documented_standards_only_when_they_exist(): void
+    {
+        $this->publishTrustHubPage();
+        $profile = (object) ['trust_points' => [['title' => 'توثيق كامل', 'icon' => 'shield-check']]];
+
+        // No standards seeded yet: the proof link must not appear.
+        $before = Blade::render(
+            '<x-public.trust-strip :business-profile="$profile" />',
+            ['profile' => $profile],
+        );
+        $this->assertStringNotContainsString('معايير تشغيلية موثّقة', $before);
+
+        $this->seed(CredentialSeeder::class);
+
+        $after = Blade::render(
+            '<x-public.trust-strip :business-profile="$profile" />',
+            ['profile' => $profile],
+        );
+        $this->assertStringContainsString('10 معايير تشغيلية موثّقة', $after);
+        $this->assertStringContainsString('/trust', $after);
+    }
+
     public function test_expiring_soon_detection(): void
     {
         $soon = Credential::query()->create([
@@ -142,17 +164,20 @@ class CredentialSystemTest extends TestCase
     }
 
     /**
-     * The Trust hub page needs to exist and be published for the /trust route
-     * to render the hub (which lists the standards).
+     * Publish a bare Trust hub page. It is saved quietly so the PageObserver's
+     * PublishingGate (which would revert a content-less page to Draft) does not
+     * run — the test only needs the row published, not gate-complete.
      */
-    private function seedTrustHubPage(): void
+    private function publishTrustHubPage(): void
     {
-        Page::factory()->create([
+        $page = Page::factory()->create([
             'type' => PageType::Trust,
             'slug' => 'trust',
             'title' => 'مركز الثقة',
-            'status' => PageStatus::Published,
-            'published_at' => now(),
         ]);
+
+        $page->status = PageStatus::Published;
+        $page->published_at = now();
+        $page->saveQuietly();
     }
 }

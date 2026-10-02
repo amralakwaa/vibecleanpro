@@ -13,6 +13,19 @@
         ->published()
         ->first();
     $warrantyUrl = $warrantyPage ? app(\App\Seo\UrlResolver::class)->urlForPage($warrantyPage) : null;
+
+    // Back the promises above with proof: the documented internal standards,
+    // each verifiable by its own code. Linked only when standards actually
+    // exist and the Trust Center hub is published, so the claim is never empty.
+    $standardsCount = \App\Models\Credential::query()->public()->internalStandards()->count();
+    $trustHubPage = \App\Models\Page::query()
+        ->where('type', \App\Enums\PageType::Trust)
+        ->where('slug', 'trust')
+        ->published()
+        ->first();
+    $standardsUrl = ($standardsCount > 0 && $trustHubPage)
+        ? app(\App\Seo\UrlResolver::class)->urlForPage($trustHubPage)
+        : null;
     $dark = $tone === 'dark';
 @endphp
 
@@ -37,11 +50,21 @@
                 @endforeach
             </ul>
 
-            @if ($warrantyUrl)
-                <a href="{{ $warrantyUrl }}" class="mt-5 inline-flex items-center gap-1.5 min-h-11 text-sm font-medium {{ $dark ? 'text-white hover:text-primary-200' : 'text-primary-700' }} underline-offset-4 hover:underline">
-                    تفاصيل الضمان وشروط الخدمة
-                    <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />
-                </a>
+            @if ($warrantyUrl || $standardsUrl)
+                <div class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
+                    @if ($standardsUrl)
+                        <a href="{{ $standardsUrl }}" class="inline-flex items-center gap-1.5 min-h-11 text-sm font-medium {{ $dark ? 'text-white hover:text-primary-200' : 'text-primary-700' }} underline-offset-4 hover:underline">
+                            {{ $standardsCount }} معايير تشغيلية موثّقة وقابلة للمراجعة
+                            <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />
+                        </a>
+                    @endif
+                    @if ($warrantyUrl)
+                        <a href="{{ $warrantyUrl }}" class="inline-flex items-center gap-1.5 min-h-11 text-sm font-medium {{ $dark ? 'text-white hover:text-primary-200' : 'text-primary-700' }} underline-offset-4 hover:underline">
+                            تفاصيل الضمان وشروط الخدمة
+                            <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />
+                        </a>
+                    @endif
+                </div>
             @endif
         </x-public.container>
     </section>
