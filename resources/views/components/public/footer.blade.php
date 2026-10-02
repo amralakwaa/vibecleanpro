@@ -54,9 +54,11 @@
                         iconSize: [14, 14],
                         iconAnchor: [7, 7],
                     });
-                    L.marker([24.7136, 46.6753], { icon })
+                    var m = L.marker([24.7136, 46.6753], { icon, title: 'الرياض — منطقة الخدمة' })
                         .addTo(map)
                         .bindTooltip('الرياض — منطقة الخدمة', { permanent: true, direction: 'top', className: 'leaflet-vcp-tooltip' });
+                    var el = m.getElement();
+                    if (el) { el.setAttribute('aria-label', 'الرياض — منطقة الخدمة'); }
                 }
                 if (document.readyState === 'loading') {
                     document.addEventListener('DOMContentLoaded', initMap);

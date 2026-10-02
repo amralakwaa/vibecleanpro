@@ -39,12 +39,15 @@
 {{-- Push an early preload hint for the LCP image into <head> so the
      browser can start fetching it in parallel with the CSS download,
      before the image tag itself is parsed further down the DOM. --}}
-@if ($image && $image->srcset())
+@if ($image)
     @push('preloads')
         <link rel="preload" as="image"
             href="{{ $image->url() }}"
-            imagesrcset="{{ $image->srcset() }}"
-            imagesizes="(min-width: 1024px) 60vw, 100vw">
+            @if ($image->srcset())
+                imagesrcset="{{ $image->srcset() }}"
+                imagesizes="(min-width: 1024px) 60vw, 100vw"
+            @endif
+            fetchpriority="high">
     @endpush
 @endif
 
