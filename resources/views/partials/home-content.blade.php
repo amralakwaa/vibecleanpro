@@ -439,17 +439,25 @@
                     @endif
                 </div>
 
-                @if ($leadTestimonial)
-                    <figure class="surface-tint relative overflow-hidden rounded-3xl p-8 md:p-10 self-start reveal">
-                        <div class="glow-primary absolute -top-16 -end-16 w-56 h-56 opacity-70" aria-hidden="true"></div>
-                        <p class="relative text-sm font-medium tracking-wide text-primary-700">رأي عميل</p>
-                        <blockquote class="relative mt-4 font-display text-xl md:text-2xl font-light leading-[1.6] text-ink-950 text-balance">
-                            {{ $leadTestimonial->content }}
-                        </blockquote>
-                        <figcaption class="relative mt-6 text-sm text-neutral-600">
-                            {{ collect([$leadTestimonial->author_name, $leadTestimonial->area?->name])->filter()->implode(' · ') }}
-                        </figcaption>
-                    </figure>
+                @if ($leadTestimonial || $businessProfile?->publicGoogleReviewUrl())
+                    <div class="self-start space-y-5 reveal">
+                        @if ($leadTestimonial)
+                            <figure class="surface-tint relative overflow-hidden rounded-3xl p-8 md:p-10">
+                                <div class="glow-primary absolute -top-16 -end-16 w-56 h-56 opacity-70" aria-hidden="true"></div>
+                                <p class="relative text-sm font-medium tracking-wide text-primary-700">رأي عميل</p>
+                                <blockquote class="relative mt-4 font-display text-xl md:text-2xl font-light leading-[1.6] text-ink-950 text-balance">
+                                    {{ $leadTestimonial->content }}
+                                </blockquote>
+                                <figcaption class="relative mt-6 text-sm text-neutral-600">
+                                    {{ collect([$leadTestimonial->author_name, $leadTestimonial->area?->name])->filter()->implode(' · ') }}
+                                </figcaption>
+                            </figure>
+                        @endif
+                        {{-- Highest-intent moment to ask a past customer for a Google
+                             review - the strongest local ranking signal. Self-gating:
+                             renders nothing until a real review link is saved. --}}
+                        <x-public.google-review-cta :business-profile="$businessProfile" />
+                    </div>
                 @endif
             </div>
         </x-public.container>

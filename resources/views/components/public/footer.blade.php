@@ -182,6 +182,16 @@
                             </a>
                         </li>
                     @endif
+                    {{-- Links the Google Business Profile from every page (helps GBP
+                         discovery and gives customers a path to Maps and reviews).
+                         Shown only when a real profile link is saved. --}}
+                    @if ($gbpUrl = $businessProfile?->publicGoogleBusinessProfileUrl())
+                        <li>
+                            <a href="{{ $gbpUrl }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-white transition-colors">
+                                <x-public.icon name="map-pin" class="w-4 h-4" /> موقعنا على خرائط Google
+                            </a>
+                        </li>
+                    @endif
                 </ul>
             </div>
         </div>
