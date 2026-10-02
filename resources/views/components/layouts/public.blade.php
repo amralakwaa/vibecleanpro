@@ -129,9 +129,10 @@
     {{-- Preload hints pushed from individual page components (e.g. hero image). --}}
     @stack('preloads')
 
-    {{-- Preload Leaflet CSS so it is ready before the footer renders; without this
-         the browser downloads it mid-body and the map causes a layout shift (CLS). --}}
-    <link rel="preload" as="style" href="{{ asset('vendor/leaflet/leaflet.css') }}">
+    {{-- Leaflet CSS is no longer preloaded here: the footer map is lazy-built
+         when it nears the viewport and injects its own stylesheet then, so the
+         map's CSS stays off the initial critical path. The fixed map container
+         height reserves its space, so deferring the CSS causes no layout shift. --}}
 
     {{-- Preconnect first so the connection is ready before the font file preloads fire. --}}
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>

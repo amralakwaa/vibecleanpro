@@ -15,9 +15,11 @@
 @once
     {{-- Leaflet is self-hosted (public/vendor/leaflet) rather than pulled
          from a CDN: no render-blocking third-party request on every page and
-         no visitor IP handed to a CDN. Map tiles still load from OpenStreetMap
-         at runtime. --}}
-    <link rel="stylesheet" href="{{ asset('vendor/leaflet/leaflet.css') }}">
+         no visitor IP handed to a CDN. The stylesheet is injected lazily when
+         the footer map nears the viewport (see the script below), so Leaflet's
+         CSS, its tiles and its init work all stay off the initial critical
+         path - the map is below the fold on every page. Map tiles still load
+         from OpenStreetMap at runtime. --}}
     <script src="{{ asset('vendor/leaflet/leaflet.js') }}" defer></script>
 @endonce
 
@@ -27,8 +29,25 @@
         <div id="footer-map" class="absolute inset-0 z-0"></div>
         <script>
             (function () {
+                var mapEl = document.getElementById('footer-map');
+                if (!mapEl) return;
+                var started = false;
+
+                function ensureLeafletCss() {
+                    if (document.getElementById('leaflet-css')) return;
+                    var link = document.createElement('link');
+                    link.id = 'leaflet-css';
+                    link.rel = 'stylesheet';
+                    link.href = @json(asset('vendor/leaflet/leaflet.css'));
+                    document.head.appendChild(link);
+                }
+
                 function initMap() {
-                    if (typeof L === 'undefined' || document.getElementById('footer-map')._leaflet_id) return;
+                    if (started || mapEl._leaflet_id) return;
+                    // leaflet.js is deferred; if it has not finished yet, retry shortly.
+                    if (typeof L === 'undefined') { setTimeout(initMap, 120); return; }
+                    started = true;
+                    ensureLeafletCss();
                     var map = L.map('footer-map', {
                         center: [24.7136, 46.6753],
                         zoom: 11,
@@ -60,7 +79,18 @@
                     var el = m.getElement();
                     if (el) { el.setAttribute('aria-label', 'الرياض — منطقة الخدمة'); }
                 }
-                if (document.readyState === 'loading') {
+                // Lazy: build the map only when its container nears the viewport,
+                // so a visitor who never scrolls to the footer pays nothing for
+                // Leaflet's CSS, tiles or init on the initial load.
+                if ('IntersectionObserver' in window) {
+                    var io = new IntersectionObserver(function (entries) {
+                        if (entries[0].isIntersecting) {
+                            io.disconnect();
+                            initMap();
+                        }
+                    }, { rootMargin: '300px' });
+                    io.observe(mapEl);
+                } else if (document.readyState === 'loading') {
                     document.addEventListener('DOMContentLoaded', initMap);
                 } else {
                     initMap();
