@@ -4,11 +4,14 @@ namespace Tests\Feature\Seo;
 
 use App\Enums\PageStatus;
 use App\Enums\PageType;
+use App\Models\Area;
 use App\Models\BusinessProfile;
 use App\Models\ContentBlock;
 use App\Models\Faq;
 use App\Models\Media;
+use App\Models\Offer;
 use App\Models\Page;
+use App\Models\Service;
 use App\Seo\StructuredDataGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Seo\Concerns\BuildsSeoFixtures;
@@ -243,5 +246,86 @@ class StructuredDataTest extends TestCase
         $this->assertNotNull($faqPage);
         $this->assertCount(1, $faqPage['mainEntity']);
         $this->assertSame('سؤال نشط؟', $faqPage['mainEntity'][0]['name']);
+    }
+
+    public function test_an_area_page_emits_each_offered_service_as_a_service_anchored_to_that_area(): void
+    {
+        $area = Area::factory()->create(['name' => 'حي الملقا']);
+        $service = $this->publishedService('deep-cleaning-service', 'تنظيف عميق');
+        $area->services()->attach($service);
+
+        $page = Page::factory()->create(['type' => PageType::Area, 'slug' => 'al-malqa-schema']);
+        $area->page()->save($page);
+        ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => 'نص.']]);
+        $page->update(['status' => PageStatus::Published]);
+
+        $serviceBlock = collect($this->generator->forPage($page->fresh(['pageable'])))->firstWhere('@type', 'Service');
+
+        $this->assertNotNull($serviceBlock);
+        $this->assertSame('تنظيف عميق', $serviceBlock['name']);
+        $this->assertSame('حي الملقا', $serviceBlock['areaServed']['name']);
+        $this->assertSame(url('/#business'), $serviceBlock['provider']['@id']);
+    }
+
+    public function test_an_area_page_never_anchors_a_service_whose_page_is_not_published(): void
+    {
+        $area = Area::factory()->create();
+        $area->services()->attach(Service::factory()->create()); // no published page
+
+        $page = Page::factory()->create(['type' => PageType::Area, 'slug' => 'area-unpublished-service']);
+        $area->page()->save($page);
+        ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => 'نص.']]);
+        $page->update(['status' => PageStatus::Published]);
+
+        $types = collect($this->generator->forPage($page->fresh(['pageable'])))->pluck('@type');
+
+        $this->assertFalse($types->contains('Service'));
+    }
+
+    public function test_an_offer_page_emits_an_offer_block_without_inventing_a_price(): void
+    {
+        $offer = Offer::factory()->create(['title' => 'باقة المنزل المتكامل', 'offer_price' => null]);
+        $service = $this->publishedService('home-cleaning-service', 'تنظيف منازل');
+        $offer->services()->attach($service);
+
+        $page = Page::factory()->create(['type' => PageType::Offer, 'slug' => 'complete-home-schema']);
+        $offer->page()->save($page);
+        ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => 'نص.']]);
+        $page->seoMetadata()->create(['meta_description' => 'باقة تنظيف شاملة.', 'robots_index' => true, 'robots_follow' => true]);
+        $page->update(['status' => PageStatus::Published]);
+
+        $offerBlock = collect($this->generator->forPage($page->fresh(['pageable', 'seoMetadata'])))->firstWhere('@type', 'Offer');
+
+        $this->assertNotNull($offerBlock);
+        $this->assertSame('باقة المنزل المتكامل', $offerBlock['name']);
+        $this->assertArrayNotHasKey('price', $offerBlock, 'a quote-based offer must not carry an invented price');
+        $this->assertSame('تنظيف منازل', $offerBlock['itemOffered'][0]['name']);
+        $this->assertSame(url('/#business'), $offerBlock['seller']['@id']);
+    }
+
+    public function test_an_offer_price_appears_only_when_the_editor_entered_one(): void
+    {
+        $offer = Offer::factory()->create(['title' => 'عرض بسعر ثابت', 'offer_price' => 499]);
+
+        $page = Page::factory()->create(['type' => PageType::Offer, 'slug' => 'priced-offer-schema']);
+        $offer->page()->save($page);
+        ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => 'نص.']]);
+        $page->update(['status' => PageStatus::Published]);
+
+        $offerBlock = collect($this->generator->forPage($page->fresh(['pageable', 'seoMetadata'])))->firstWhere('@type', 'Offer');
+
+        $this->assertSame(499.0, $offerBlock['price']);
+        $this->assertSame(config('pricing.currency'), $offerBlock['priceCurrency']);
+    }
+
+    private function publishedService(string $slug, string $name): Service
+    {
+        $service = Service::factory()->create(['name' => $name]);
+        $page = Page::factory()->create(['type' => PageType::Service, 'slug' => $slug]);
+        $service->page()->save($page);
+        ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => 'نص.']]);
+        $page->update(['status' => PageStatus::Published]);
+
+        return $service->fresh();
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Area;
 use App\Models\Article;
 use App\Models\BusinessProfile;
 use App\Models\Faq;
+use App\Models\Offer;
 use App\Models\Page;
 use App\Models\Project;
 use App\Models\Service;
@@ -81,14 +82,18 @@ class StructuredDataGenerator
         $blocks[] = $this->breadcrumbList($page);
 
         $typed = match ($page->type) {
-            PageType::Service => $page->pageable instanceof Service ? $this->service($page, $page->pageable) : null,
-            PageType::Article => $page->pageable instanceof Article ? $this->article($page, $page->pageable) : null,
-            PageType::Project => $page->pageable instanceof Project ? $this->caseStudy($page, $page->pageable) : null,
-            default => null,
+            PageType::Service => $page->pageable instanceof Service ? [$this->service($page, $page->pageable)] : [],
+            PageType::Article => $page->pageable instanceof Article ? [$this->article($page, $page->pageable)] : [],
+            PageType::Project => $page->pageable instanceof Project ? [$this->caseStudy($page, $page->pageable)] : [],
+            PageType::Offer => $page->pageable instanceof Offer ? [$this->offer($page, $page->pageable)] : [],
+            PageType::Area => $page->pageable instanceof Area ? $this->areaServices($page->pageable) : [],
+            default => [],
         };
 
-        if ($typed) {
-            $blocks[] = $typed;
+        foreach ($typed as $block) {
+            if ($block !== []) {
+                $blocks[] = $block;
+            }
         }
 
         $faqs = $page->faqs()->where('is_active', true)->orderBy('sort_order')->get();
@@ -350,6 +355,85 @@ class StructuredDataGenerator
             // PublicPrice never carries this mode, but the match must be total.
             ServicePricingMode::QuoteOnly => [],
         };
+    }
+
+    /**
+     * An offer/package page as a schema.org Offer. Every field mirrors what
+     * the page actually holds: the promo window (validFrom/validThrough), the
+     * real services it bundles (itemOffered), and the areas it covers - all
+     * filtered to published destinations. A price appears only when the
+     * editor entered one; most packages are quote-based and carry none, and
+     * a price is never invented to satisfy a rich result.
+     *
+     * @return array<string, mixed>
+     */
+    private function offer(Page $page, Offer $offer): array
+    {
+        $services = $offer->services()->whereHas('page', fn ($query) => $query->published())->get();
+        $areas = $offer->areas()->whereHas('page', fn ($query) => $query->published())->get();
+
+        $data = array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Offer',
+            'name' => $offer->title,
+            'description' => $page->seoMetadata?->meta_description,
+            'url' => $this->canonical->resolve($page),
+            'seller' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],
+            'validFrom' => $offer->starts_at?->toAtomString(),
+            'validThrough' => $offer->ends_at?->toAtomString(),
+        ]);
+
+        if ($offer->offer_price !== null) {
+            $data['price'] = (float) $offer->offer_price;
+            $data['priceCurrency'] = config('pricing.currency');
+        }
+
+        if ($services->isNotEmpty()) {
+            $data['itemOffered'] = $services->map(fn (Service $service) => array_filter([
+                '@type' => 'Service',
+                'name' => $service->name,
+                'url' => $service->page ? $this->urlResolver->urlForPage($service->page) : null,
+            ]))->all();
+        }
+
+        if ($areas->isNotEmpty()) {
+            $data['areaServed'] = $areas->map(fn (Area $area) => [
+                '@type' => 'Place',
+                'name' => $area->name,
+            ])->all();
+        }
+
+        return $data;
+    }
+
+    /**
+     * An area page says "we do these services in this neighbourhood", so it
+     * emits each service actually offered there as a Service anchored to that
+     * specific Place - the strongest honest local signal for a neighbourhood
+     * page, and only for services that are real, published destinations.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function areaServices(Area $area): array
+    {
+        // Exactly what the page's own service list shows: an actively-linked
+        // service (pivot is_active) that is itself a published destination.
+        $services = $area->services()
+            ->wherePivot('is_active', true)
+            ->whereHas('page', fn ($query) => $query->published())
+            ->get();
+
+        return $services->map(fn (Service $service) => array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Service',
+            'name' => $service->name,
+            'url' => $service->page ? $this->urlResolver->urlForPage($service->page) : null,
+            'provider' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],
+            'areaServed' => [
+                '@type' => 'Place',
+                'name' => $area->name,
+            ],
+        ]))->values()->all();
     }
 
     /**
