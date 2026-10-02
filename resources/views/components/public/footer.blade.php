@@ -101,13 +101,13 @@
             <div>
                 <div class="flex items-center gap-2.5 font-bold text-white">
                     @if ($businessProfile?->logo)
-                        <img src="{{ $businessProfile->logo->url() }}" alt="{{ $businessProfile->name }}" class="h-8 w-auto">
+                        <img src="{{ $businessProfile->logo->url() }}" alt="{{ $businessProfile->displayName() }}" class="h-8 w-auto">
                     @else
                         <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
                             <x-public.icon name="sparkles" class="w-4 h-4" />
                         </span>
                     @endif
-                    <span>{{ $businessProfile->name ?? config('app.name') }}</span>
+                    <span>{{ $businessProfile?->displayName() ?: config('app.name') }}</span>
                 </div>
 
                 @if ($businessProfile?->address || $businessProfile?->city)
@@ -188,7 +188,7 @@
 
         <div class="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-300/80">
             <p>
-                &copy; {{ now()->year }} {{ $businessProfile->name ?? config('app.name') }}. جميع الحقوق محفوظة.
+                &copy; {{ now()->year }} {{ $businessProfile?->displayName() ?: config('app.name') }}. جميع الحقوق محفوظة.
                 @if ($registration = $businessProfile?->publicCommercialRegistration())
                     <span class="ms-2">السجل التجاري: <span dir="ltr">{{ $registration }}</span></span>
                 @endif

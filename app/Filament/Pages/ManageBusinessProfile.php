@@ -71,7 +71,8 @@ class ManageBusinessProfile extends Page
                         Tab::make('البيانات الأساسية')->schema([
                             Section::make('بيانات التواصل')
                                 ->schema([
-                                    TextInput::make('name')->label('اسم المنشأة')->required()->maxLength(255),
+                                    TextInput::make('name')->label('اسم المنشأة (بالإنجليزية — للهوية الرسمية والبيانات المنظّمة)')->required()->maxLength(255),
+                                    TextInput::make('name_ar')->label('الاسم المعروض بالعربية (في الهيدر والفوتر والعناوين)')->maxLength(255)->placeholder('فايب كلين برو'),
                                     TextInput::make('phone')->label('الهاتف')->tel(),
                                     TextInput::make('whatsapp_number')->label('رقم واتساب')->tel(),
                                     TextInput::make('email')->label('البريد العام (يظهر للعملاء)')->email(),

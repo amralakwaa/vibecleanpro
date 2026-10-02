@@ -109,6 +109,7 @@ class StructuredDataGenerator
             '@type' => 'LocalBusiness',
             '@id' => $this->urlResolver->absoluteUrl('/').'#business',
             'name' => $profile->name,
+            ...(filled($profile->name_ar) ? ['alternateName' => $profile->name_ar] : []),
             'url' => $this->urlResolver->absoluteUrl('/'),
         ];
 

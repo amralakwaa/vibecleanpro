@@ -26,7 +26,7 @@
 
 @php
     $primaryNav ??= $navItems;
-    $brandName = $businessProfile->name ?? config('app.name');
+    $brandName = $businessProfile?->displayName() ?: config('app.name');
 
     // "تواصل معنا" and "للشركات" share /contact and differ only by
     // ?for=business, so the current item is decided by path AND that

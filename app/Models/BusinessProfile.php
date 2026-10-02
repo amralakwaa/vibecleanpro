@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'name', 'phone', 'whatsapp_number', 'email', 'lead_notification_email', 'address', 'city',
+    'name', 'name_ar', 'phone', 'whatsapp_number', 'email', 'lead_notification_email', 'address', 'city',
     'latitude', 'longitude', 'working_hours', 'social_links', 'logo_media_id',
     'tagline', 'identity_statement', 'story', 'mission', 'vision', 'values',
     'founder_name', 'founder_title', 'founder_photo_media_id', 'founder_bio', 'founder_long_bio',
@@ -56,6 +56,16 @@ class BusinessProfile extends Model
     public function publicGoogleBusinessProfileUrl(): ?string
     {
         return DemoValue::realOrNull($this->google_business_profile_url);
+    }
+
+    /**
+     * The brand name shown in the Arabic RTL interface (header, footer,
+     * page titles). Falls back to the canonical `name` so a profile without
+     * an Arabic name still renders, and `name` stays the schema.org identity.
+     */
+    public function displayName(): string
+    {
+        return filled($this->name_ar) ? $this->name_ar : (string) $this->name;
     }
 
     public function logo(): BelongsTo

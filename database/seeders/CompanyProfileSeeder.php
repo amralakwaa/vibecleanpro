@@ -25,6 +25,7 @@ class CompanyProfileSeeder extends Seeder
      */
     public const APPROVED = [
         'name' => 'Vibe Clean Pro',
+        'name_ar' => 'فايب كلين برو',
         'phone' => '+966534999194',
         'whatsapp_number' => '966534999194',
         'city' => 'الرياض',

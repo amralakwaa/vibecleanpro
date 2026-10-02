@@ -75,8 +75,8 @@ class HomeController extends Controller
      */
     private function buildSeoArgs(?BusinessProfile $profile): array
     {
-        $title = $profile?->name
-            ? "{$profile->name} | شركة تنظيف احترافية في الرياض"
+        $title = $profile
+            ? "{$profile->displayName()} | شركة تنظيف احترافية في الرياض"
             : 'شركة تنظيف احترافية في الرياض';
 
         return [
