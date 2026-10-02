@@ -172,6 +172,18 @@ class TrustPagesDraftSeeder extends Seeder
                 '<h2>ساعات العمل والتواصل</h2>',
                 '<p>ساعات العمل ووسائل التواصل موضّحة أعلى هذه الصفحة وفي <a href="/contact">صفحة التواصل</a>: الهاتف، وواتساب، والبريد الإلكتروني.</p>',
             ]),
+            // Real field-work clips of the uniformed team - the video companion
+            // to the "we rely on our own photos" theme above. Renders through
+            // x-public.video-evidence (click-to-load), so it never loads a byte
+            // of video until the viewer presses play.
+            ['type' => 'video', 'data' => [
+                'heading' => 'شاهد فريقنا أثناء العمل',
+                'items' => [
+                    ['slug' => 'team', 'caption' => 'فريق فايب كلين برو بالزيّ الموحّد'],
+                    ['slug' => 'glass-height-01', 'caption' => 'تنظيف واجهة زجاجية مرتفعة'],
+                    ['slug' => 'post-construction-vacuum', 'caption' => 'شفط المياه بعد الغسيل العميق'],
+                ],
+            ]],
             ['type' => 'cta', 'data' => [
                 'heading' => 'أخبرنا عن المكان، ونرسل لك عرضًا مكتوبًا',
                 'button_label' => 'اطلب عرض سعر',
