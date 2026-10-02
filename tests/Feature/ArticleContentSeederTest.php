@@ -23,12 +23,14 @@ class ArticleContentSeederTest extends TestCase
         $this->seed(ProductionContentSeeder::class);
     }
 
-    public function test_it_loads_the_ten_launch_articles_as_drafts_linked_to_services(): void
+    public function test_it_loads_every_launch_article_as_drafts_linked_to_services(): void
     {
         $this->seed(ArticleContentSeeder::class);
 
-        $this->assertSame(10, Article::query()->count());
-        $this->assertSame(10, Page::query()->where('type', PageType::Article)->where('status', PageStatus::Draft)->count());
+        $expected = count((require database_path('seeders/content/articles.php'))['articles']);
+
+        $this->assertSame($expected, Article::query()->count());
+        $this->assertSame($expected, Page::query()->where('type', PageType::Article)->where('status', PageStatus::Draft)->count());
 
         $prices = Page::query()->where('slug', 'cleaning-prices-riyadh')->first();
         $this->assertSame(4, $prices->pageable->services()->count());
@@ -51,7 +53,9 @@ class ArticleContentSeederTest extends TestCase
     {
         $content = require database_path('seeders/content/articles.php');
         $articleSlugs = collect($content['articles'])->pluck('slug');
-        $allowedServices = ['villa-cleaning', 'office-cleaning', 'facade-cleaning', 'post-construction-cleaning'];
+        // Every real service the catalogue actually has - a /services/ link is
+        // valid only if it points at one of these, never a guessed slug.
+        $allowedServices = Page::query()->where('type', PageType::Service)->pluck('slug')->all();
 
         foreach ($content['articles'] as $article) {
             preg_match_all('/href="([^"]+)"/', $article['body'], $matches);
@@ -72,7 +76,8 @@ class ArticleContentSeederTest extends TestCase
 
         $this->seed(ArticleContentSeeder::class);
 
-        $this->assertSame(10, Article::query()->count());
+        $expected = count((require database_path('seeders/content/articles.php'))['articles']);
+        $this->assertSame($expected, Article::query()->count());
         $this->assertSame('عنوان المحرر', Page::query()->where('slug', 'villa-cleaning-checklist')->value('title'));
     }
 
