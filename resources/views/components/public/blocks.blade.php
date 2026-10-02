@@ -263,11 +263,13 @@
             @if (! empty($items))
                 <x-public.section tone="surface">
                     @if (! empty($block->data['heading']))
-                        <h2 class="font-display text-2xl md:text-4xl md:leading-[1.15] font-medium tracking-tight text-ink-950 mb-10 text-balance reveal">
+                        <h2 class="font-display text-2xl md:text-4xl md:leading-[1.15] font-medium tracking-tight text-ink-950 mb-8 md:mb-10 text-balance reveal">
                             {{ $block->data['heading'] }}
                         </h2>
                     @endif
-                    <ol class="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-10 reveal">
+                    {{-- Cards stack on the phone and become a row on desktop, so a
+                         process reads as designed steps on every viewport. --}}
+                    <ol @class(['reveal space-y-4 md:space-y-0 md:grid md:gap-5', 'md:grid-cols-4' => count($items) % 4 === 0 || count($items) >= 4, 'md:grid-cols-3' => count($items) % 4 !== 0 && count($items) < 4])>
                         @foreach ($items as $index => $item)
                             <x-public.step-card :number="$index + 1" :title="$item['title'] ?? ''" :description="$item['description'] ?? null" />
                         @endforeach
