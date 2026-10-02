@@ -5,6 +5,7 @@ use App\Http\Controllers\BlogIndexController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CredentialController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LlmsTxtController;
 use App\Http\Controllers\OffersIndexController;
 use App\Http\Controllers\ProjectsIndexController;
 use App\Http\Controllers\PublicPageController;
@@ -19,6 +20,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [RobotsController::class, 'index'])->name('robots');
+Route::get('/llms.txt', [LlmsTxtController::class, 'index'])->name('llms');
 
 Route::get('/services', [ServicesIndexController::class, 'index'])->name('public.services.index');
 Route::get('/services/{slug}', [PublicPageController::class, 'service'])->name('public.service');
@@ -55,5 +57,5 @@ Route::post('/e', TrackEventController::class)->middleware('throttle:30,1')->nam
 // at the root, so this must be registered last and must never be able to
 // swallow a reserved top-level path.
 Route::get('/{slug}', [PublicPageController::class, 'standalone'])
-    ->where('slug', '(?!admin$|sitemap\.xml$|robots\.txt$|services$|areas$|projects$|blog$|offers$|contact$|quote$).*')
+    ->where('slug', '(?!admin$|sitemap\.xml$|robots\.txt$|llms\.txt$|services$|areas$|projects$|blog$|offers$|contact$|quote$).*')
     ->name('public.standalone');
