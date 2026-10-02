@@ -44,7 +44,7 @@ class BlogIndexController extends Controller
             ->values();
 
         $seo = new SeoHeadData(
-            title: 'المدونة | '.($businessProfile?->name ?? config('app.name')),
+            title: 'المدونة | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'مقالات ونصائح حول التنظيف المنزلي والتجاري في الرياض.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/blog'),
             robotsContent: 'index, follow',

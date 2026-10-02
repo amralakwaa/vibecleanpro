@@ -37,7 +37,7 @@ class ContactController extends Controller
         $businessProfile = BusinessProfile::query()->first();
 
         $seo = new SeoHeadData(
-            title: 'تواصل معنا | '.($businessProfile?->name ?? config('app.name')),
+            title: 'تواصل معنا | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'تواصل مع فريقنا عبر الهاتف أو واتساب أو نموذج التواصل.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/contact'),
             robotsContent: 'index, follow',

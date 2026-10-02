@@ -51,7 +51,7 @@ class AreasIndexController extends Controller
         // under a neutral bucket instead of being silently dropped.
         $ungrouped = $grouped->get(null, collect());
 
-        $businessProfileName = $businessProfile?->name ?? config('app.name');
+        $businessProfileName = $businessProfile?->displayName() ?: config('app.name');
 
         $publishedAreas = $areas->filter(fn (Area $area) => $area->page !== null)->values();
 

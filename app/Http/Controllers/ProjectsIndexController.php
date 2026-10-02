@@ -46,7 +46,7 @@ class ProjectsIndexController extends Controller
         $filterAreas = Area::query()->whereHas('page', fn ($query) => $query->published())->orderBy('sort_order')->get();
 
         $seo = new SeoHeadData(
-            title: 'أعمالنا ومشاريعنا | '.($businessProfile?->name ?? config('app.name')),
+            title: 'أعمالنا ومشاريعنا | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'تصفح نماذج من مشاريعنا المنفذة في الرياض.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/projects'),
             robotsContent: 'index, follow',
