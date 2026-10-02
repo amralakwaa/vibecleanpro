@@ -112,12 +112,15 @@ class ServiceContentSeederTest extends TestCase
         // And at least one row exists that only the written body justifies.
         $this->assertGreaterThan(0, InternalLink::query()->where('context', 'body_link')->count());
 
-        // water-tank-cleaning's body links to no other service, so it must
-        // not have acquired outgoing body links.
-        $this->assertSame(0, InternalLink::query()
-            ->where('from_page_id', $this->page('water-tank-cleaning')->id)
-            ->where('context', 'body_link')
-            ->count());
+        // No link is ever fabricated: water-tank-cleaning's body names only the
+        // services it actually cross-links to (post-construction, home, pool),
+        // so a service it never mentions - majlis-cleaning - must not appear as
+        // an outgoing body link.
+        $this->assertDatabaseMissing('internal_links', [
+            'from_page_id' => $this->page('water-tank-cleaning')->id,
+            'to_page_id' => $this->page('majlis-cleaning')->id,
+            'context' => 'body_link',
+        ]);
     }
 
     public function test_appended_sections_are_added_once_and_only_to_written_pages(): void
