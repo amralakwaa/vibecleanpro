@@ -56,8 +56,15 @@ class ServiceContentSeederTest extends TestCase
 
         $this->seed(ServiceContentSeeder::class);
 
-        $this->assertSame(1, $page->contentBlocks()->count());
-        $this->assertSame('<p>نص كتبه المحرر.</p>', $page->contentBlocks()->first()->data['content']);
+        // Page mode is skipped so the editor's block is never overwritten and
+        // stays first. Append-mode sections (each carrying a `section` key) may
+        // still add new, separately-keyed sections on top - that is their job.
+        $blocks = $page->contentBlocks()->orderBy('position')->get();
+        $this->assertSame('<p>نص كتبه المحرر.</p>', $blocks->first()->data['content']);
+        $this->assertTrue(
+            $blocks->skip(1)->every(fn ($block) => filled($block->data['section'] ?? null)),
+            'page mode must not inject its own blocks; only appended section blocks may be added',
+        );
     }
 
     public function test_an_image_block_is_dropped_when_its_photo_is_not_approved(): void
