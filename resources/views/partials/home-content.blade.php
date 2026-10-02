@@ -196,6 +196,25 @@
         </section>
     @endif
 
+    {{-- ===== 3b. Video evidence - the branded team at work. Performance-safe:
+         posters are lazy and the <video> only enters the DOM on click, so this
+         section adds zero video bytes to initial load (see x-public.video-evidence). --}}
+    <section class="surface-tint relative" aria-labelledby="home-videos">
+        <x-public.container width="wide" class="py-16 md:py-24">
+            <div class="max-w-2xl">
+                <p class="text-sm font-semibold tracking-wide text-primary-700">نماذج من أعمالنا في الرياض</p>
+                <h2 id="home-videos" class="mt-2 font-display text-3xl md:text-5xl md:leading-[1.1] font-medium tracking-tight text-ink-950 text-balance">شاهد فريقنا أثناء العمل</h2>
+                <p class="mt-4 text-lg text-neutral-600 leading-relaxed">لقطات حقيقية من مواقع العمل: فريق سعودي بزيّ موحّد ومعدات مخصّصة — من تنظيف الواجهات الزجاجية إلى الأرضيات الخارجية وما بعد البناء.</p>
+            </div>
+            <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+                <x-public.video-evidence slug="team" caption="فريق فايب كلين برو بالزيّ الموحّد" />
+                <x-public.video-evidence slug="glass-height-01" caption="تنظيف واجهة زجاجية مرتفعة" />
+                <x-public.video-evidence slug="courtyard-scrub" caption="فرك وغسيل أرضيات خارجية" />
+                <x-public.video-evidence slug="post-construction-vacuum" caption="شفط المياه بعد الغسيل العميق" />
+            </div>
+        </x-public.container>
+    </section>
+
     {{-- ===== 4. B2C / B2B - two doors with two personalities ===== --}}
     <section class="grid lg:grid-cols-[1.15fr_1fr]" aria-label="اختر ما يناسبك">
         <div class="surface-tint relative overflow-hidden px-6 py-14 md:px-12 md:py-20 lg:px-16 flex flex-col justify-center">

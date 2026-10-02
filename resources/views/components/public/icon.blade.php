@@ -12,6 +12,10 @@
 @endphp
 <svg {{ $attributes->class([$base])->merge(['fill' => 'none', 'viewBox' => '0 0 24 24', 'stroke' => 'currentColor', 'stroke-width' => 1.75, 'aria-hidden' => 'true']) }}>
     @switch($name)
+        @case('play')
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.5 5.5c0-.78.84-1.27 1.52-.89l9.2 5.1c.7.39.7 1.4 0 1.79l-9.2 5.1c-.68.38-1.52-.11-1.52-.89V5.5Z" />
+            @break
+
         @case('whatsapp')
             <path stroke-linecap="round" stroke-linejoin="round" d="M7 13.5c0 3.038 2.462 5.5 5.5 5.5.98 0 1.9-.256 2.696-.705L18.5 19l-.72-2.79A5.478 5.478 0 0 0 18.5 13.5c0-3.038-2.462-5.5-5.5-5.5S7 10.462 7 13.5Z" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 12c0 1.657 1.343 3 3 3M10.5 12c0-.5.2-.9.5-1.2M10.5 12h0" />
