@@ -302,6 +302,26 @@
             @endif
             @break
 
+        @case('video')
+            {{-- Real field-work clips as evidence. Each card is a click-to-load
+                 facade (see x-public.video-evidence): only a lazy poster is in
+                 the DOM until the viewer presses play, so a video block never
+                 touches the page's critical path. --}}
+            @php($clips = array_values(array_filter($block->data['items'] ?? [], fn ($clip) => filled($clip['slug'] ?? null))))
+            @if ($clips !== [])
+                <x-public.section tone="surface">
+                    @if (! empty($block->data['heading']))
+                        <h2 class="font-display text-2xl md:text-4xl md:leading-[1.15] font-medium tracking-tight text-ink-950 mb-8 text-balance reveal">{{ $block->data['heading'] }}</h2>
+                    @endif
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 reveal">
+                        @foreach ($clips as $clip)
+                            <x-public.video-evidence :slug="$clip['slug']" :caption="$clip['caption'] ?? null" />
+                        @endforeach
+                    </div>
+                </x-public.section>
+            @endif
+            @break
+
         @case('cta')
             @if (! empty($block->data['heading']))
                 <x-public.cta :title="$block->data['heading']" :quote-url="route('public.quote')" :whatsapp-url="$block->data['button_url'] ?? null" />

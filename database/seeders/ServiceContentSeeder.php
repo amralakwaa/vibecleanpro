@@ -159,6 +159,7 @@ class ServiceContentSeeder extends Seeder
             'steps' => ['heading' => $block['heading'], 'items' => $block['items']],
             'features' => ['heading' => $block['heading'], 'items' => $block['items']],
             'cta' => ['heading' => $block['heading'], 'button_label' => $block['label'], 'button_url' => url($block['url'])],
+            'video' => ['heading' => $block['heading'] ?? null, 'items' => $block['items']],
             'faq' => [],
             default => [],
         };
