@@ -39,3 +39,30 @@
         </ul>
     </x-public.container>
 </section>
+
+@php($standards = \App\Models\Credential::query()->public()->internalStandards()->ordered()->get())
+@if ($standards->isNotEmpty())
+    <section class="relative bg-white" aria-labelledby="trust-standards">
+        <x-public.container width="wide" class="py-14 md:py-20">
+            <div class="max-w-2xl reveal">
+                <p class="text-sm font-medium tracking-wide text-primary-700">معايير فايب كلين برو الداخلية</p>
+                <h2 id="trust-standards" class="mt-2 font-display text-2xl md:text-4xl md:leading-[1.15] font-medium tracking-tight text-ink-950 text-balance">كيف نضبط جودة وسلامة عملنا</h2>
+                <p class="mt-3 text-neutral-600 leading-relaxed">معايير تشغيلية داخلية نلتزم بها في كل خدمة — موثّقة وقابلة للمراجعة برمز لكل وثيقة. (معايير داخلية صادرة عن فايب كلين برو، وليست شهادات ISO أو اعتمادات حكومية.)</p>
+            </div>
+            <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 reveal">
+                @foreach ($standards as $standard)
+                    <li>
+                        <x-public.trust-policy-card
+                            :url="$standard->verifyUrl()"
+                            :title="$standard->name_ar"
+                            :icon="$standard->icon ?: 'badge-check'"
+                            eyebrow="معيار داخلي"
+                            :blurb="$standard->summary_ar"
+                            accent="primary"
+                        />
+                    </li>
+                @endforeach
+            </ul>
+        </x-public.container>
+    </section>
+@endif

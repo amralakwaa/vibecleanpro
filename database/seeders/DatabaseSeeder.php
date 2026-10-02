@@ -32,5 +32,11 @@ class DatabaseSeeder extends Seeder
         // Licensed stock illustrations for the hero and the service
         // catalogue - part of the initial content, not test data.
         $this->call(InitialMediaSeeder::class);
+
+        // Trust/credentials system: internal Vibe Clean Pro standards (public)
+        // + the admin-only external ISO/licence roadmap (planned/pending).
+        // Self-contained (no media or page dependency), so it belongs in the
+        // base seed for fresh-rebuild reproducibility.
+        $this->call(CredentialSeeder::class);
     }
 }

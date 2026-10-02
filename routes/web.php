@@ -3,6 +3,7 @@
 use App\Http\Controllers\AreasIndexController;
 use App\Http\Controllers\BlogIndexController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CredentialController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OffersIndexController;
 use App\Http\Controllers\ProjectsIndexController;
@@ -39,6 +40,13 @@ Route::post('/contact', [ContactController::class, 'store'])->middleware('thrott
 
 Route::get('/quote', [QuoteController::class, 'create'])->name('public.quote');
 Route::post('/quote', [QuoteController::class, 'store'])->middleware('throttle:6,1')->name('public.quote.store');
+
+// Internal-standard document / verification page. Registered before the
+// standalone catch-all; a document code (VCP-QMS-001) resolves to the full
+// standard, issued by Vibe Clean Pro, and confirms its version and status.
+Route::get('/trust/verify/{code}', [CredentialController::class, 'verify'])
+    ->where('code', '[A-Za-z0-9-]+')
+    ->name('public.trust.verify');
 
 Route::post('/e', TrackEventController::class)->middleware('throttle:30,1')->name('public.track');
 
