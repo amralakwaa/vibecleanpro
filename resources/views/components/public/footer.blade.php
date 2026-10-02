@@ -202,5 +202,28 @@
                 </ul>
             @endif
         </div>
+
+        {{-- Site design & development credit. Managed on the business profile
+             and shown only when a name is set, so a bare profile (and the
+             honesty guardrails that forbid an unconfigured phone link) is
+             never contradicted. Prominent on purpose: the name and contact
+             line stand out against the dark footer. The extra bottom padding
+             on small screens clears the fixed mobile CTA bar, which overlaps
+             the page bottom below the lg breakpoint. --}}
+        @if (filled($businessProfile?->credit_name))
+            <div class="mt-6 pt-6 pb-24 lg:pb-0 border-t border-white/10 flex flex-col items-center gap-2 text-center">
+                <p class="text-sm text-ink-300/80">
+                    تصميم وتطوير
+                    <span class="font-display font-semibold text-transparent bg-clip-text bg-gradient-to-l from-primary-300 to-primary-500">{{ $businessProfile->credit_name }}</span>
+                </p>
+                @if (filled($businessProfile->credit_phone))
+                    <a href="tel:{{ preg_replace('/\s+/', '', $businessProfile->credit_phone) }}"
+                       class="inline-flex items-center gap-2 rounded-full bg-primary-500/15 ring-1 ring-primary-400/40 px-4 py-1.5 text-sm font-semibold text-primary-200 hover:bg-primary-500/25 hover:text-white transition-colors">
+                        <x-public.icon name="phone" class="w-4 h-4" />
+                        <span dir="ltr">{{ $businessProfile->credit_phone }}</span>
+                    </a>
+                @endif
+            </div>
+        @endif
     </x-public.container>
 </footer>

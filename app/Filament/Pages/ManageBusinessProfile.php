@@ -73,6 +73,8 @@ class ManageBusinessProfile extends Page
                                 ->schema([
                                     TextInput::make('name')->label('اسم المنشأة (بالإنجليزية — للهوية الرسمية والبيانات المنظّمة)')->required()->maxLength(255),
                                     TextInput::make('name_ar')->label('الاسم المعروض بالعربية (في الهيدر والفوتر والعناوين)')->maxLength(255)->placeholder('فايب كلين برو'),
+                                    TextInput::make('credit_name')->label('تصميم وتطوير (اسم يظهر في أسفل الفوتر)')->maxLength(255)->placeholder('عمر بلال الأكوع'),
+                                    TextInput::make('credit_phone')->label('هاتف المصمم/المطوّر (يظهر أسفل الاسم)')->tel()->maxLength(255)->placeholder('+967780475125'),
                                     TextInput::make('phone')->label('الهاتف')->tel(),
                                     TextInput::make('whatsapp_number')->label('رقم واتساب')->tel(),
                                     TextInput::make('email')->label('البريد العام (يظهر للعملاء)')->email(),
