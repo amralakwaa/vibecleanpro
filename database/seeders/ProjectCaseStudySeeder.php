@@ -301,6 +301,39 @@ class ProjectCaseStudySeeder extends Seeder
     }
 
     /**
+     * The import stamped every project with a generic "تنظيف X — الرياض"
+     * heading, joined by an em-dash that none of the authored headings use.
+     * That em-dash is the signature of an untouched machine default, so the
+     * H1 is replaced only while it is still present - an editor's own
+     * heading, which never carries it, is left exactly as written.
+     */
+    private function isMachineDefaultTitle(string $title): bool
+    {
+        return str_contains($title, '—');
+    }
+
+    /**
+     * Derive a unique, descriptive H1 from the already-authored, per-project
+     * meta_title: drop the marketing label it opens with ("دراسة حالة:",
+     * "قبل وبعد:", "لقطة موثَّقة:") and the trailing brand, leaving the real
+     * subject of the page ("تنظيف واجهات وزجاج مرتفع بالرياض"). No heading is
+     * invented here; it reuses copy a person already wrote for the title tag.
+     */
+    private function headingFromMetaTitle(string $metaTitle): string
+    {
+        $heading = str_replace(' | فايب كلين برو', '', $metaTitle);
+
+        foreach (['دراسة حالة:', 'قبل وبعد:', 'لقطة موثَّقة:'] as $label) {
+            if (str_starts_with($heading, $label)) {
+                $heading = mb_substr($heading, mb_strlen($label));
+                break;
+            }
+        }
+
+        return trim($heading);
+    }
+
+    /**
      * Can this case study compete for its own long-tail query?
      *
      * The first cut of this system indexed by photo count alone, and that
@@ -414,6 +447,25 @@ class ProjectCaseStudySeeder extends Seeder
         // Google collapse them against each other.
         if (filled($definition['meta_title'] ?? null) && $this->isMachineDefault($seo->meta_title, $page->title)) {
             $seo->meta_title = $definition['meta_title'];
+        }
+
+        // The visible H1 (page title) got the same generic import stamp:
+        // "تنظيف واجهة مبنى — الرياض" was shared by six facade projects, so
+        // six case-study pages carried an identical, undescriptive H1. The
+        // authored meta_title is already unique per project, so the H1 is
+        // derived from it (the marketing label and brand stripped) rather
+        // than re-authored - and only while the title still shows the
+        // import's em-dash signature, never over an editor's own heading.
+        if (filled($definition['meta_title'] ?? null) && $this->isMachineDefaultTitle($page->title)) {
+            $descriptiveTitle = $this->headingFromMetaTitle($definition['meta_title']);
+
+            if (filled($descriptiveTitle)) {
+                $page->forceFill(['title' => $descriptiveTitle])->save();
+
+                if ($this->isMachineDefaultTitle((string) $project->title)) {
+                    $project->forceFill(['title' => $descriptiveTitle])->save();
+                }
+            }
         }
 
         if (filled($definition['meta_description'] ?? null) && $this->isMachineDefault($seo->meta_description, $page->title)) {
