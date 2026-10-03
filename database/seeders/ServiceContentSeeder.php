@@ -158,6 +158,17 @@ class ServiceContentSeeder extends Seeder
             'image' => ['media_id' => (string) $this->mediaId($block['media_file']), 'caption' => $block['caption'] ?? null],
             'steps' => ['heading' => $block['heading'], 'items' => $block['items']],
             'features' => ['heading' => $block['heading'], 'items' => $block['items']],
+            'icon_cards', 'highlights' => [
+                'heading' => $block['heading'] ?? null,
+                'eyebrow' => $block['eyebrow'] ?? null,
+                'items' => $block['items'],
+            ],
+            'cta_banner' => [
+                'heading' => $block['heading'],
+                'body' => $block['body'] ?? null,
+                'whatsapp_url' => $block['whatsapp_url'] ?? null,
+                'whatsapp_label' => $block['whatsapp_label'] ?? null,
+            ],
             'inclusions' => [
                 'heading' => $block['heading'] ?? null,
                 'included' => array_map(fn (string $item) => ['item' => $item], $block['included'] ?? []),

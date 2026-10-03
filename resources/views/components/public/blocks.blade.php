@@ -374,5 +374,94 @@
                 </x-public.section>
             @endif
             @break
+
+        @case('icon_cards')
+            {{-- A grid of types/categories, each a card with an icon chip -
+                 for "the kinds of X we handle" sections that read better as
+                 scannable cards than as a bullet list. --}}
+            @php($items = array_values(array_filter($block->data['items'] ?? [], fn ($i) => filled($i['title'] ?? null))))
+            @if ($items !== [])
+                <x-public.section tone="tint">
+                    @if (! empty($block->data['heading']))
+                        <div class="max-w-2xl reveal">
+                            @if (! empty($block->data['eyebrow']))
+                                <p class="text-sm font-medium tracking-wide text-primary-700">{{ $block->data['eyebrow'] }}</p>
+                            @endif
+                            <h2 class="mt-2 font-display text-2xl md:text-4xl md:leading-[1.15] font-medium tracking-tight text-ink-950 text-balance">{{ $block->data['heading'] }}</h2>
+                        </div>
+                    @endif
+                    <ul @class(['mt-8 md:mt-10 grid gap-5 sm:grid-cols-2 reveal', 'lg:grid-cols-4' => count($items) % 4 === 0 || count($items) >= 4, 'lg:grid-cols-3' => count($items) % 4 !== 0 && count($items) === 3])>
+                        @foreach ($items as $item)
+                            <li class="bg-white rounded-2xl border border-neutral-200 p-5 transition-shadow duration-150 hover:shadow-md hover:shadow-neutral-900/5">
+                                <span class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-primary-50 text-primary-700 ring-1 ring-primary-100" aria-hidden="true"><x-public.icon :name="($item['icon'] ?? null) ?: 'badge-check'" class="w-5 h-5" /></span>
+                                <p class="mt-4 font-semibold text-ink-950">{{ $item['title'] }}</p>
+                                @if (! empty($item['description']))
+                                    <p class="mt-1.5 text-sm text-neutral-600 leading-relaxed">{{ $item['description'] }}</p>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                </x-public.section>
+            @endif
+            @break
+
+        @case('highlights')
+            {{-- "Why choose us" as feature cards on a navy field - a premium,
+                 trust-oriented band that reads as a designed section. --}}
+            @php($items = array_values(array_filter($block->data['items'] ?? [], fn ($i) => filled($i['title'] ?? null))))
+            @if ($items !== [])
+                <x-public.section tone="primary">
+                    @if (! empty($block->data['heading']))
+                        <div class="max-w-2xl reveal">
+                            @if (! empty($block->data['eyebrow']))
+                                <p class="text-sm font-medium tracking-wide text-primary-300">{{ $block->data['eyebrow'] }}</p>
+                            @endif
+                            <h2 class="mt-2 font-display text-2xl md:text-4xl md:leading-[1.15] font-medium tracking-tight text-white text-balance">{{ $block->data['heading'] }}</h2>
+                        </div>
+                    @endif
+                    <ul @class(['mt-8 md:mt-10 grid gap-5 reveal', 'sm:grid-cols-3' => count($items) % 3 === 0, 'sm:grid-cols-2' => count($items) % 3 !== 0])>
+                        @foreach ($items as $item)
+                            <li class="rounded-2xl bg-white/5 ring-1 ring-white/10 p-6">
+                                <span class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-primary-500/15 text-primary-300 ring-1 ring-primary-400/30" aria-hidden="true"><x-public.icon :name="($item['icon'] ?? null) ?: 'check-circle'" class="w-5 h-5" /></span>
+                                <p class="mt-4 font-semibold text-white">{{ $item['title'] }}</p>
+                                @if (! empty($item['description']))
+                                    <p class="mt-1.5 text-sm text-white/70 leading-relaxed">{{ $item['description'] }}</p>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                </x-public.section>
+            @endif
+            @break
+
+        @case('cta_banner')
+            {{-- A prominent call to action as a navy card (not a heading): the
+                 right home for an action prompt that was wrongly written as an
+                 <h2>. Always offers the quote action; a WhatsApp action shows
+                 when a link is provided. --}}
+            @if (! empty($block->data['heading']))
+                <x-public.section>
+                    <div class="relative isolate overflow-hidden rounded-3xl bg-ink-950 text-white p-8 md:p-12 reveal">
+                        <div class="glow-primary absolute -top-24 -start-24 w-[22rem] h-[22rem] opacity-40" aria-hidden="true"></div>
+                        <div class="relative md:flex md:items-center md:justify-between md:gap-8">
+                            <div class="max-w-xl">
+                                <h2 class="font-display text-2xl md:text-3xl font-medium tracking-tight text-balance">{{ $block->data['heading'] }}</h2>
+                                @if (! empty($block->data['body']))
+                                    <p class="mt-3 text-white/75 leading-relaxed">{{ $block->data['body'] }}</p>
+                                @endif
+                            </div>
+                            <div class="mt-6 md:mt-0 flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
+                                @if (! empty($block->data['whatsapp_url']))
+                                    <a href="{{ $block->data['whatsapp_url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-primary-600 hover:bg-primary-700 text-white font-semibold transition-colors">
+                                        <x-public.icon name="whatsapp" class="w-5 h-5" /> {{ $block->data['whatsapp_label'] ?? 'تواصل عبر واتساب' }}
+                                    </a>
+                                @endif
+                                <a href="{{ route('public.quote') }}" class="inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-white/10 hover:bg-white/15 ring-1 ring-white/20 text-white font-semibold transition-colors">اطلب عرض سعر</a>
+                            </div>
+                        </div>
+                    </div>
+                </x-public.section>
+            @endif
+            @break
     @endswitch
 @endforeach

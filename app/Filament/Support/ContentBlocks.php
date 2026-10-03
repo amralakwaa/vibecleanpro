@@ -127,6 +127,51 @@ class ContentBlocks
                     ])
                     ->columns(1),
 
+                Block::make('icon_cards')
+                    ->label('بطاقات بأيقونات (أنواع/فئات)')
+                    ->icon('heroicon-o-view-columns')
+                    ->schema([
+                        TextInput::make('eyebrow')->label('سطر تمهيدي'),
+                        TextInput::make('heading')->label('عنوان القسم'),
+                        Repeater::make('items')
+                            ->label('البطاقات')
+                            ->schema([
+                                TextInput::make('icon')->label('أيقونة (اسم Heroicon)'),
+                                TextInput::make('title')->label('العنوان')->required()->maxLength(120),
+                                Textarea::make('description')->label('الوصف')->rows(2)->maxLength(300),
+                            ])
+                            ->columns(3)
+                            ->defaultItems(1),
+                    ]),
+
+                Block::make('highlights')
+                    ->label('بطاقات مزايا (خلفية داكنة)')
+                    ->icon('heroicon-o-sparkles')
+                    ->schema([
+                        TextInput::make('eyebrow')->label('سطر تمهيدي'),
+                        TextInput::make('heading')->label('عنوان القسم'),
+                        Repeater::make('items')
+                            ->label('المزايا')
+                            ->schema([
+                                TextInput::make('icon')->label('أيقونة (اسم Heroicon)'),
+                                TextInput::make('title')->label('العنوان')->required()->maxLength(120),
+                                Textarea::make('description')->label('الوصف')->rows(2)->maxLength(300),
+                            ])
+                            ->columns(3)
+                            ->defaultItems(1),
+                    ]),
+
+                Block::make('cta_banner')
+                    ->label('بطاقة دعوة للعمل (خلفية داكنة)')
+                    ->icon('heroicon-o-megaphone')
+                    ->schema([
+                        TextInput::make('heading')->label('العنوان')->required(),
+                        Textarea::make('body')->label('نص توضيحي')->rows(2),
+                        TextInput::make('whatsapp_url')->label('رابط واتساب (اختياري)')->url(),
+                        TextInput::make('whatsapp_label')->label('نص زر واتساب')->placeholder('تواصل عبر واتساب'),
+                    ])
+                    ->columns(2),
+
                 Block::make('packages')
                     ->label('باقات الخدمة')
                     ->icon('heroicon-o-tag')

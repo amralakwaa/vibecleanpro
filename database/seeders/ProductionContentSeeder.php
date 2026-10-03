@@ -359,6 +359,10 @@ class ProductionContentSeeder extends Seeder
             $data['button_url'] = BusinessProfile::query()->first()?->whatsappUrl() ?? route('public.quote');
         }
 
+        if ($block['type'] === 'cta_banner' && ($data['whatsapp_url'] ?? null) === '{whatsapp}') {
+            $data['whatsapp_url'] = BusinessProfile::query()->first()?->whatsappUrl();
+        }
+
         return $data;
     }
 
