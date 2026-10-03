@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Console\Commands\ImportMediaLibrary;
 use App\Enums\PageType;
+use App\Models\BusinessProfile;
 use App\Models\ContentBlock;
 use App\Models\InternalLink;
 use App\Models\Media;
@@ -166,7 +167,9 @@ class ServiceContentSeeder extends Seeder
             'cta_banner' => [
                 'heading' => $block['heading'],
                 'body' => $block['body'] ?? null,
-                'whatsapp_url' => $block['whatsapp_url'] ?? null,
+                'whatsapp_url' => ($block['whatsapp_url'] ?? null) === '{whatsapp}'
+                    ? BusinessProfile::query()->first()?->whatsappUrl()
+                    : ($block['whatsapp_url'] ?? null),
                 'whatsapp_label' => $block['whatsapp_label'] ?? null,
             ],
             'inclusions' => [
