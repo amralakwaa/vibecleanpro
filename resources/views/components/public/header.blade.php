@@ -215,6 +215,18 @@
                     </a>
                 @endif
             </div>
+
+            @if ($businessProfile?->social_links)
+                <div class="flex items-center justify-center gap-3 pt-1">
+                    @foreach ($businessProfile->social_links as $platform => $url)
+                        @if (! empty($url) && strtolower($platform) !== 'whatsapp')
+                            <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-ink-950 transition-colors" aria-label="{{ $platform }}">
+                                <x-public.icon :name="strtolower($platform)" class="w-4.5 h-4.5" />
+                            </a>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
     </template>

@@ -106,14 +106,14 @@ class AuditFixesTest extends TestCase
 
     public function test_footer_social_links_are_named_after_their_platform(): void
     {
-        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'social_links' => ['Instagram' => 'https://instagram.com/example', 'TikTok' => 'https://tiktok.com/@example', 'empty' => '']]);
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'social_links' => ['instagram' => 'https://instagram.com/example', 'tiktok' => 'https://tiktok.com/@example', 'empty' => '']]);
 
         $html = $this->get('/services')->assertOk()->getContent();
 
-        $this->assertMatchesRegularExpression('/<a href="https:\/\/instagram\.com\/example"[^>]*>\s*Instagram\s*<\/a>/u', $html);
-        $this->assertMatchesRegularExpression('/<a href="https:\/\/tiktok\.com\/@example"[^>]*>\s*TikTok\s*<\/a>/u', $html);
+        $this->assertMatchesRegularExpression('/<a href="https:\/\/instagram\.com\/example"[^>]*aria-label="instagram"/u', $html);
+        $this->assertMatchesRegularExpression('/<a href="https:\/\/tiktok\.com\/@example"[^>]*aria-label="tiktok"/u', $html);
         preg_match('/<a href="https:\/\/instagram\.com\/example"[^>]*class="([^"]*)"/', $html, $m);
-        $this->assertStringContainsString('min-h-11', $m[1]);
+        $this->assertStringContainsString('rounded-full', $m[1]);
         $this->assertStringNotContainsString('href=""', $html);
     }
 

@@ -147,17 +147,20 @@
                     </p>
                 @endif
 
-                @if ($businessProfile?->social_links)
-                    {{-- The platform name the editor typed is the link
-                         text: every social link is named, and no brand
-                         icon is faked with a generic arrow. --}}
+                @php
+                    $socialIcons = ['tiktok' => 'tiktok', 'facebook' => 'facebook', 'snapchat' => 'snapchat', 'instagram' => 'instagram', 'whatsapp' => 'whatsapp'];
+                    $socials = collect($businessProfile?->social_links ?? [])
+                        ->when($whatsappUrl, fn ($c) => $c->has('whatsapp') ? $c : $c->put('whatsapp', $whatsappUrl));
+                @endphp
+                @if ($socials->filter()->isNotEmpty())
                     <ul class="mt-5 flex flex-wrap items-center gap-2">
-                        @foreach ($businessProfile->social_links as $platform => $social)
-                            @if (! empty($social))
+                        @foreach ($socials as $platform => $url)
+                            @if (! empty($url))
                                 <li>
-                                    <a href="{{ $social }}" target="_blank" rel="noopener noreferrer"
-                                        class="inline-flex items-center min-h-11 px-3.5 rounded-full bg-white/10 text-sm text-ink-100 hover:bg-white/20 hover:text-white transition-colors">
-                                        {{ is_string($platform) ? $platform : $social }}
+                                    <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
+                                        class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/10 text-ink-100 hover:bg-white/20 hover:text-white transition-colors"
+                                        aria-label="{{ $platform }}">
+                                        <x-public.icon :name="$socialIcons[strtolower($platform)] ?? 'arrow-start'" class="w-5 h-5" />
                                     </a>
                                 </li>
                             @endif
