@@ -50,6 +50,13 @@ class ServiceContentSeeder extends Seeder
                 continue;
             }
 
+            // The 'page' base must be written before any 'append' section,
+            // otherwise an append from a file that sorts earlier (e.g.
+            // wave1-services-batch2.php before wave1-services.php) fills the
+            // page first and fillPage then skips the real base. File order is
+            // kept within each mode.
+            usort($definitions, fn ($a, $b) => ($a['mode'] === 'page' ? 0 : 1) <=> ($b['mode'] === 'page' ? 0 : 1));
+
             foreach ($definitions as $definition) {
                 $definition['mode'] === 'append'
                     ? $this->appendSections($page->refresh(), $definition['sections'])
