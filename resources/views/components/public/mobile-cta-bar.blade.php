@@ -1,18 +1,15 @@
 {{--
-    Mobile conversion bar. Previously three equal-width actions (quote,
-    call, WhatsApp), which gave the thumb three identical targets and no
-    hierarchy. Now: one dominant blue action that takes the available
-    width, with WhatsApp beside it as the secondary channel in green.
+    Mobile conversion bar: three actions with clear hierarchy.
+    1. Quote (blue, dominant width) — the main conversion action
+    2. Phone (secondary, icon-only) — direct call for impatient customers
+    3. WhatsApp (green, icon-only) — async channel
 
-    Phone is deliberately no longer a permanent third button - it stays
-    reachable from the mobile menu and the footer, so the bar carries a
-    decision rather than a menu. Fixed height, safe-area aware, lg:hidden;
-    the layout gives <main> matching bottom padding so this never covers
-    page content.
+    Fixed height, safe-area aware, lg:hidden; the layout gives <main>
+    matching bottom padding so this never covers page content.
 --}}
 @props(['quoteUrl' => null, 'whatsappUrl' => null, 'phoneUrl' => null])
 
-@if ($quoteUrl || $whatsappUrl)
+@if ($quoteUrl || $whatsappUrl || $phoneUrl)
     {{-- While a page's own primary action ([data-hero-cta]) is on screen
          the bar slides away, so a visitor never sees two "request" buttons
          at once. One IntersectionObserver, no scroll listeners; without
@@ -31,24 +28,22 @@
                 </x-public.button>
             @endif
 
+            @if ($phoneUrl)
+                <a href="{{ $phoneUrl }}" class="shrink-0 inline-flex items-center justify-center min-h-12 min-w-12 rounded-xl bg-ink-950 text-white hover:bg-neutral-800 active:bg-neutral-900 transition-colors shadow-sm" aria-label="اتصل بنا">
+                    <x-public.icon name="phone" class="w-5 h-5" />
+                </a>
+            @endif
+
             @if ($whatsappUrl)
-                {{-- Alongside the quote action it collapses to an
-                     icon-only square (kept at a 48px+ tap target and
-                     given its own aria-label); on its own it becomes the
-                     full-width labelled action. --}}
                 <x-public.button
                     :href="$whatsappUrl"
                     external
                     variant="whatsapp"
                     size="md"
                     icon="whatsapp"
-                    :class="$quoteUrl ? 'shrink-0 !px-4 min-h-12 min-w-12' : 'grow min-h-12'"
-                    :aria-label="$quoteUrl ? 'تواصل عبر واتساب' : null"
-                >
-                    @unless ($quoteUrl)
-                        تواصل عبر واتساب
-                    @endunless
-                </x-public.button>
+                    class="shrink-0 !px-4 min-h-12 min-w-12"
+                    aria-label="تواصل عبر واتساب"
+                />
             @endif
         </div>
     </div>

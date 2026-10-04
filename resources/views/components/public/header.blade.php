@@ -32,6 +32,16 @@
     // ?for=business, so the current item is decided by path AND that
     // query - never both at once. Anything other than "business" is the
     // plain contact context (see ContactController).
+    $navIcons = [
+        'خدماتنا' => 'sparkles',
+        'أعمالنا' => 'briefcase',
+        'مناطق التغطية' => 'map-pin',
+        'من نحن' => 'users',
+        'المدونة' => 'clipboard',
+        'العروض' => 'star',
+        'تواصل معنا' => 'mail',
+    ];
+
     $currentFor = request()->query('for') === 'business' ? 'business' : null;
     $isCurrentNav = function (string $url) use ($currentFor): bool {
         parse_str((string) parse_url($url, PHP_URL_QUERY), $query);
@@ -47,16 +57,7 @@
     @scroll.window="scrolled = window.scrollY > 24"
     @keydown.escape.window="mobileOpen = false"
     x-effect="document.body.style.overflow = mobileOpen ? 'hidden' : ''"
-    {{-- The header is a stacking context (sticky + z-index), so the
-         full-screen menu's own z-index is scoped INSIDE it - without
-         lifting the header itself while the menu is open, the mobile CTA
-         bar (also fixed, later in the DOM) paints over the menu and
-         covers its contact row. Both dynamic concerns share one :class
-         binding, because a second one would silently be dropped. --}}
-    :class="[
-        mobileOpen ? '!z-[60]' : '',
-        @js($overlay) ? (scrolled ? 'bg-white/95 backdrop-blur border-b border-neutral-200' : 'bg-transparent border-b border-transparent') : ''
-    ]"
+    :class="@js($overlay) ? (scrolled ? 'bg-white/95 backdrop-blur border-b border-neutral-200' : 'bg-transparent border-b border-transparent') : ''"
     @class([
         'sticky top-0 z-40 transition-colors duration-200',
         'border-b' => ! $overlay,
@@ -127,69 +128,94 @@
     </x-public.container>
 
     {{--
-        Full-screen mobile menu. No x-transition on purpose: Alpine's
-        transitions clear their enter state via requestAnimationFrame,
-        which browsers throttle in a backgrounded tab - a user who taps
-        the menu then switches tabs could return to a menu stuck
-        open-but-invisible. Reliability beats the animation here.
+        Full-screen mobile menu. Teleported to <body> so that the
+        header's backdrop-filter (which creates a CSS containing block)
+        does not trap this fixed-position overlay inside the header's
+        own height - without teleport, "fixed inset-0" covers only
+        the header strip when backdrop-blur is active.
+
+        No x-transition on purpose: Alpine's transitions clear their
+        enter state via requestAnimationFrame, which browsers throttle
+        in a backgrounded tab - a user who taps the menu then switches
+        tabs could return to a menu stuck open-but-invisible.
     --}}
+    <template x-teleport="body">
     <div
         id="mobile-nav"
         x-show="mobileOpen"
         x-cloak
-        class="lg:hidden fixed inset-0 z-50 bg-white flex flex-col overflow-y-auto"
+        class="lg:hidden fixed inset-0 z-[60] bg-gradient-to-b from-white to-primary-50 flex flex-col overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-label="القائمة"
     >
-        <div class="flex items-center justify-between h-16 px-4 border-b border-neutral-200 shrink-0">
-            <span class="font-display font-medium text-lg text-ink-950">{{ $brandName }}</span>
-            <button type="button" @click="mobileOpen = false" class="-me-2 p-3 text-ink-950 rounded-md" aria-label="إغلاق القائمة">
-                <x-public.icon name="close" class="w-6 h-6" />
+        <div class="flex items-center justify-between h-16 px-5 shrink-0">
+            <a href="{{ url('/') }}" class="flex items-center gap-2.5">
+                @if ($businessProfile?->logo)
+                    <img src="{{ $businessProfile->logo->url() }}" alt="{{ $brandName }}" class="h-8 w-auto">
+                @endif
+                <span class="font-display font-medium text-lg text-ink-950">{{ $brandName }}</span>
+            </a>
+            <button type="button" @click="mobileOpen = false" class="flex items-center justify-center w-10 h-10 rounded-full bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors" aria-label="إغلاق القائمة">
+                <x-public.icon name="close" class="w-5 h-5" />
             </button>
         </div>
 
-        <nav class="grow px-6 py-8" aria-label="التنقل - جوال">
-            {{-- B2C block --}}
-            <p class="text-xs font-medium tracking-wide text-neutral-500">للأفراد والمنازل</p>
-            <ul class="mt-4 space-y-1">
+        <nav class="grow px-5 pt-4 pb-6" aria-label="التنقل - جوال">
+            <p class="text-[0.7rem] font-semibold tracking-widest text-neutral-400 uppercase px-3 mb-2">للأفراد والمنازل</p>
+            <ul class="space-y-0.5">
                 @foreach ($navItems as $label => $url)
                     @continue($label === 'للشركات')
+                    @php($isCurrent = $isCurrentNav($url))
                     <li>
-                        <a href="{{ $url }}" class="block py-3 font-display text-2xl font-medium text-ink-950">{{ $label }}</a>
+                        <a
+                            href="{{ $url }}"
+                            class="flex items-center gap-3.5 py-3 px-3 rounded-xl font-display text-[1.05rem] font-medium transition-colors {{ $isCurrent ? 'bg-primary-50 text-primary-700' : 'text-ink-950 hover:bg-neutral-100' }}"
+                        >
+                            <span class="flex items-center justify-center w-9 h-9 rounded-lg shrink-0 {{ $isCurrent ? 'bg-primary-100 text-primary-600' : 'bg-neutral-100 text-neutral-500' }}">
+                                <x-public.icon :name="$navIcons[$label] ?? 'arrow-start'" class="w-[1.1rem] h-[1.1rem]" />
+                            </span>
+                            {{ $label }}
+                        </a>
                     </li>
                 @endforeach
             </ul>
 
-            {{-- B2B block, visually separated so the two audiences read as
-                 two different doors rather than one long link list. --}}
             @if (isset($navItems['للشركات']))
-                <div class="mt-8 pt-8 border-t border-neutral-200">
-                    <p class="text-xs font-medium tracking-wide text-neutral-500">للشركات والمنشآت</p>
-                    <a href="{{ $navItems['للشركات'] }}" class="mt-4 block py-3 font-display text-2xl font-medium text-primary-700">
+                @php($isB2BCurrent = $isCurrentNav($navItems['للشركات']))
+                <div class="mt-5">
+                    <p class="text-[0.7rem] font-semibold tracking-widest text-neutral-400 uppercase px-3 mb-2">للشركات والمنشآت</p>
+                    <a
+                        href="{{ $navItems['للشركات'] }}"
+                        class="flex items-center gap-3.5 py-3 px-3 rounded-xl font-display text-[1.05rem] font-medium transition-colors {{ $isB2BCurrent ? 'bg-primary-50 text-primary-700' : 'text-ink-950 hover:bg-neutral-100' }}"
+                    >
+                        <span class="flex items-center justify-center w-9 h-9 rounded-lg shrink-0 {{ $isB2BCurrent ? 'bg-primary-100 text-primary-600' : 'bg-neutral-100 text-neutral-500' }}">
+                            <x-public.icon name="building" class="w-[1.1rem] h-[1.1rem]" />
+                        </span>
                         حلول الشركات وعقود التشغيل
                     </a>
                 </div>
             @endif
         </nav>
 
-        <div class="px-6 pb-8 pt-6 border-t border-neutral-200 shrink-0 space-y-3">
+        <div class="px-5 pb-6 pt-5 mt-auto shrink-0 space-y-3">
             @if ($quoteUrl)
                 <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle" class="w-full">اطلب عرض سعر</x-public.button>
             @endif
 
-            <div class="flex items-center gap-6 pt-1">
+            <div class="flex items-center gap-3">
                 @if ($whatsappUrl)
-                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 py-2 text-sm font-medium text-neutral-700">
-                        <x-public.icon name="whatsapp" class="w-4 h-4 text-success-600" /> واتساب
+                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-success-50 text-success-700 text-sm font-medium hover:bg-success-100 transition-colors">
+                        <x-public.icon name="whatsapp" class="w-4 h-4" /> واتساب
                     </a>
                 @endif
                 @if ($phoneUrl)
-                    <a href="{{ $phoneUrl }}" class="inline-flex items-center gap-2 py-2 text-sm font-medium text-neutral-700">
+                    <a href="{{ $phoneUrl }}" class="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 text-sm font-medium hover:bg-neutral-200 transition-colors">
                         <x-public.icon name="phone" class="w-4 h-4" /> اتصل بنا
                     </a>
                 @endif
             </div>
         </div>
     </div>
+    </template>
 </header>
