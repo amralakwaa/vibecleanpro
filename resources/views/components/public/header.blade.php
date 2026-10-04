@@ -72,13 +72,12 @@
         <div class="flex items-center justify-between h-16 md:h-20 gap-6">
             <a
                 href="{{ url('/') }}"
-                class="flex items-center gap-2.5 font-display font-medium text-lg lg:text-xl shrink-0 transition-colors {{ $overlay ? '' : 'text-ink-950' }}"
-                @if ($overlay) :class="scrolled ? 'text-ink-950' : 'text-white'" @endif
+                class="flex items-center gap-2 shrink-0 transition-colors"
             >
-                @if ($businessProfile?->logo)
-                    <img src="{{ $businessProfile->logo->url() }}" alt="{{ $brandName }}" class="h-9 lg:h-10 w-auto">
-                @endif
-                <span>{{ $brandName }}</span>
+                <img src="{{ asset('images/logo-mark.webp') }}" alt="" width="80" height="80" class="h-9 lg:h-10 w-auto" aria-hidden="true">
+                <span class="font-display font-bold text-lg lg:text-xl {{ $overlay ? '' : 'text-ink-950' }}"
+                    @if ($overlay) :class="scrolled ? 'text-ink-950' : 'text-white'" @endif
+                >{{ $brandName }}</span>
             </a>
 
             <nav class="hidden lg:flex items-center gap-8" aria-label="التنقل الرئيسي">
@@ -150,11 +149,9 @@
         aria-label="القائمة"
     >
         <div class="flex items-center justify-between h-16 px-5 shrink-0">
-            <a href="{{ url('/') }}" class="flex items-center gap-2.5">
-                @if ($businessProfile?->logo)
-                    <img src="{{ $businessProfile->logo->url() }}" alt="{{ $brandName }}" class="h-8 w-auto">
-                @endif
-                <span class="font-display font-medium text-lg text-ink-950">{{ $brandName }}</span>
+            <a href="{{ url('/') }}" class="flex items-center gap-2">
+                <img src="{{ asset('images/logo-mark.webp') }}" alt="" width="80" height="80" class="h-8 w-auto" aria-hidden="true">
+                <span class="font-display font-bold text-lg text-ink-950">{{ $brandName }}</span>
             </a>
             <button type="button" @click="mobileOpen = false" class="flex items-center justify-center w-10 h-10 rounded-full bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors" aria-label="إغلاق القائمة">
                 <x-public.icon name="close" class="w-5 h-5" />

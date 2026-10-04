@@ -136,9 +136,7 @@
         {{-- Brand + contact strip --}}
         <div class="flex flex-col items-center text-center mb-12">
             <a href="{{ url('/') }}" class="flex items-center gap-3 group">
-                @if ($businessProfile?->logo)
-                    <img src="{{ $businessProfile->logo->url() }}" alt="{{ $businessProfile?->displayName() }}" class="h-10 w-auto">
-                @endif
+                <img src="{{ asset('images/logo-mark.webp') }}" alt="" width="80" height="80" class="h-11 w-auto" aria-hidden="true">
                 <span class="font-display font-bold text-xl text-white group-hover:text-primary-300 transition-colors">{{ $businessProfile?->displayName() ?: config('app.name') }}</span>
             </a>
 

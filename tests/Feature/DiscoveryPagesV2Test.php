@@ -128,7 +128,10 @@ class DiscoveryPagesV2Test extends TestCase
         $this->assertStringNotContainsString('/areas/idx-draft', $html, 'a draft area is never linked');
         $this->assertStringNotContainsString('مجموعة-فارغة', $html);
         $this->assertStringNotContainsString('0 خدمات', $html);
-        $this->assertStringNotContainsString('<img', mb_substr($html, mb_strpos($html, '<main')), 'no picture pretends to be a neighbourhood');
+        $mainStart = mb_strpos($html, '<main');
+        $mainEnd = mb_strpos($html, '</main>', $mainStart);
+        $mainContent = mb_substr($html, $mainStart, $mainEnd - $mainStart);
+        $this->assertStringNotContainsString('<img', $mainContent, 'no picture pretends to be a neighbourhood');
         $this->assertNoCustomerFacingEmptyState($html);
     }
 
