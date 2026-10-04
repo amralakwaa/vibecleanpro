@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0e1f45"/>
+      <stop offset="100%" stop-color="#071228"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b7cf6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- Sparkle/clean symbol -->
+  <g transform="translate(256,170)">
+    <circle cx="0" cy="0" r="8" fill="#3b7cf6" opacity="0.9"/>
+    <path d="M0-28 L4-8 L24-12 L8-4 L12 12 L0 0 L-12 12 L-8-4 L-24-12 L-4-8Z" fill="url(#accent)" opacity="0.7"/>
+  </g>
+  <!-- Arabic brand text "فايب كلين برو" -->
+  <text x="256" y="310" text-anchor="middle" font-family="'IBM Plex Sans Arabic', 'Readex Pro', system-ui, sans-serif" font-weight="700" font-size="72" fill="white" direction="rtl">فايب كلين</text>
+  <text x="256" y="385" text-anchor="middle" font-family="'IBM Plex Sans Arabic', 'Readex Pro', system-ui, sans-serif" font-weight="600" font-size="56" fill="url(#accent)">PRO</text>
+  <!-- Underline accent -->
+  <rect x="176" y="400" width="160" height="3" rx="1.5" fill="#2563eb" opacity="0.5"/>
+</svg>

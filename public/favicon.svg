@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#071228"/>
+  <g transform="translate(16,10)">
+    <circle cx="0" cy="0" r="1.5" fill="#3b7cf6"/>
+    <path d="M0-5 L.8-1.5 L4.5-2 L1.5-.8 L2.2 2.2 L0 0 L-2.2 2.2 L-1.5-.8 L-4.5-2 L-.8-1.5Z" fill="#3b7cf6" opacity="0.8"/>
+  </g>
+  <text x="16" y="24.5" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="10" fill="white" letter-spacing="0.5">VCP</text>
+</svg>
