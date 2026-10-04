@@ -126,55 +126,66 @@
         .leaflet-vcp-tooltip::before { display: none; }
     </style>
 
-    <x-public.container width="wide" class="py-14">
-        <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-            <div>
-                <div class="flex items-center gap-2.5 font-bold text-white">
-                    @if ($businessProfile?->logo)
-                        <img src="{{ $businessProfile->logo->url() }}" alt="{{ $businessProfile->displayName() }}" class="h-8 w-auto">
-                    @else
-                        <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                            <x-public.icon name="sparkles" class="w-4 h-4" />
-                        </span>
-                    @endif
-                    <span>{{ $businessProfile?->displayName() ?: config('app.name') }}</span>
-                </div>
+    @php
+        $socialIcons = ['tiktok' => 'tiktok', 'facebook' => 'facebook', 'snapchat' => 'snapchat', 'instagram' => 'instagram', 'whatsapp' => 'whatsapp'];
+        $socials = collect($businessProfile?->social_links ?? [])
+            ->when($whatsappUrl, fn ($c) => $c->has('whatsapp') ? $c : $c->put('whatsapp', $whatsappUrl));
+    @endphp
 
-                @if ($businessProfile?->address || $businessProfile?->city)
-                    <p class="mt-4 text-sm leading-relaxed flex items-start gap-2 max-w-xs">
-                        <x-public.icon name="map-pin" class="w-4 h-4 mt-0.5 shrink-0" />
-                        <span>{{ $businessProfile->address ?? $businessProfile->city }}</span>
-                    </p>
+    <x-public.container width="wide" class="pt-16 pb-10">
+        {{-- Brand + contact strip --}}
+        <div class="flex flex-col items-center text-center mb-12">
+            <a href="{{ url('/') }}" class="flex items-center gap-3 group">
+                @if ($businessProfile?->logo)
+                    <img src="{{ $businessProfile->logo->url() }}" alt="{{ $businessProfile?->displayName() }}" class="h-10 w-auto">
                 @endif
+                <span class="font-display font-bold text-xl text-white group-hover:text-primary-300 transition-colors">{{ $businessProfile?->displayName() ?: config('app.name') }}</span>
+            </a>
 
-                @php
-                    $socialIcons = ['tiktok' => 'tiktok', 'facebook' => 'facebook', 'snapchat' => 'snapchat', 'instagram' => 'instagram', 'whatsapp' => 'whatsapp'];
-                    $socials = collect($businessProfile?->social_links ?? [])
-                        ->when($whatsappUrl, fn ($c) => $c->has('whatsapp') ? $c : $c->put('whatsapp', $whatsappUrl));
-                @endphp
-                @if ($socials->filter()->isNotEmpty())
-                    <ul class="mt-5 flex flex-wrap items-center gap-2">
-                        @foreach ($socials as $platform => $url)
-                            @if (! empty($url))
-                                <li>
-                                    <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
-                                        class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/10 text-ink-100 hover:bg-white/20 hover:text-white transition-colors"
-                                        aria-label="{{ $platform }}">
-                                        <x-public.icon :name="$socialIcons[strtolower($platform)] ?? 'arrow-start'" class="w-5 h-5" />
-                                    </a>
-                                </li>
-                            @endif
-                        @endforeach
-                    </ul>
-                @endif
-            </div>
+            @if ($businessProfile?->identity_statement)
+                <p class="mt-3 text-sm text-ink-300 max-w-sm leading-relaxed">{{ $businessProfile->identity_statement }}</p>
+            @endif
 
+            @if ($businessProfile?->address || $businessProfile?->city)
+                <p class="mt-3 text-sm text-ink-300 flex items-center gap-1.5">
+                    <x-public.icon name="map-pin" class="w-3.5 h-3.5 shrink-0" />
+                    {{ $businessProfile->address ?? $businessProfile->city }}
+                </p>
+            @endif
+
+            @if ($socials->filter()->isNotEmpty())
+                <ul class="mt-5 flex items-center gap-2.5">
+                    @foreach ($socials as $platform => $url)
+                        @if (! empty($url))
+                            <li>
+                                <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
+                                    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/[0.07] text-ink-300 hover:bg-primary-600 hover:text-white hover:scale-110 transition-all duration-200"
+                                    aria-label="{{ $platform }}">
+                                    <x-public.icon :name="$socialIcons[strtolower($platform)] ?? 'arrow-start'" class="w-[1.15rem] h-[1.15rem]" />
+                                </a>
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+            @endif
+        </div>
+
+        {{-- Divider --}}
+        <div class="h-px bg-gradient-to-l from-transparent via-white/15 to-transparent mb-10" aria-hidden="true"></div>
+
+        {{-- Links grid --}}
+        <div class="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
             @if ($navItems)
                 <div>
-                    <p class="text-sm font-semibold text-white mb-3">روابط سريعة</p>
-                    <ul class="space-y-2 text-sm">
+                    <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">روابط سريعة</p>
+                    <ul class="space-y-2.5 text-sm">
                         @foreach ($navItems as $label => $url)
-                            <li><a href="{{ $url }}" class="hover:text-white transition-colors">{{ $label }}</a></li>
+                            <li>
+                                <a href="{{ $url }}" class="inline-flex items-center gap-1.5 text-ink-200 hover:text-white hover:translate-x-[-2px] transition-all duration-150">
+                                    <span class="w-1 h-1 rounded-full bg-primary-500/60 shrink-0"></span>
+                                    {{ $label }}
+                                </a>
+                            </li>
                         @endforeach
                     </ul>
                 </div>
@@ -182,46 +193,60 @@
 
             @if ($trustLinks)
                 <div>
-                    <p class="text-sm font-semibold text-white mb-3">الثقة والسياسات</p>
-                    <ul class="space-y-2 text-sm">
+                    <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">الثقة والسياسات</p>
+                    <ul class="space-y-2.5 text-sm">
                         @foreach ($trustLinks as $label => $url)
-                            <li><a href="{{ $url }}" class="hover:text-white transition-colors">{{ $label }}</a></li>
+                            <li>
+                                <a href="{{ $url }}" class="inline-flex items-center gap-1.5 text-ink-200 hover:text-white hover:translate-x-[-2px] transition-all duration-150">
+                                    <span class="w-1 h-1 rounded-full bg-primary-500/60 shrink-0"></span>
+                                    {{ $label }}
+                                </a>
+                            </li>
                         @endforeach
                     </ul>
                 </div>
             @endif
 
             <div>
-                <p class="text-sm font-semibold text-white mb-3">تواصل معنا</p>
-                <ul class="space-y-2.5 text-sm">
+                <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">تواصل معنا</p>
+                <ul class="space-y-3 text-sm">
                     @if ($phoneUrl && $businessProfile?->phone)
                         <li>
-                            <a href="{{ $phoneUrl }}" class="flex items-center gap-2 hover:text-white transition-colors">
-                                <x-public.icon name="phone" class="w-4 h-4" /> {{ $businessProfile->phone }}
+                            <a href="{{ $phoneUrl }}" class="flex items-center gap-3 py-2 px-3 -mx-3 rounded-lg hover:bg-white/[0.05] transition-colors group">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.07] text-ink-300 group-hover:bg-primary-600 group-hover:text-white transition-colors shrink-0">
+                                    <x-public.icon name="phone" class="w-4 h-4" />
+                                </span>
+                                <span dir="ltr" class="text-ink-200 group-hover:text-white transition-colors">{{ $businessProfile->phone }}</span>
                             </a>
                         </li>
                     @endif
                     @if ($businessProfile?->email)
                         <li>
-                            <a href="mailto:{{ $businessProfile->email }}" class="flex items-center gap-2 hover:text-white transition-colors">
-                                <x-public.icon name="mail" class="w-4 h-4" /> {{ $businessProfile->email }}
+                            <a href="mailto:{{ $businessProfile->email }}" class="flex items-center gap-3 py-2 px-3 -mx-3 rounded-lg hover:bg-white/[0.05] transition-colors group">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.07] text-ink-300 group-hover:bg-primary-600 group-hover:text-white transition-colors shrink-0">
+                                    <x-public.icon name="mail" class="w-4 h-4" />
+                                </span>
+                                <span class="text-ink-200 group-hover:text-white transition-colors">{{ $businessProfile->email }}</span>
                             </a>
                         </li>
                     @endif
                     @if ($whatsappUrl)
                         <li>
-                            <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-white transition-colors">
-                                <x-public.icon name="whatsapp" class="w-4 h-4" /> واتساب
+                            <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 py-2 px-3 -mx-3 rounded-lg hover:bg-white/[0.05] transition-colors group">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.07] text-ink-300 group-hover:bg-success-600 group-hover:text-white transition-colors shrink-0">
+                                    <x-public.icon name="whatsapp" class="w-4 h-4" />
+                                </span>
+                                <span class="text-ink-200 group-hover:text-white transition-colors">واتساب</span>
                             </a>
                         </li>
                     @endif
-                    {{-- Links the Google Business Profile from every page (helps GBP
-                         discovery and gives customers a path to Maps and reviews).
-                         Shown only when a real profile link is saved. --}}
                     @if ($gbpUrl = $businessProfile?->publicGoogleBusinessProfileUrl())
                         <li>
-                            <a href="{{ $gbpUrl }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-white transition-colors">
-                                <x-public.icon name="map-pin" class="w-4 h-4" /> موقعنا على خرائط Google
+                            <a href="{{ $gbpUrl }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 py-2 px-3 -mx-3 rounded-lg hover:bg-white/[0.05] transition-colors group">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.07] text-ink-300 group-hover:bg-primary-600 group-hover:text-white transition-colors shrink-0">
+                                    <x-public.icon name="map-pin" class="w-4 h-4" />
+                                </span>
+                                <span class="text-ink-200 group-hover:text-white transition-colors">خرائط Google</span>
                             </a>
                         </li>
                     @endif
@@ -229,7 +254,8 @@
             </div>
         </div>
 
-        <div class="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-300/80">
+        {{-- Bottom bar --}}
+        <div class="mt-12 pt-6 border-t border-white/[0.07] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-400">
             <p>
                 &copy; {{ now()->year }} {{ $businessProfile?->displayName() ?: config('app.name') }}. جميع الحقوق محفوظة.
                 @if ($registration = $businessProfile?->publicCommercialRegistration())
@@ -246,22 +272,15 @@
             @endif
         </div>
 
-        {{-- Site design & development credit. Managed on the business profile
-             and shown only when a name is set, so a bare profile (and the
-             honesty guardrails that forbid an unconfigured phone link) is
-             never contradicted. Prominent on purpose: the name and contact
-             line stand out against the dark footer. The extra bottom padding
-             on small screens clears the fixed mobile CTA bar, which overlaps
-             the page bottom below the lg breakpoint. --}}
         @if (filled($businessProfile?->credit_name))
-            <div class="mt-6 pt-6 pb-24 lg:pb-0 border-t border-white/10 flex flex-col items-center gap-2 text-center">
-                <p class="text-sm text-ink-300/80">
+            <div class="mt-6 pt-6 pb-24 lg:pb-0 border-t border-white/[0.07] flex flex-col items-center gap-2 text-center">
+                <p class="text-sm text-ink-400">
                     تصميم وتطوير
                     <span class="font-display font-semibold text-transparent bg-clip-text bg-gradient-to-l from-primary-300 to-primary-500">{{ $businessProfile->credit_name }}</span>
                 </p>
                 @if (filled($businessProfile->credit_phone))
                     <a href="tel:{{ preg_replace('/\s+/', '', $businessProfile->credit_phone) }}"
-                       class="inline-flex items-center gap-2 rounded-full bg-primary-500/15 ring-1 ring-primary-400/40 px-4 py-1.5 text-sm font-semibold text-primary-200 hover:bg-primary-500/25 hover:text-white transition-colors">
+                       class="inline-flex items-center gap-2 rounded-full bg-primary-500/15 ring-1 ring-primary-400/30 px-4 py-1.5 text-sm font-semibold text-primary-200 hover:bg-primary-500/25 hover:text-white transition-colors">
                         <x-public.icon name="phone" class="w-4 h-4" />
                         <span dir="ltr">{{ $businessProfile->credit_phone }}</span>
                     </a>

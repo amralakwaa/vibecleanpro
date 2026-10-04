@@ -35,13 +35,13 @@ class ReviewFunnelTest extends TestCase
     {
         $profile = BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'name_ar' => 'فايب كلين برو', 'city' => 'الرياض']);
 
-        $this->get('/')->assertOk()->assertDontSee('موقعنا على خرائط Google');
+        $this->get('/')->assertOk()->assertDontSee('خرائط Google');
 
         $profile->update(['google_business_profile_url' => 'https://maps.google.com/?cid=12345']);
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('موقعنا على خرائط Google')
+            ->assertSee('خرائط Google')
             ->assertSee('https://maps.google.com/?cid=12345', escape: false);
     }
 }
