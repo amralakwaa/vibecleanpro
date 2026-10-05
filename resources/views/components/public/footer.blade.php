@@ -14,13 +14,12 @@
 
 @once
     {{-- Leaflet is self-hosted (public/vendor/leaflet) rather than pulled
-         from a CDN: no render-blocking third-party request on every page and
-         no visitor IP handed to a CDN. The stylesheet is injected lazily when
-         the footer map nears the viewport (see the script below), so Leaflet's
-         CSS, its tiles and its init work all stay off the initial critical
-         path - the map is below the fold on every page. Map tiles still load
-         from OpenStreetMap at runtime. --}}
-    <script src="{{ asset('vendor/leaflet/leaflet.js') }}" defer></script>
+         from a CDN: no third-party request on every page and no visitor IP
+         handed to a CDN. Neither its script nor its stylesheet is requested
+         up front - both are injected only when the footer map nears the
+         viewport (see ensureLeafletJs below), so a visitor who never scrolls
+         to the footer pays nothing for Leaflet. Map tiles load from
+         OpenStreetMap at runtime. --}}
 @endonce
 
 <footer class="bg-ink-950 text-ink-200">
@@ -42,12 +41,26 @@
                     document.head.appendChild(link);
                 }
 
+                function ensureLeafletJs(cb) {
+                    if (typeof L !== 'undefined') { cb(); return; }
+                    var existing = document.getElementById('leaflet-js');
+                    if (existing) { existing.addEventListener('load', cb); return; }
+                    var s = document.createElement('script');
+                    s.id = 'leaflet-js';
+                    s.src = @json(asset('vendor/leaflet/leaflet.js'));
+                    s.onload = cb;
+                    document.head.appendChild(s);
+                }
+
                 function initMap() {
                     if (started || mapEl._leaflet_id) return;
-                    // leaflet.js is deferred; if it has not finished yet, retry shortly.
-                    if (typeof L === 'undefined') { setTimeout(initMap, 120); return; }
                     started = true;
                     ensureLeafletCss();
+                    ensureLeafletJs(buildMap);
+                }
+
+                function buildMap() {
+                    if (mapEl._leaflet_id) return;
                     var map = L.map('footer-map', {
                         center: [24.7136, 46.6753],
                         zoom: 11,

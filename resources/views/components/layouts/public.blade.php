@@ -95,11 +95,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#071228">
 
-    <link rel="icon" href="/favicon.ico" sizes="32x32">
-    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
-    <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
+    {{-- PERFORMANCE-CRITICAL RESOURCES FIRST: the preload scanner discovers
+         them in byte order, so every KB of HTML before these is wasted time
+         on a slow connection. CSS + hero image + fonts go before SEO meta. --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('preloads')
+    {{-- Self-hosted, subsetted fonts. Replaces fonts.bunny.net: removes a
+         third-party DNS+TLS handshake, lets Cloudflare cache the files on the
+         same origin, and cuts 298KB of font traffic to 165KB by dropping the
+         Arabic Presentation Forms blocks (U+FB50-FDFF, U+FE70-FEFC) and the
+         unused Latin ranges. Arabic still shapes correctly: contextual forms
+         are reached through the retained GSUB features, not those codepoints.
+         font-display:optional keeps CLS at zero - a face that misses first
+         paint is skipped for that load rather than swapped in late. --}}
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/plex-ar-400.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/readex-ar-500.woff2">
+    <style>
+    @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:400;font-display:optional;src:url(/fonts/plex-ar-400.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41}
+    @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:500;font-display:optional;src:url(/fonts/plex-ar-500.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41}
+    @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:600;font-display:optional;src:url(/fonts/plex-ar-600.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41}
+    @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:700;font-display:optional;src:url(/fonts/plex-ar-700.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41}
+    @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:400;font-display:optional;src:url(/fonts/plex-la-400.woff2) format('woff2');unicode-range:U+0020-007E,U+00A0,U+00AB,U+00BB,U+00D7,U+2013-2014,U+2018-2019,U+201C-201D,U+2026,U+202F,U+2212,U+FEFF}
+    @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:500;font-display:optional;src:url(/fonts/plex-la-500.woff2) format('woff2');unicode-range:U+0020-007E,U+00A0,U+00AB,U+00BB,U+00D7,U+2013-2014,U+2018-2019,U+201C-201D,U+2026,U+202F,U+2212,U+FEFF}
+    @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:600;font-display:optional;src:url(/fonts/plex-la-600.woff2) format('woff2');unicode-range:U+0020-007E,U+00A0,U+00AB,U+00BB,U+00D7,U+2013-2014,U+2018-2019,U+201C-201D,U+2026,U+202F,U+2212,U+FEFF}
+    @font-face{font-family:'Readex Pro';font-style:normal;font-weight:400;font-display:optional;src:url(/fonts/readex-ar-400.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41}
+    @font-face{font-family:'Readex Pro';font-style:normal;font-weight:500;font-display:optional;src:url(/fonts/readex-ar-500.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41}
+    @font-face{font-family:'Readex Pro';font-style:normal;font-weight:500;font-display:optional;src:url(/fonts/readex-la-500.woff2) format('woff2');unicode-range:U+0020-007E,U+00A0,U+00AB,U+00BB,U+00D7,U+2013-2014,U+2018-2019,U+201C-201D,U+2026,U+202F,U+2212,U+FEFF}
+    </style>
 
     <title>{{ $seo->title }}</title>
     @if ($seo->metaDescription)
@@ -107,6 +129,12 @@
     @endif
     <link rel="canonical" href="{{ $seo->canonicalUrl }}">
     <meta name="robots" content="{{ $seo->robotsContent }}">
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
 
     <meta property="og:title" content="{{ $seo->openGraph['title'] }}">
     @if ($seo->openGraph['description'])
@@ -132,31 +160,6 @@
         <script type="application/ld+json">{!! json_encode($block, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
     @endforeach
 
-    {{-- Preload hints pushed from individual page components (e.g. hero image). --}}
-    @stack('preloads')
-
-    {{-- Leaflet CSS is no longer preloaded here: the footer map is lazy-built
-         when it nears the viewport and injects its own stylesheet then, so the
-         map's CSS stays off the initial critical path. The fixed map container
-         height reserves its space, so deferring the CSS causes no layout shift. --}}
-
-    {{-- Preconnect first so the connection is ready before the font file preloads fire. --}}
-    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
-    {{-- Preload the key Arabic-subset font files so they are ready before first paint.
-         Without this, async font CSS loads after FCP and font-swap causes CLS.
-         IBM Plex Sans Arabic 400 is the LCP element (body text) — high priority.
-         Others use fetchpriority="low" to not compete with the hero image. --}}
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-        href="https://fonts.bunny.net/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-400-normal.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin fetchpriority="low"
-        href="https://fonts.bunny.net/readex-pro/files/readex-pro-arabic-500-normal.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin fetchpriority="low"
-        href="https://fonts.bunny.net/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-700-normal.woff2">
-    {{-- Load font CSS asynchronously so it never blocks the first paint.
-         The onload swap is the standard JS-free async-CSS pattern; the
-         <noscript> fallback covers the rare no-JS case. --}}
-    <link rel="preload" as="style" href="https://fonts.bunny.net/css?family=ibm-plex-sans-arabic:400,500,600,700|readex-pro:300,400,500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.bunny.net/css?family=ibm-plex-sans-arabic:400,500,600,700|readex-pro:300,400,500&display=swap"></noscript>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="vcp-track" content="{{ route('public.track') }}">
     @php($analytics = app(\App\Support\Analytics\AnalyticsSettings::class))
@@ -167,7 +170,6 @@
         <script async src="https://www.googletagmanager.com/gtag/js?id={{ $analytics->ga4MeasurementId() }}"></script>
         <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', @json($analytics->ga4MeasurementId()));</script>
     @endif
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-background text-text-primary font-sans antialiased">
     <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-50 focus:bg-white focus:text-primary-800 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg">

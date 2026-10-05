@@ -12,13 +12,23 @@ use Illuminate\Support\Facades\Storage;
  * phones a 480px image instead of the full upload (srcset). Uses GD only -
  * no extra dependency. Widths at or above the original are skipped: the
  * original itself is always the largest candidate.
+ *
+ * Resizing goes through imagecopyresampled() rather than imagescale(): the
+ * production GD build returns false for IMG_BICUBIC and IMG_BICUBIC_FIXED,
+ * which silently produced zero variants for the whole library.
  */
 class ResponsiveImageGenerator
 {
-    /** @var list<int> */
-    public const WIDTHS = [480, 960, 1600];
+    /**
+     * 768 exists because a 412px phone at DPR 1.75 asks for ~721px: without
+     * it the browser jumps to the next candidate up and downloads roughly
+     * 1.6x the pixels it will ever paint.
+     *
+     * @var list<int>
+     */
+    public const WIDTHS = [480, 768, 1200, 1600];
 
-    private const QUALITY = 80;
+    private const QUALITY = 76;
 
     private const DIRECTORY = 'responsive';
 
@@ -47,6 +57,8 @@ class ResponsiveImageGenerator
             return [];
         }
 
+        imagepalettetotruecolor($source);
+
         $this->delete($media);
 
         $width = imagesx($source);
@@ -58,7 +70,12 @@ class ResponsiveImageGenerator
                 continue;
             }
 
-            $resized = imagescale($source, $target, (int) round($height * $target / $width), IMG_BICUBIC);
+            $targetHeight = max(1, (int) round($height * $target / $width));
+            $resized = imagecreatetruecolor($target, $targetHeight);
+
+            imagealphablending($resized, false);
+            imagesavealpha($resized, true);
+            imagecopyresampled($resized, $source, 0, 0, 0, 0, $target, $targetHeight, $width, $height);
 
             ob_start();
             imagewebp($resized, null, self::QUALITY);

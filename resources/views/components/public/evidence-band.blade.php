@@ -31,11 +31,15 @@
 <figure {{ $attributes->merge(['class' => 'group']) }}>
     <a href="{{ $url }}" class="relative block rounded-2xl overflow-hidden ring-1 ring-ink-950/5 shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-primary-900/10" aria-label="{{ $project->title }}">
         {{-- gap over a white background paints the hairline between the
-             two photos without either image needing a border of its own. --}}
+             two photos without either image needing a border of its own.
+             Both photos sit in a 2-up grid at every breakpoint, so each one
+             is half the card's width - `sizes` must halve the card's own
+             share of the viewport or the browser picks a variant twice the
+             size it will ever paint. --}}
         <div class="grid grid-cols-2 gap-0.5 bg-white">
             <div class="relative bg-neutral-100">
                 <img
-                    src="{{ $before->url() }}" srcset="{{ $before->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    src="{{ $before->url() }}" srcset="{{ $before->srcset() }}" sizes="(min-width: 1024px) 16vw, (min-width: 640px) 24vw, 46vw"
                     alt="{{ $before->alt_text ?? 'قبل التنفيذ - '.$project->title }}"
                     loading="lazy"
                     width="{{ $before->width ?: 800 }}"
@@ -47,7 +51,7 @@
 
             <div class="relative bg-neutral-100">
                 <img
-                    src="{{ $after->url() }}" srcset="{{ $after->srcset() }}" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    src="{{ $after->url() }}" srcset="{{ $after->srcset() }}" sizes="(min-width: 1024px) 16vw, (min-width: 640px) 24vw, 46vw"
                     alt="{{ $after->alt_text ?? 'بعد التنفيذ - '.$project->title }}"
                     loading="lazy"
                     width="{{ $after->width ?: 800 }}"
