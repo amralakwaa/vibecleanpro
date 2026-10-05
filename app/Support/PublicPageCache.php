@@ -23,6 +23,9 @@ class PublicPageCache
     /** Rendered homepage content HTML (HomeController::buildContentData). */
     public const HOME_CONTENT = 'public:home:content:v1';
 
+    /** Scalar preload attributes for the homepage LCP image (hero photo). */
+    public const HOME_LCP = 'public:home:lcp:v1';
+
     /** Nav + legal + trust links derived from Page lookups in the public layout. */
     public const LAYOUT_CHROME = 'public:layout:chrome:v1';
 
@@ -38,6 +41,7 @@ class PublicPageCache
     {
         Cache::forget(self::HOME_SEO);
         Cache::forget(self::HOME_CONTENT);
+        Cache::forget(self::HOME_LCP);
     }
 
     public static function flushLayoutChrome(): void

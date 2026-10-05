@@ -15,6 +15,10 @@
     // $headerOverlay - only correct over a full-bleed dark hero image.
     $headerOverlay ??= false;
 
+    // ['url' => ..., 'srcset' => ...] for the page's LCP image, when the
+    // controller knows it. Pages that do not pass one simply preload nothing.
+    $lcpImage ??= null;
+
     // Pages whose whole purpose is a form (Quote, Contact) opt out of the
     // sticky mobile bar with :mobile-bar="false" - a fixed "طلب خدمة"
     // button under the quote form itself is a competing CTA, not help.
@@ -98,8 +102,28 @@
     {{-- PERFORMANCE-CRITICAL RESOURCES FIRST: the preload scanner discovers
          them in byte order, so every KB of HTML before these is wasted time
          on a slow connection. CSS + hero image + fonts go before SEO meta. --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Resource hints come before the inlined stylesheet below. The preload
+         scanner reads the document in byte order, so a hint parked behind
+         ~100KB of inline CSS text is found late - moving these after it cost
+         2.1s of Speed Index in testing. --}}
+    @if ($lcpImage)
+        <link rel="preload" as="image" href="{{ $lcpImage['url'] }}"
+            @if ($lcpImage['srcset'])
+                imagesrcset="{{ $lcpImage['srcset'] }}"
+                imagesizes="(min-width: 1024px) 60vw, 100vw"
+            @endif
+            fetchpriority="high">
+    @endif
     @stack('preloads')
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/plex-ar-400.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/readex-ar-500.woff2">
+
+    {{-- Linked, not inlined. Inlining removes the render-blocking request
+         (worth ~635ms on mobile) but pushes the whole document to 36KB gzipped
+         and the body HTML behind ~100KB of CSS text: measured on PageSpeed it
+         bought 0.3s of LCP and cost 2.2s of Speed Index, a net wash. The link
+         stays until there is a way to ship only the above-the-fold rules. --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- Self-hosted, subsetted fonts. Replaces fonts.bunny.net: removes a
          third-party DNS+TLS handshake, lets Cloudflare cache the files on the
          same origin, and cuts 298KB of font traffic to 165KB by dropping the
@@ -108,8 +132,6 @@
          are reached through the retained GSUB features, not those codepoints.
          font-display:optional keeps CLS at zero - a face that misses first
          paint is skipped for that load rather than swapped in late. --}}
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/plex-ar-400.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/readex-ar-500.woff2">
     <style>
     @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:400;font-display:optional;src:url(/fonts/plex-ar-400.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41}
     @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:500;font-display:optional;src:url(/fonts/plex-ar-500.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41}

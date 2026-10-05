@@ -36,21 +36,6 @@
     $quickServices = $services?->take(4) ?? collect();
 @endphp
 
-{{-- Push an early preload hint for the LCP image into <head> so the
-     browser can start fetching it in parallel with the CSS download,
-     before the image tag itself is parsed further down the DOM. --}}
-@if ($image)
-    @push('preloads')
-        <link rel="preload" as="image"
-            href="{{ $image->url() }}"
-            @if ($image->srcset())
-                imagesrcset="{{ $image->srcset() }}"
-                imagesizes="(min-width: 1024px) 60vw, 100vw"
-            @endif
-            fetchpriority="high">
-    @endpush
-@endif
-
 <section class="surface-atmos relative isolate overflow-hidden text-white">
     @if ($image)
         {{-- The photograph is the hero's second half, not its wallpaper.

@@ -60,9 +60,25 @@ class HomeController extends Controller
             fn (): string => view('partials.home-content', $this->buildContentData($profile))->render(),
         );
 
+        // The hero photo is the LCP element, so the layout preloads it from
+        // <head>. It cannot come from the @push inside the content partial:
+        // that partial is rendered to a cached string by its own render()
+        // call, which flushes the view factory's stacks before the layout
+        // ever reaches @stack. Scalars only - Media is not cacheable here.
+        $lcpImage = Cache::remember(
+            PublicPageCache::HOME_LCP,
+            PublicPageCache::TTL_SECONDS,
+            function (): ?array {
+                $hero = $this->resolveHeroImage();
+
+                return $hero ? ['url' => $hero->url(), 'srcset' => $hero->srcset()] : null;
+            },
+        );
+
         return response()->view('home', [
             'seo' => $seo,
             'businessProfile' => $profile,
+            'lcpImage' => $lcpImage,
             'homeContent' => $content,
         ], 200);
     }
@@ -73,6 +89,30 @@ class HomeController extends Controller
      *
      * @return array<string, mixed>
      */
+    /**
+     * The editor's chosen hero photo if one is set (it never claims to be the
+     * company's own work), otherwise the featured project's "after" photo,
+     * then the most recently completed published project that has one.
+     */
+    private function resolveHeroImage(): ?Media
+    {
+        if ($heroMediaId = SiteSetting::get(SiteSetting::HOME_HERO_MEDIA_ID)) {
+            if ($hero = Media::query()->find($heroMediaId)) {
+                return $hero;
+            }
+        }
+
+        $heroProject = Project::query()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->whereHas('media', fn ($query) => $query->where('project_media.stage', 'after'))
+            ->with('media')
+            ->orderByDesc('is_featured')
+            ->orderByDesc('completed_at')
+            ->first();
+
+        return $heroProject?->media->firstWhere('pivot.stage', 'after');
+    }
+
     private function buildSeoArgs(?BusinessProfile $profile): array
     {
         $title = $profile
@@ -148,20 +188,7 @@ class HomeController extends Controller
         // it never claims to be the company's own work), otherwise the
         // featured project's "after" photo, then the most recently
         // completed published project that has one. Nothing invented.
-        $heroImage = ($heroMediaId = SiteSetting::get(SiteSetting::HOME_HERO_MEDIA_ID))
-            ? Media::query()->find($heroMediaId)
-            : null;
-
-        if (! $heroImage) {
-            $heroProject = Project::query()
-                ->whereHas('page', fn ($query) => $query->published())
-                ->whereHas('media', fn ($query) => $query->where('project_media.stage', 'after'))
-                ->with('media')
-                ->orderByDesc('is_featured')
-                ->orderByDesc('completed_at')
-                ->first();
-            $heroImage = $heroProject?->media->firstWhere('pivot.stage', 'after');
-        }
+        $heroImage = $this->resolveHeroImage();
 
         // 'area' is eager-loaded because the homepage pull quote prints
         // the customer's area alongside their name when it exists.

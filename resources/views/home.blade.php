@@ -25,6 +25,6 @@
 {{-- The content body is rendered and cached separately (see HomeController).
      This shell only wraps the cached HTML in the public layout, which still
      renders per request so the <head>, CSRF token and nav stay correct. --}}
-<x-layouts.public :seo="$seo" :business-profile="$businessProfile" :header-overlay="true">
+<x-layouts.public :seo="$seo" :business-profile="$businessProfile" :lcp-image="$lcpImage" :header-overlay="true">
     {!! $homeContent !!}
 </x-layouts.public>
