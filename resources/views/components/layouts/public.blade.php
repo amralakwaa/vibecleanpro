@@ -118,11 +118,16 @@
     <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/plex-ar-400.woff2">
     <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/readex-ar-500.woff2">
 
-    {{-- Linked, not inlined. Inlining removes the render-blocking request
-         (worth ~635ms on mobile) but pushes the whole document to 36KB gzipped
-         and the body HTML behind ~100KB of CSS text: measured on PageSpeed it
-         bought 0.3s of LCP and cost 2.2s of Speed Index, a net wash. The link
-         stays until there is a way to ship only the above-the-fold rules. --}}
+    {{-- Linked, not inlined. Lighthouse calls this the page's only
+         render-blocking request and models it at ~602ms, but both ways of
+         removing it measured WORSE on PageSpeed: inlining the whole sheet
+         scored 94 (Speed Index 2.2s->4.4s) and inlining a Beasties-extracted
+         critical subset with the rest async scored 93 (FCP 2.0s->2.3s), against
+         95 for simply linking it. The file is 14.6KB over Brotli, edge-cached
+         by Cloudflare and multiplexed onto an already-open connection, so
+         fetching it costs less than growing the document by 50% and serialising
+         the CSS parse into the document parse. Do not "fix" this again without
+         measuring. --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- Self-hosted, subsetted fonts. Replaces fonts.bunny.net: removes a
          third-party DNS+TLS handshake, lets Cloudflare cache the files on the
