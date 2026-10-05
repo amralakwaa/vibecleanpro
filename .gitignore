@@ -1,4 +1,5 @@
 *.log
+/scratch_*.php
 .DS_Store
 .env
 .env.backup
