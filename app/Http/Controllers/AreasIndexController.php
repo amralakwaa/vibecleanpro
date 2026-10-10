@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AreaTier;
+use App\Enums\PageType;
 use App\Models\Area;
 use App\Models\AreaGroup;
 use App\Models\BusinessProfile;
+use App\Models\Page;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
@@ -38,12 +40,23 @@ class AreasIndexController extends Controller
 
         $grouped = $areas->groupBy('area_group_id');
 
+        // A side of Riyadh still gets no URL just for existing. It is linked
+        // only when a landing page has actually been published against that
+        // AreaGroup (served under /areas by PublicPageController::area),
+        // which happens only for a side with real districts and projects.
+        $sidePages = Page::query()
+            ->where('type', PageType::Landing)
+            ->where('pageable_type', AreaGroup::class)
+            ->published()
+            ->pluck('pageable_id');
+
         $groups = AreaGroup::query()
             ->whereIn('id', $grouped->keys()->filter())
             ->orderBy('sort_order')
             ->get()
             ->map(fn (AreaGroup $group) => [
                 'group' => $group,
+                'url' => $sidePages->contains($group->id) ? $this->urlResolver->pathFor(PageType::Area, $group->slug) : null,
                 'areas' => $grouped->get($group->id, collect()),
             ]);
 

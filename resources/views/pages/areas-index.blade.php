@@ -6,9 +6,11 @@
     of the real AreaGroups (in-page anchors), then one ruled section per
     group with the group's name and its real area count in a lead column
     and the areas as pill links beside it, each carrying the number of
-    services genuinely attached to it. Group names are headings only - an
-    AreaGroup has no page, so nothing here links to one - and the only
-    text on the page is real data: group names, area names and counts.
+    services genuinely attached to it. A group name links out only when an
+    editor has published a landing page for that side of Riyadh (the
+    controller resolves it); the rest stay plain headings, so a side gets
+    no URL just for existing - and the only text on the page is real
+    data: group names, area names and counts.
     No map, no stock photograph of a neighbourhood.
 
     The controller's grouping, ordering and published filter are unchanged.
@@ -32,9 +34,9 @@
         default => $count.' حيًا',
     };
 
-    $directory = $groups->map(fn ($entry) => ['name' => $entry['group']->name, 'areas' => $entry['areas']])->values();
+    $directory = $groups->map(fn ($entry) => ['name' => $entry['group']->name, 'url' => $entry['url'], 'areas' => $entry['areas']])->values();
     if ($ungrouped->isNotEmpty()) {
-        $directory->push(['name' => $directory->isEmpty() ? null : 'مناطق أخرى', 'areas' => $ungrouped]);
+        $directory->push(['name' => $directory->isEmpty() ? null : 'مناطق أخرى', 'url' => null, 'areas' => $ungrouped]);
     }
     $namedSections = $directory->filter(fn ($section) => $section['name'] !== null);
 @endphp
@@ -92,7 +94,13 @@
                         @if ($section['name'])
                             <div class="lg:pt-1 reveal">
                                 <p class="font-display text-sm font-medium text-primary-600 tabular-nums" aria-hidden="true">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</p>
-                                <h2 class="mt-1 font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950">{{ $section['name'] }}</h2>
+                                <h2 class="mt-1 font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950">
+                                    @if ($section['url'])
+                                        <a href="{{ $section['url'] }}" class="hover:text-primary-700 transition-colors">{{ $section['name'] }}</a>
+                                    @else
+                                        {{ $section['name'] }}
+                                    @endif
+                                </h2>
                                 <p class="mt-1 text-sm text-neutral-500">{{ $areasLabel($section['areas']->count()) }}</p>
                             </div>
                         @endif

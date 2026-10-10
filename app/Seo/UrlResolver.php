@@ -3,6 +3,7 @@
 namespace App\Seo;
 
 use App\Enums\PageType;
+use App\Models\AreaGroup;
 use App\Models\Page;
 
 /**
@@ -29,8 +30,20 @@ class UrlResolver
         'offer' => 'offers',
     ];
 
+    /**
+     * One exception to the table above, and it lives here rather than in a
+     * second URL policy elsewhere: a landing page attached to an AreaGroup
+     * is a side of Riyadh (شمال/شرق/وسط), so it belongs under /areas with
+     * the districts it groups - not at the root where a landing page
+     * normally sits. PublicPageController::area serves it and
+     * ::standalone refuses it, so it has exactly one URL.
+     */
     public function pathForPage(Page $page): string
     {
+        if ($page->type === PageType::Landing && $page->pageable_type === AreaGroup::class) {
+            return '/areas/'.$page->slug;
+        }
+
         return $this->pathFor($page->type, $page->slug);
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\PageStatus;
 use App\Enums\PageType;
 use App\Models\Area;
+use App\Models\AreaGroup;
 use App\Models\Article;
 use App\Models\BusinessProfile;
 use App\Models\Faq;
@@ -48,9 +49,24 @@ class PublicPageController extends Controller
         return $this->resolve($request, PageType::Service, $slug);
     }
 
+    /**
+     * Riyadh's sides (شمال/شرق/وسط الرياض) are not neighbourhoods: they have
+     * no Area record, so they can never be an area page. A side we genuinely
+     * cover gets a landing page attached to its AreaGroup instead, and this
+     * route serves it so it sits under /areas with the districts it groups
+     * (see UrlResolver::pathForPage, which makes that its only URL). A real
+     * area always wins the slug, so a side can never shadow a district.
+     */
     public function area(Request $request, string $slug): Response
     {
-        return $this->resolve($request, PageType::Area, $slug);
+        $page = Page::query()->where('type', PageType::Area)->where('slug', $slug)->first()
+            ?? Page::query()
+                ->where('type', PageType::Landing)
+                ->where('pageable_type', AreaGroup::class)
+                ->where('slug', $slug)
+                ->first();
+
+        return $this->respond($request, $page);
     }
 
     public function project(Request $request, string $slug): Response
@@ -70,7 +86,11 @@ class PublicPageController extends Controller
 
     public function standalone(Request $request, string $slug): Response
     {
+        // A landing page bound to an entity is served by that entity's own
+        // route (an AreaGroup side page lives under /areas), so the root
+        // catch-all must refuse it or the page would answer on two URLs.
         $page = Page::query()
+            ->whereNull('pageable_type')
             ->whereIn('type', [PageType::About, PageType::Trust, PageType::Legal, PageType::Landing])
             ->where('slug', $slug)
             ->first();
