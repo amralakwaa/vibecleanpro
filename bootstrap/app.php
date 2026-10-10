@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CaptureLeadAttribution;
+use App\Http\Middleware\RedirectWwwToApex;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Global, not web-group: the apex redirect is about the hostname,
+        // so it has to apply to every entry point the server answers on -
+        // the public site, /admin, sitemap.xml and robots.txt alike.
+        $middleware->prepend(RedirectWwwToApex::class);
+
         // Only routes/web.php (the public site) resolves through the
         // named "web" group - Filament's admin panel registers its own
         // explicit middleware stack (see AdminPanelProvider), so this
