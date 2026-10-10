@@ -25,14 +25,26 @@ return Application::configure(basePath: dirname(__DIR__))
         // never touches /admin.
         $middleware->appendToGroup('web', CaptureLeadAttribution::class);
 
-        // When the site is served through Cloudflare, the origin only ever
-        // sees Cloudflare's IPs; the real visitor IP and the original scheme
-        // arrive in X-Forwarded-*. Trust exactly Cloudflare's published ranges
-        // (never "*", because the Hostinger origin is also reachable directly)
-        // so https:// URL generation, the canonical tag and lead-attribution
-        // tracking all use the visitor's real connection, not Cloudflare's.
-        // Before Cloudflare is live these ranges simply never match, so this is
-        // a no-op until cutover. Source: https://www.cloudflare.com/ips/
+        // These ranges are currently INERT, and nothing about visitor IPs
+        // depends on them - do not assume otherwise when changing this.
+        //
+        // The origin has always sat behind Hostinger's own edge, so the
+        // immediate peer is a Hostinger address and never a Cloudflare one;
+        // these ranges have therefore never matched. The real client IP
+        // reaches PHP regardless, because that edge rewrites REMOTE_ADDR
+        // before the application sees it. Measured, not assumed: two sources
+        // hitting the throttled /e endpoint at the same moment get separate
+        // rate-limit buckets, which only happens if $request->ip() is the
+        // true client address.
+        //
+        // Cloudflare was proxying in front of that edge until Oct 2026, when
+        // the stacked pair made the edge treat the whole audience as one
+        // visitor and answer 429 site-wide; Cloudflare is now DNS-only. The
+        // list is kept so that re-enabling the orange cloud does not silently
+        // change IP resolution - but note that while Cloudflare is NOT in
+        // front, trusting its ranges is a (small) spoofing surface, because
+        // the origin is directly reachable. Drop the list if the proxy is
+        // staying off for good. Source: https://www.cloudflare.com/ips/
         $middleware->trustProxies(at: [
             '173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22',
             '103.31.4.0/22', '141.101.64.0/18', '108.162.192.0/18',
