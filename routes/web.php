@@ -37,11 +37,18 @@ Route::get('/blog/{slug}', [PublicPageController::class, 'article'])->name('publ
 Route::get('/offers', [OffersIndexController::class, 'index'])->name('public.offers.index');
 Route::get('/offers/{slug}', [PublicPageController::class, 'offer'])->name('public.offer');
 
+// The lead forms are throttled per IP, and Saudi mobile carriers put many
+// subscribers behind one carrier-grade NAT address - so a per-IP limit is
+// really a per-neighbourhood limit, and a tight one silently rejects real
+// customers during a campaign. 6/min was tight enough to do that, so the
+// limit is set where a crude flood still fails but a street of shoppers on
+// the same mobile network does not. Spam is not what this defends against:
+// StoreLeadRequest's honeypot does that, and it catches bots at any rate.
 Route::get('/contact', [ContactController::class, 'index'])->name('public.contact');
-Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:6,1')->name('public.contact.store');
+Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:30,1')->name('public.contact.store');
 
 Route::get('/quote', [QuoteController::class, 'create'])->name('public.quote');
-Route::post('/quote', [QuoteController::class, 'store'])->middleware('throttle:6,1')->name('public.quote.store');
+Route::post('/quote', [QuoteController::class, 'store'])->middleware('throttle:30,1')->name('public.quote.store');
 
 // Internal-standard document / verification page. Registered before the
 // standalone catch-all; a document code (VCP-QMS-001) resolves to the full
