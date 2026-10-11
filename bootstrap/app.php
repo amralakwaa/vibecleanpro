@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CachePublicPages;
 use App\Http\Middleware\CaptureLeadAttribution;
 use App\Http\Middleware\RedirectWwwToApex;
 use Illuminate\Foundation\Application;
@@ -24,6 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // explicit middleware stack (see AdminPanelProvider), so this
         // never touches /admin.
         $middleware->appendToGroup('web', CaptureLeadAttribution::class);
+
+        // Appended AFTER attribution and inside the session middleware, so a
+        // cached hit still records where an ad click came from and still gets
+        // its own session and XSRF cookies - see CachePublicPages.
+        $middleware->appendToGroup('web', CachePublicPages::class);
 
         // These ranges are currently INERT, and nothing about visitor IPs
         // depends on them - do not assume otherwise when changing this.

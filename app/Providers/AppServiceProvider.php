@@ -7,6 +7,7 @@ use App\Models\AreaGroup;
 use App\Models\Article;
 use App\Models\ArticleCategory;
 use App\Models\BusinessProfile;
+use App\Models\ContentBlock;
 use App\Models\Faq;
 use App\Models\InternalLink;
 use App\Models\Lead;
@@ -15,6 +16,7 @@ use App\Models\Offer;
 use App\Models\Page;
 use App\Models\Project;
 use App\Models\Redirect;
+use App\Models\SeoMetadata;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\SiteSetting;
@@ -40,6 +42,7 @@ use App\Policies\TeamMemberPolicy;
 use App\Policies\TestimonialPolicy;
 use App\Policies\UserPolicy;
 use App\Seo\DuplicateSimilarityAnalyzer;
+use App\Support\Cache\PageCache;
 use App\Support\Content\PublishedLinkFilter;
 use App\Support\Mail\MailSettings;
 use App\Support\PublicPageCache;
@@ -83,6 +86,29 @@ class AppServiceProvider extends ServiceProvider
      *
      * @var list<class-string<Model>>
      */
+    /**
+     * Every model whose change can alter rendered public HTML. Wider than
+     * the homepage set: it adds the page body itself (blocks, FAQs, SEO
+     * metadata) because the full-page cache stores the finished markup.
+     */
+    private const PAGE_CACHE_DEPENDENCIES = [
+        Service::class,
+        ServiceCategory::class,
+        Area::class,
+        Project::class,
+        Testimonial::class,
+        Offer::class,
+        Faq::class,
+        SiteSetting::class,
+        Media::class,
+        BusinessProfile::class,
+        Page::class,
+        ContentBlock::class,
+        SeoMetadata::class,
+        Article::class,
+        TeamMember::class,
+    ];
+
     private const HOME_CACHE_DEPENDENCIES = [
         Service::class,
         ServiceCategory::class,
@@ -128,6 +154,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'service' => Service::class,
             'area' => Area::class,
+            'area_group' => AreaGroup::class,
             'project' => Project::class,
             'article' => Article::class,
             'offer' => Offer::class,
@@ -157,6 +184,18 @@ class AppServiceProvider extends ServiceProvider
         }
         Page::saved(static fn () => PublicPageCache::flushLayoutChrome());
         Page::deleted(static fn () => PublicPageCache::flushLayoutChrome());
+
+        // The full-page cache holds rendered HTML, so ANY content change can
+        // invalidate ANY page - a service renamed in the admin shows up in
+        // area pages, project pages and the footer alike. Rather than track
+        // that graph, the whole cache is retired on a content save; it is a
+        // single counter bump (see PageCache), editor saves are rare, and a
+        // visitor seeing last-minute-old content is the one failure this is
+        // not allowed to have.
+        foreach (self::PAGE_CACHE_DEPENDENCIES as $model) {
+            $model::saved(static fn () => app(PageCache::class)->flush());
+            $model::deleted(static fn () => app(PageCache::class)->flush());
+        }
 
         // Mail credentials entered in the panel are applied here, unless the
         // environment already defines the transport (which always wins).

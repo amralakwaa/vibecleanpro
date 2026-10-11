@@ -57,6 +57,10 @@ class IntegrationSettings
 
     public const BACKUP_LAST_RESTORE_TEST = 'backup_last_restore_test_at';
 
+    public const PAGE_CACHE_ENABLED = 'page_cache_enabled';
+
+    public const PAGE_CACHE_TTL_MINUTES = 'page_cache_ttl_minutes';
+
     public const SEARCH_CONSOLE_ENABLED = 'google_site_verification_enabled';
 
     /**
@@ -94,7 +98,7 @@ class IntegrationSettings
 
     public function has(string $key): bool
     {
-        return SiteSetting::query()->where('key', $key)->exists();
+        return SiteSetting::exists($key);
     }
 
     public function set(string $key, mixed $value, string $type = 'string'): void

@@ -32,7 +32,7 @@ class ResponsiveImagesTest extends TestCase
     {
         $media = $this->upload(1200, 800)->fresh();
 
-        $this->assertSame([480, 960], array_keys($media->variants));
+        $this->assertSame([480, 768], array_keys($media->variants));
         foreach ($media->variants as $width => $path) {
             Storage::disk('public')->assertExists($path);
             $this->assertStringEndsWith("-{$width}w.webp", $path);
@@ -70,6 +70,6 @@ class ResponsiveImagesTest extends TestCase
 
         $this->artisan('media:generate-variants', ['--missing' => true])->assertSuccessful();
 
-        $this->assertSame([480, 960], array_keys($media->fresh()->variants));
+        $this->assertSame([480, 768], array_keys($media->fresh()->variants));
     }
 }

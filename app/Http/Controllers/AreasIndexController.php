@@ -46,7 +46,7 @@ class AreasIndexController extends Controller
         // which happens only for a side with real districts and projects.
         $sidePages = Page::query()
             ->where('type', PageType::Landing)
-            ->where('pageable_type', AreaGroup::class)
+            ->where('pageable_type', (new AreaGroup)->getMorphClass())
             ->published()
             ->pluck('pageable_id');
 

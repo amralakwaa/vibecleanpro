@@ -6,6 +6,8 @@ use App\Listeners\LogSecurityEvent;
 use App\Support\Analytics\AnalyticsSettings;
 use App\Support\Backup\BackupSettings;
 use App\Support\Backup\ExternalBackupDestinationRegistry;
+use App\Support\Cache\PageCache;
+use App\Support\Cache\PageCacheSettings;
 use App\Support\Mail\MailSettings;
 use App\Support\Readiness\LaunchReadiness;
 use App\Support\Settings\IntegrationSettings;
@@ -91,6 +93,8 @@ class ManageIntegrations extends Page
             IntegrationSettings::SEARCH_CONSOLE_ENABLED => $settings->bool(IntegrationSettings::SEARCH_CONSOLE_ENABLED),
             AnalyticsSettings::GA4_ID_KEY => $settings->string(AnalyticsSettings::GA4_ID_KEY),
             AnalyticsSettings::GA4_ENABLED_KEY => $settings->bool(AnalyticsSettings::GA4_ENABLED_KEY),
+            IntegrationSettings::PAGE_CACHE_ENABLED => app(PageCacheSettings::class)->enabled(),
+            IntegrationSettings::PAGE_CACHE_TTL_MINUTES => app(PageCacheSettings::class)->ttlMinutes(),
         ]);
     }
 
@@ -159,6 +163,30 @@ class ManageIntegrations extends Page
                                 ->columns(2),
                         ]),
 
+                        Tab::make('الأداء')->icon('heroicon-o-bolt')->schema([
+                            Section::make('التخزين المؤقت للصفحات')
+                                ->description('يخزّن الصفحة الجاهزة، فتُخدَم الزيارة التالية دون لمس قاعدة البيانات. هذا ما يسمح للموقع باستيعاب حملة إعلانية: الطلب غير المخزَّن يحجز اتصالاً بقاعدة البيانات طوال توليد الصفحة، وعدد الاتصالات المتاح للحساب محدود.')
+                                ->schema([
+                                    Toggle::make(IntegrationSettings::PAGE_CACHE_ENABLED)
+                                        ->label('تفعيل التخزين المؤقت للصفحات')
+                                        ->helperText('صفحات الزوّار فقط. من يدخل لوحة التحكم يرى الصفحة الحيّة دائمًا، وصفحات النماذج (طلب عرض السعر والتواصل) لا تُخزَّن إطلاقًا.')
+                                        ->columnSpanFull(),
+                                    TextInput::make(IntegrationSettings::PAGE_CACHE_TTL_MINUTES)
+                                        ->label('مدة الصلاحية (بالدقائق)')
+                                        ->numeric()
+                                        ->minValue(PageCacheSettings::MIN_TTL_MINUTES)
+                                        ->maxValue(PageCacheSettings::MAX_TTL_MINUTES)
+                                        ->default(PageCacheSettings::DEFAULT_TTL_MINUTES)
+                                        ->helperText('سقف أعلى للقِدَم فقط. أي تعديل محتوى في اللوحة يمسح الذاكرة فورًا، فلا تنتظر انتهاء المدة لترى تغييرك.'),
+                                ])
+                                ->columns(2),
+                            Section::make('مسح يدوي')
+                                ->description('نادرًا ما تحتاجه: المسح تلقائي عند أي حفظ للمحتوى. استخدمه إن تغيّر شيء من خارج اللوحة.')
+                                ->schema([
+                                    Text::make(fn (): string => 'إصدار الذاكرة الحالي: '.app(PageCache::class)->version()),
+                                ]),
+                        ]),
+
                         Tab::make('Google والتحليلات')->icon('heroicon-o-chart-bar')->schema([
                             Section::make('Google Search Console')
                                 ->schema([
@@ -196,6 +224,7 @@ class ManageIntegrations extends Page
                         Actions::make([
                             Action::make('save')->label('حفظ')->submit('save')->keyBindings(['mod+s']),
                             $this->testMailAction(),
+                            $this->clearPageCacheAction(),
                         ]),
                     ]),
             ])
@@ -245,6 +274,27 @@ class ManageIntegrations extends Page
         }
     }
 
+    /**
+     * Retires every cached page at once by bumping the cache version, so
+     * clearing stays a single write no matter how many pages are stored.
+     */
+    public function clearPageCacheAction(): Action
+    {
+        return Action::make('clearPageCache')
+            ->label('مسح ذاكرة الصفحات')
+            ->icon(Heroicon::OutlinedTrash)
+            ->color('gray')
+            ->action(function (): void {
+                app(PageCache::class)->flush();
+
+                LogSecurityEvent::record('settings.page_cache_cleared', Auth::user());
+
+                Notification::make()->success()->title('مُسحت ذاكرة الصفحات')->body('ستُبنى كل صفحة من جديد عند أول زيارة لها.')->send();
+
+                $this->mount();
+            });
+    }
+
     public function save(): void
     {
         $data = $this->form->getState();
@@ -270,6 +320,8 @@ class ManageIntegrations extends Page
             IntegrationSettings::SEARCH_CONSOLE_ENABLED => 'bool',
             AnalyticsSettings::GA4_ID_KEY => 'string',
             AnalyticsSettings::GA4_ENABLED_KEY => 'bool',
+            IntegrationSettings::PAGE_CACHE_ENABLED => 'bool',
+            IntegrationSettings::PAGE_CACHE_TTL_MINUTES => 'int',
         ];
 
         foreach ($plain as $key => $type) {

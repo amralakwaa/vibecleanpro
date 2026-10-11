@@ -187,7 +187,7 @@ class QuoteTest extends TestCase
 
     public function test_the_submit_route_is_rate_limited(): void
     {
-        for ($i = 0; $i < 6; $i++) {
+        for ($i = 0; $i < 30; $i++) {
             $this->post('/quote', ['name' => "user-{$i}", 'phone' => '0500000000'])->assertRedirect();
         }
 

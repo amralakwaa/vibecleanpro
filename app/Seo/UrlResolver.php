@@ -40,7 +40,7 @@ class UrlResolver
      */
     public function pathForPage(Page $page): string
     {
-        if ($page->type === PageType::Landing && $page->pageable_type === AreaGroup::class) {
+        if ($page->type === PageType::Landing && $page->pageable_type === (new AreaGroup)->getMorphClass()) {
             return '/areas/'.$page->slug;
         }
 

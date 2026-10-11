@@ -62,7 +62,7 @@ class PublicPageController extends Controller
         $page = Page::query()->where('type', PageType::Area)->where('slug', $slug)->first()
             ?? Page::query()
                 ->where('type', PageType::Landing)
-                ->where('pageable_type', AreaGroup::class)
+                ->where('pageable_type', (new AreaGroup)->getMorphClass())
                 ->where('slug', $slug)
                 ->first();
 

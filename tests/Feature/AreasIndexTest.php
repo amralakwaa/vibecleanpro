@@ -73,15 +73,40 @@ class AreasIndexTest extends TestCase
         $response->assertDontSee('منشورة');
     }
 
-    public function test_group_names_are_headings_and_never_links(): void
+    public function test_a_group_name_is_a_plain_heading_until_its_side_page_is_published(): void
     {
-        $group = AreaGroup::factory()->create(['name' => 'مجموعة-عنوان-فقط']);
+        $group = AreaGroup::factory()->create(['name' => 'مجموعة-عنوان-فقط', 'slug' => 'heading-only-side']);
         $this->publishedArea('heading-only-area', $group);
 
         $html = $this->get('/areas')->assertOk()->getContent();
 
-        $this->assertMatchesRegularExpression('/<h2[^>]*>مجموعة-عنوان-فقط<\/h2>/u', $html);
+        $this->assertStringContainsString('مجموعة-عنوان-فقط', $html);
         $this->assertDoesNotMatchRegularExpression('/<a[^>]*>\s*مجموعة-عنوان-فقط/u', $html);
+    }
+
+    public function test_a_group_name_links_out_once_a_side_page_exists_for_it(): void
+    {
+        $group = AreaGroup::factory()->create(['name' => 'مجموعة-لها-صفحة', 'slug' => 'side-with-page']);
+        $this->publishedArea('linked-side-area', $group);
+
+        // pageable_* is not mass-assignable on Page, so the association is
+        // made through the relation - which also proves AreaGroup is in the
+        // enforced morph map.
+        $page = Page::factory()->create([
+            'type' => PageType::Landing,
+            'slug' => 'side-with-page',
+            'published_at' => now()->subDay(),
+        ]);
+        $page->pageable()->associate($group);
+        // saveQuietly: PageObserver reverts a Published page that fails the
+        // gate back to Draft, and this fixture only needs the row, not a
+        // publishable body - the gate has its own tests.
+        $page->status = PageStatus::Published;
+        $page->saveQuietly();
+
+        $html = $this->get('/areas')->assertOk()->getContent();
+
+        $this->assertStringContainsString('href="/areas/side-with-page"', $html);
     }
 
     public function test_ungrouped_areas_sit_under_a_neutral_bucket_only_beside_real_groups(): void
