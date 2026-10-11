@@ -10,6 +10,7 @@ use App\Support\Cache\PageCache;
 use App\Support\Cache\PageCacheSettings;
 use App\Support\Mail\MailSettings;
 use App\Support\Readiness\LaunchReadiness;
+use App\Support\Scheduling\BackgroundHeartbeat;
 use App\Support\Settings\IntegrationSettings;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -95,6 +96,7 @@ class ManageIntegrations extends Page
             AnalyticsSettings::GA4_ENABLED_KEY => $settings->bool(AnalyticsSettings::GA4_ENABLED_KEY),
             IntegrationSettings::PAGE_CACHE_ENABLED => app(PageCacheSettings::class)->enabled(),
             IntegrationSettings::PAGE_CACHE_TTL_MINUTES => app(PageCacheSettings::class)->ttlMinutes(),
+            IntegrationSettings::BACKGROUND_WORK_ENABLED => app(BackgroundHeartbeat::class)->enabled(),
         ]);
     }
 
@@ -180,6 +182,15 @@ class ManageIntegrations extends Page
                                         ->helperText('سقف أعلى للقِدَم فقط. أي تعديل محتوى في اللوحة يمسح الذاكرة فورًا، فلا تنتظر انتهاء المدة لترى تغييرك.'),
                                 ])
                                 ->columns(2),
+                            Section::make('تشغيل المهام الخلفية')
+                                ->description('هذه الاستضافة لا تتيح جدولة cron إلا من لوحة الاستضافة نفسها، فتقوم زيارات الموقع مقامها: مرة كل دقيقة على الأكثر، وبعد تسليم الصفحة للزائر، تُشغَّل المهام المستحقّة في عملية منفصلة لا ينتظرها أحد.')
+                                ->schema([
+                                    Toggle::make(IntegrationSettings::BACKGROUND_WORK_ENABLED)
+                                        ->label('تشغيل المهام المجدولة وطابور المهام')
+                                        ->helperText('يشمل النسخ الاحتياطي اليومي، وحذف البيانات الشخصية الدوري، وتوليد النسخ المصغّرة لأي صورة جديدة ترفعها. إن أضفت cron حقيقيًا في لوحة الاستضافة لاحقًا، أطفئ هذا.')
+                                        ->columnSpanFull(),
+                                ]),
+
                             Section::make('مسح يدوي')
                                 ->description('نادرًا ما تحتاجه: المسح تلقائي عند أي حفظ للمحتوى. استخدمه إن تغيّر شيء من خارج اللوحة.')
                                 ->schema([
@@ -322,6 +333,7 @@ class ManageIntegrations extends Page
             AnalyticsSettings::GA4_ENABLED_KEY => 'bool',
             IntegrationSettings::PAGE_CACHE_ENABLED => 'bool',
             IntegrationSettings::PAGE_CACHE_TTL_MINUTES => 'int',
+            IntegrationSettings::BACKGROUND_WORK_ENABLED => 'bool',
         ];
 
         foreach ($plain as $key => $type) {

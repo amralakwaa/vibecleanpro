@@ -3,6 +3,7 @@
 use App\Http\Middleware\CachePublicPages;
 use App\Http\Middleware\CaptureLeadAttribution;
 use App\Http\Middleware\RedirectWwwToApex;
+use App\Http\Middleware\TriggerBackgroundWork;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -30,6 +31,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // cached hit still records where an ad click came from and still gets
         // its own session and XSRF cookies - see CachePublicPages.
         $middleware->appendToGroup('web', CachePublicPages::class);
+
+        // This account has no crontab, so visitor traffic drives the
+        // scheduler and queue instead - from terminate(), after the
+        // response is sent. See BackgroundHeartbeat.
+        $middleware->appendToGroup('web', TriggerBackgroundWork::class);
 
         // These ranges are currently INERT, and nothing about visitor IPs
         // depends on them - do not assume otherwise when changing this.

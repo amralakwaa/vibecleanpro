@@ -57,6 +57,8 @@ class IntegrationSettings
 
     public const BACKUP_LAST_RESTORE_TEST = 'backup_last_restore_test_at';
 
+    public const BACKGROUND_WORK_ENABLED = 'background_work_enabled';
+
     public const PAGE_CACHE_ENABLED = 'page_cache_enabled';
 
     public const PAGE_CACHE_TTL_MINUTES = 'page_cache_ttl_minutes';

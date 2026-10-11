@@ -17,6 +17,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | CLI PHP Binary
+    |--------------------------------------------------------------------------
+    |
+    | Used by App\Support\Scheduling\BackgroundHeartbeat to start the
+    | scheduler and queue worker as detached processes. PHP_BINARY under a
+    | web SAPI can point at the web interpreter rather than a CLI one, so
+    | hosts where the two differ set SCHEDULER_PHP_BINARY explicitly.
+    |
+    */
+
+    'php_binary' => env('SCHEDULER_PHP_BINARY', PHP_BINARY),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
