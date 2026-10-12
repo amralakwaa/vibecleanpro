@@ -16,6 +16,7 @@ use App\Models\Service;
 use App\Models\TeamMember;
 use App\Seo\RedirectResolver;
 use App\Seo\SeoHeadResolver;
+use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\SeoHeadData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect as RedirectFacade;
@@ -42,6 +43,7 @@ class PublicPageController extends Controller
     public function __construct(
         private readonly RedirectResolver $redirects,
         private readonly SeoHeadResolver $seoHead,
+        private readonly UrlResolver $urlResolver,
     ) {}
 
     public function service(Request $request, string $slug): Response
@@ -364,11 +366,30 @@ class PublicPageController extends Controller
             ->limit(3)
             ->get();
 
+        // The side of Riyadh this district belongs to, as a URL, but only
+        // when a landing page has actually been published against that
+        // AreaGroup - the same rule AreasIndexController applies, so a side
+        // never gets a link just for existing.
+        //
+        // Without this the three published side pages had exactly one
+        // inbound link each, from /areas, while forty district pages named
+        // their side in plain text. The hub every spoke already names is
+        // the natural link, so no new copy is invented to carry it.
+        $areaGroupUrl = $area->area_group_id && Page::query()
+            ->where('type', PageType::Landing)
+            ->where('pageable_type', (new AreaGroup)->getMorphClass())
+            ->where('pageable_id', $area->area_group_id)
+            ->published()
+            ->exists()
+            ? $this->urlResolver->pathFor(PageType::Area, $area->group->slug)
+            : null;
+
         return response()->view('pages.area', [
             'page' => $page,
             'seo' => $seo,
             'businessProfile' => $businessProfile,
             'area' => $area,
+            'areaGroupUrl' => $areaGroupUrl,
             'faqs' => $faqs,
             'services' => $services,
             'localProjects' => $localProjects,

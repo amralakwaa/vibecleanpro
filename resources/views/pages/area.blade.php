@@ -55,7 +55,19 @@
 
     // Real context only: the group this area belongs to and the city the
     // business states for itself. Nothing is written when neither exists.
-    $context = collect([$area->group?->name, $businessProfile?->city])->filter()->unique()->values();
+    //
+    // The group name is a LINK when its side page is published (the
+    // controller resolves $areaGroupUrl, and only then). That link is the
+    // page's tie back to its hub: before it, the three published side
+    // pages had one inbound link each while forty district pages named
+    // their side in plain text. The city stays plain - there is no city
+    // page to point at and a dead-end link would be worse than none.
+    //
+    // The link is styled with utilities the SHIPPED stylesheet already
+    // carries (underline / underline-offset-4 / font-medium). Reaching for
+    // decoration-primary-300 or hover:text-primary-700 would render an
+    // unstyled link until the whole public CSS bundle is rebuilt and
+    // redeployed, which is a far larger change than one anchor is worth.
 
     // Services grouped by their category (uncategorised last), so a longer
     // list scans by kind instead of as one flat column.
@@ -95,9 +107,18 @@
                 <p class="inline-flex items-center gap-2 rounded-full bg-white/80 ring-1 ring-primary-200/70 px-3.5 py-1.5 text-sm font-medium text-primary-700 backdrop-blur-sm">
                     <x-public.icon name="map-pin" class="w-4 h-4" />
                     منطقة تغطية
-                    @if ($context->isNotEmpty())
+                    @if ($area->group?->name)
                         <span class="text-primary-400" aria-hidden="true">·</span>
-                        <span class="text-ink-950/80">{{ $context->implode(' · ') }}</span>
+                        @if ($areaGroupUrl ?? null)
+                            <a href="{{ $areaGroupUrl }}" class="text-ink-950/80 font-medium underline underline-offset-4 transition-colors">{{ $area->group->name }}</a>
+                        @else
+                            <span class="text-ink-950/80">{{ $area->group->name }}</span>
+                        @endif
+                    @endif
+
+                    @if ($businessProfile?->city && $businessProfile->city !== $area->group?->name)
+                        <span class="text-primary-400" aria-hidden="true">·</span>
+                        <span class="text-ink-950/80">{{ $businessProfile->city }}</span>
                     @endif
                 </p>
 
