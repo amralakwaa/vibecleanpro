@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 
 class RecentlyUpdatedPagesWidget extends TableWidget
 {
+    protected static ?int $sort = 3;
+
     protected static ?string $heading = 'أحدث المحتوى المعدَّل';
 
     protected int|string|array $columnSpan = 1;

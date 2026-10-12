@@ -20,9 +20,9 @@ use Illuminate\Support\Facades\Auth;
  */
 class LaunchReadinessWidget extends BaseWidget
 {
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 8;
 
-    protected ?string $heading = 'جاهزية الإطلاق — ما ينتظر قرارًا';
+    protected ?string $heading = 'بانتظار قرارك';
 
     public static function canView(): bool
     {

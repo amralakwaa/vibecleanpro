@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 
 class LatestLeadsWidget extends TableWidget
 {
+    protected static ?int $sort = 2;
+
     protected static ?string $heading = 'أحدث العملاء المحتملين';
 
     protected int|string|array $columnSpan = 1;
@@ -35,10 +37,16 @@ class LatestLeadsWidget extends TableWidget
                     LeadStatus::Quoted => 'عرض سعر',
                     LeadStatus::Won => 'فوز',
                     LeadStatus::Lost => 'خسارة',
-                    LeadStatus::Spam => 'Spam',
+                    LeadStatus::Spam => 'مزعج',
                 }),
                 TextColumn::make('created_at')->label('التاريخ')->since(),
             ])
+            // Without this the widget falls back to Filament's generic
+            // "لا يوجد leads" - the raw table name, in English, inside an
+            // otherwise Arabic panel. On a brand new site an empty table
+            // here is also the normal state, not a fault, so it says so.
+            ->emptyStateHeading('لا توجد طلبات بعد')
+            ->emptyStateDescription('كل طلب يصل من نموذج الموقع أو من زر واتساب سيظهر هنا فور وصوله.')
             ->paginated(false);
     }
 }

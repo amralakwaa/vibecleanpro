@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 
 class SeoDashboardWidget extends BaseWidget
 {
+    protected static ?int $sort = 7;
+
     public static function canView(): bool
     {
         return (bool) Auth::user()?->can('view_seo_dashboard');

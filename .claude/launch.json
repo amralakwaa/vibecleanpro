@@ -18,7 +18,10 @@
         "serve",
         "--port=8000"
       ],
-      "port": 8000
+      "port": 8000,
+      "env": {
+        "PHP_CLI_SERVER_WORKERS": "8"
+      }
     }
   ]
 }

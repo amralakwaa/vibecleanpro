@@ -1,5 +1,20 @@
 <x-filament-widgets::widget>
-    <x-filament::section heading="جاهزية التشغيل" description="حالة كل تكامل كما هي الآن، وسبب الحالة، وأين تُضبط.">
+    {{-- Collapsed by default, and the collapse state is remembered per
+     viewer. This panel is a full operational audit - every
+     integration, backup, mail and Google setting with its reason -
+     which is exactly right to read when something is being set up
+     and pure noise every other day. Open it added about three
+     thousand pixels to the dashboard and pushed the charts and the
+     requests table below anything anyone scrolls to. --}}
+    <x-filament::section
+        heading="جاهزية التشغيل"
+        description="حالة كل تكامل كما هي الآن، وسبب الحالة، وأين تُضبط."
+        icon="heroicon-o-server-stack"
+        collapsible
+        collapsed
+        persist-collapsed
+        collapse-id="system-readiness"
+    >
         <div class="grid gap-6 lg:grid-cols-2">
             @foreach ($groups as $groupTitle => $items)
                 <div>

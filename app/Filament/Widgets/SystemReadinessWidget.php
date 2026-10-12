@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class SystemReadinessWidget extends Widget
 {
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 9;
 
     protected int|string|array $columnSpan = 'full';
 

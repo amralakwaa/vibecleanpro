@@ -18,6 +18,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -74,6 +75,25 @@ class InternalLinkResource extends Resource
                 IconColumn::make('is_active')->label('مفعّل')->boolean(),
             ])
             ->defaultSort('sort_order')
+            // 209 links across 115 pages is past the point where scrolling
+            // works. These two answer the questions the SEO screens raise
+            // elsewhere in the panel: "what does this page link out to" and,
+            // the one behind every orphan-page warning, "what links TO this
+            // page". `context` is deliberately not a filter - it is free
+            // text and almost every value is unique, so it would render a
+            // hundred-item dropdown that filters one row each.
+            ->filters([
+                SelectFilter::make('from_page_id')
+                    ->label('الروابط الخارجة من')
+                    ->relationship('fromPage', 'title')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('to_page_id')
+                    ->label('الروابط الواردة إلى')
+                    ->relationship('toPage', 'title')
+                    ->searchable()
+                    ->preload(),
+            ])
             ->recordActions([
                 EditAction::make(),
             ])

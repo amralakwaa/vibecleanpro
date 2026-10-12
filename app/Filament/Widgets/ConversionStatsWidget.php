@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ConversionStatsWidget extends BaseWidget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 1;
 
     protected ?string $heading = 'التحويلات — آخر 30 يومًا';
 
