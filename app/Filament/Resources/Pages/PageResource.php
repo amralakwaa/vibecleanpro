@@ -224,9 +224,18 @@ class PageResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('title')->label('العنوان')->searchable()->weight('medium'),
+                // Title and slug share one column, as Sidra's tables do: the
+                // slug is what the title BECOMES, so reading them stacked is
+                // one glance instead of two, and it buys back a column on a
+                // table that already carries seven.
+                TextColumn::make('title')
+                    ->label('العنوان')
+                    ->searchable()
+                    ->weight('medium')
+                    ->description(fn (Page $record): string => '/'.$record->slug)
+                    ->wrap(),
                 TextColumn::make('type')->label('النوع')->badge()->formatStateUsing(fn (PageType $state) => self::typeLabel($state)),
-                TextColumn::make('slug')->label('الرابط')->searchable()->copyable(),
+                TextColumn::make('slug')->label('الرابط')->searchable()->copyable()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')->label('الحالة')->badge()
                     ->formatStateUsing(fn (PageStatus $state) => match ($state) {
                         PageStatus::Draft => 'مسودة',
@@ -259,8 +268,11 @@ class PageResource extends Resource
                     ]),
                 TrashedFilter::make(),
             ])
+            // Icon-only row actions, as Sidra's tables use: the label on a
+            // repeated row action is read once and then never again, while
+            // the column it costs is paid on every row.
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->iconButton(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
