@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Auth\AccountSecurity;
 use App\Filament\Pages\Auth\Login;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
+use Filament\Enums\ThemeMode;
 use Filament\FontProviders\BunnyFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -40,7 +41,13 @@ class AdminPanelProvider extends PanelProvider
             // Arabic carries both scripts and is what the public site uses.
             // Bunny is the same host the public layout already preconnects
             // to, so the panel adds no new third party.
-            ->font('IBM Plex Sans Arabic', provider: BunnyFontProvider::class)
+            ->font('Tajawal', provider: BunnyFontProvider::class)
+            // Sidra's panel is dark, and matching it is the point of this
+            // theme. Dark is the DEFAULT rather than forced, so the mode
+            // toggle in the user menu still works for anyone who wants the
+            // light scheme; Filament's own dark palette is overridden by
+            // the Sidra surface ramp in the theme file.
+            ->defaultThemeMode(ThemeMode::Dark)
             ->brandLogo(fn (): View => view('filament.brand'))
             ->brandLogoHeight('2rem')
             ->favicon(asset('favicon-32x32.png'))
@@ -57,7 +64,7 @@ class AdminPanelProvider extends PanelProvider
             // `gray` is restated as the cool ramp so Filament's generated
             // component shades match the panel theme's surfaces.
             ->colors([
-                'primary' => Color::hex('#2563eb'),
+                'primary' => Color::hex('#2878b4'),
                 'danger' => Color::hex('#dc2626'),
                 'success' => Color::hex('#047857'),
                 'warning' => Color::hex('#d97706'),

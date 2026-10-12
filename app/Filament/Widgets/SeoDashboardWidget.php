@@ -8,15 +8,22 @@ use App\Seo\SeoDashboardService;
 use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Facades\Auth;
 
 class SeoDashboardWidget extends BaseWidget
 {
-    protected static ?int $sort = 7;
-
+    /**
+     * Superseded by SeoHealthWidget, which presents the same figures the way
+     * Sidra's dashboard does - four shares with bars and a verdict, then the
+     * zero-is-healthy counts as a compact strip - instead of as eleven
+     * full-size stat cards, which were most of this dashboard's length.
+     *
+     * The class is kept rather than deleted: SeoDashboardService and its
+     * tests are shared with SeoHealthWidget, and returning true here is the
+     * one-line way back if the card layout is ever wanted again.
+     */
     public static function canView(): bool
     {
-        return (bool) Auth::user()?->can('view_seo_dashboard');
+        return false;
     }
 
     protected function getStats(): array

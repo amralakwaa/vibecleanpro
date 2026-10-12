@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class LaunchReadinessWidget extends BaseWidget
 {
-    protected static ?int $sort = 8;
+    protected static ?int $sort = 9;
 
     protected ?string $heading = 'بانتظار قرارك';
 

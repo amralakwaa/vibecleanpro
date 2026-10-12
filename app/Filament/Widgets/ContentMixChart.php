@@ -24,7 +24,7 @@ class ContentMixChart extends ChartWidget
 
     protected ?string $description = 'ما يتكوّن منه الموقع فعلاً — الصفحات المنشورة فقط.';
 
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 6;
 
     protected int|string|array $columnSpan = 1;
 
@@ -49,15 +49,23 @@ class ContentMixChart extends ChartWidget
             ->pluck('total', 'type')
             ->sortDesc();
 
-        // Brand navy stepping down to brand blue: one family, read as one
-        // whole rather than as a bag of unrelated hues.
-        $palette = ['#071228', '#16233d', '#243350', '#2563eb', '#3b7cf6', '#609afa', '#93bbfd', '#bfd7fe', '#dbe8fe'];
+        // Sidra's brand blue stepping into its gold, read as one family
+        // rather than as a bag of unrelated hues.
+        //
+        // Every step is LIGHTER than the card it sits on. The first version
+        // of this palette started at the brand navy #071228 and was built
+        // for the old light theme; against Sidra's #161b22 card the dark end
+        // of it disappeared entirely and the doughnut read as three slices
+        // instead of eight.
+        $palette = ['#4d96c8', '#2878b4', '#7eb4da', '#1b4f72', '#d4ac0d', '#e8c132', '#f5d87a', '#b1bac4', '#6e7681'];
 
         return [
             'datasets' => [[
                 'data' => $counts->values()->all(),
                 'backgroundColor' => array_slice($palette, 0, $counts->count()),
-                'borderColor' => '#ffffff',
+                // The card colour, not white: the gap between slices has to
+                // read as the card showing through, not as a bright ring.
+                'borderColor' => '#161b22',
                 'borderWidth' => 2,
             ]],
             // PageResource::typeLabel is the one place these are named in
@@ -83,7 +91,7 @@ class ContentMixChart extends ChartWidget
             'plugins' => [
                 'legend' => [
                     'position' => 'right',
-                    'labels' => ['boxWidth' => 12, 'padding' => 14, 'font' => ['size' => 12]],
+                    'labels' => ['boxWidth' => 12, 'padding' => 14, 'font' => ['size' => 12], 'color' => '#b1bac4'],
                 ],
             ],
         ];

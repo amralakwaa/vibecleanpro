@@ -4,116 +4,241 @@
 @source '../../../../resources/views/filament/**/*';
 
 /*
- * Vibe Clean Pro - Admin panel theme.
+ * Vibe Clean Pro - Admin panel theme, built to match Sidra CMS.
  *
- * Scope: the /admin panel only. It deliberately mirrors the PUBLIC design
- * system in resources/css/app.css rather than importing it: the public
- * file is a Tailwind theme for a marketing site (hero rhythms, prose
- * counters, section patterns) and pulling it in here would ship hundreds
- * of rules the panel never uses. What is shared is the *decisions* - the
- * typeface, the navy, the blue, the cool neutral ramp - restated below as
- * the small subset the panel actually needs.
+ * The owner runs Sidra as well and asked for this panel to look like its
+ * dashboard, so the values below are lifted from sidra-cms's own
+ * resources/css/admin.css rather than approximated by eye: the surface
+ * ramp, the brand and gold ramps, the 12px card radius, the 44px icon
+ * chip, the 6px progress track. Sidra is a hand-written PHP CMS with no
+ * Laravel or Filament in it, so none of its code could be carried across -
+ * only the design, re-expressed through Filament's own class hooks.
  *
- * Three fixes drive this file, in order of how much they change:
+ * Two things are deliberately NOT copied:
  *
- *   1. THE FONT. Filament ships Inter and loads only its LATIN subset
- *      (inter-latin-wght-normal.woff2). Inter-latin contains no Arabic
- *      glyphs at all, and this panel's interface is ~100% Arabic, so
- *      every Arabic character was falling through to whatever the OS
- *      picked - Segoe UI on Windows, Geeza Pro on macOS, Noto on
- *      Android. The panel literally looked different per device and the
- *      downloaded font file was near-useless. The panel now uses IBM
- *      Plex Sans Arabic, the same single typeface as the public site,
- *      which carries both Arabic and Latin glyphs so the brand name and
- *      the interface share one voice.
+ *   - Eastern Arabic numerals (٢٣٢). Sidra renders its figures that way.
+ *     Filament formats numbers through PHP's locale layer, and the tables,
+ *     filters and form inputs all stay Western, so converting the dashboard
+ *     alone would leave one screen disagreeing with every other screen in
+ *     the same panel. One numeral system, everywhere.
  *
- *   2. LETTER-SPACING. Filament applies `letter-spacing: -0.025em`
- *      (tracking-tight) to headings. Negative tracking is a LATIN
- *      typographic device; Arabic is a cursive script whose letters
- *      connect along a baseline, so tightening it crowds the joins and
- *      reads as subtly broken rather than as subtly tighter. Tracking is
- *      reset to normal panel-wide below.
+ *   - Sidra's mobile bottom navigation bar. Filament already ships a
+ *     slide-over sidebar for narrow screens, wired to this panel's
+ *     navigation groups and permissions; a parallel bottom bar would be a
+ *     second navigation to keep in sync with the first forever.
  *
- *   3. THE IDENTITY. The panel was amber on white with no logo, sharing
- *      nothing with the navy-and-blue public site. The sidebar is now the
- *      brand's `ink` navy - the same dark surface the site uses for its
- *      CTA band and footer - which is what makes the panel read as part
- *      of the product instead of as a generic admin template.
- *
- * Colors (primary/danger/success/warning) are registered in PHP, in
- * AdminPanelProvider::panel(), because Filament generates its component
- * shade maps from there; this file must not re-declare them or the two
- * sources would drift.
+ * The public site keeps its own light design system in resources/css/
+ * app.css. Nothing here touches it.
  */
 
 @theme {
-    /* One typeface for Arabic and Latin, matching the public site. The
-       weights are requested in AdminPanelProvider via BunnyFontProvider,
-       the same host the public layout already preconnects to. */
-    --font-sans: 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    /* Tajawal, as Sidra uses, requested through BunnyFontProvider in
+       AdminPanelProvider - the same host the public layout already
+       preconnects to, so the panel adds no new third party. Plex Arabic
+       stays as the fallback because it is already on the public site. */
+    --font-sans: 'Tajawal', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
-    /* Filament's neutral ramp. Swapped from its default warm-ish gray to
-       the public system's cool gray so panel surfaces sit in the same
-       light as the site. gray-50 is the site's canvas value exactly. */
-    --color-gray-50: #f9fafb;
-    --color-gray-100: #f3f4f6;
-    --color-gray-200: #e5e7eb;
-    --color-gray-300: #d1d5db;
-    --color-gray-400: #9ca3af;
-    --color-gray-500: #6b7280;
-    --color-gray-600: #4b5563;
-    --color-gray-700: #374151;
-    --color-gray-800: #1f2937;
-    --color-gray-900: #111827;
-    --color-gray-950: #030712;
+    /* Sidra's surface ramp - GitHub's dark values, which is why the panel
+       reads as a tool rather than as a tinted-dark marketing page: the
+       steps sit close together and almost neutral, so borders stay legible
+       without ever glowing.
+       Both ramps run the same way - lightest at 50, darkest at 950 - so
+       Sidra's surface-N maps straight onto Filament's gray-N. */
+    --color-gray-50: #e6edf3;
+    --color-gray-100: #cdd9e5;
+    --color-gray-200: #b1bac4;
+    --color-gray-300: #8b949e;
+    --color-gray-400: #6e7681;
+    --color-gray-500: #484f58;
+    --color-gray-600: #30363d;
+    --color-gray-700: #21262d;
+    --color-gray-800: #161b22;
+    --color-gray-900: #0d1117;
+    --color-gray-950: #080c10;
 
-    /* `ink` - Deep Navy, the identity color. Not a Filament color slot;
-       declared here purely so the sidebar rules below can name it instead
-       of repeating hex values. */
-    --color-ink-200: #c8d2e0;
-    --color-ink-300: #9faec5;
-    --color-ink-400: #6d80a0;
-    --color-ink-700: #243350;
-    --color-ink-800: #16233d;
-    --color-ink-900: #0c1830;
-    --color-ink-950: #071228;
+    /* Sidra's brand blue and its gold accent, named here so the rules below
+       can reach for them instead of repeating hex values. */
+    --color-sidra-brand-400: #4d96c8;
+    --color-sidra-brand-500: #2878b4;
+    --color-sidra-brand-600: #1b4f72;
+    --color-sidra-gold-400: #e8c132;
+    --color-sidra-gold-500: #d4ac0d;
+
+    --radius-card: 12px;
 }
 
 /*
- * Arabic typography corrections.
- *
- * Both rules target the script, not a component, so they survive Filament
- * upgrades that rename or restructure classes.
+ * Arabic typography. Both rules target the script rather than a component,
+ * so they survive Filament upgrades that rename or restructure classes.
  */
 @layer base {
-    /* See note 2 in the file header. `normal` rather than `0` so any
-       intentional future tracking can still be set locally. */
+    /* Filament sets letter-spacing: -0.025em on headings. Negative tracking
+       is a Latin device; Arabic is cursive and joins along a baseline, so
+       tightening it crowds the joins and reads as subtly broken. */
     :where(.fi-body) * {
         letter-spacing: normal;
     }
 
-    /* Arabic has no x-height shoulder to rest on and carries marks above
-       and below the baseline, so it needs more leading than Latin at the
-       same size to stay comfortable. Filament's default body leading is
-       tuned for Inter; this is the Arabic equivalent. */
+    /* Arabic carries marks above and below the baseline and has no x-height
+       shoulder to rest on, so it needs more leading than Latin at the same
+       size. Filament's default is tuned for Inter. */
     .fi-body {
         line-height: 1.7;
+        background-color: var(--color-gray-950);
     }
 
-    /* Headings keep a tighter leading - the extra space above is what
-       separates them, not internal leading. */
     .fi-body :is(h1, h2, h3, h4, h5, h6) {
         line-height: 1.45;
     }
 }
 
 /*
- * The brand lockup (resources/views/filament/brand.blade.php).
- *
- * Filament sizes the slot with brandLogoHeight; these rules only lay the
- * mark and the wordmark out beside each other and keep the wordmark
- * legible on the navy sidebar.
+ * The shell: sidebar, topbar, canvas.
+ */
+@layer components {
+    /* Sidra's rail is a vertical gradient from surface-900 to -950, which
+       keeps the logo end a shade lighter and gives the column a direction
+       without needing a visible divider. */
+    .fi-sidebar,
+    .fi-sidebar .fi-sidebar-header {
+        background: linear-gradient(180deg, var(--color-gray-900) 0%, var(--color-gray-950) 100%);
+        border-color: var(--color-gray-700);
+    }
+
+    .fi-sidebar .fi-sidebar-group-label {
+        color: var(--color-gray-400);
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .fi-sidebar .fi-sidebar-item-btn,
+    .fi-sidebar .fi-sidebar-item-btn .fi-sidebar-item-label {
+        color: var(--color-gray-200);
+    }
+
+    .fi-sidebar .fi-sidebar-item-btn .fi-sidebar-item-icon {
+        color: var(--color-gray-400);
+    }
+
+    .fi-sidebar .fi-sidebar-item-btn:hover,
+    .fi-sidebar .fi-sidebar-item-btn:hover .fi-sidebar-item-label {
+        background-color: var(--color-gray-800);
+        color: var(--color-gray-50);
+    }
+
+    /* The current page. Sidra marks it with a tinted fill and an edge rule
+       rather than a solid block, which stays quiet against a dark rail
+       while still being the only lit row on it. */
+    .fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
+    .fi-sidebar .fi-sidebar-item.fi-active > a.fi-sidebar-item-btn {
+        background-color: rgba(43, 134, 197, 0.18);
+        box-shadow: inset 2px 0 0 var(--color-sidra-brand-400);
+        font-weight: 600;
+    }
+
+    .fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
+    .fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label,
+    .fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-icon {
+        color: var(--color-gray-50);
+    }
+
+    .fi-sidebar .fi-sidebar-item-grouped-border-part {
+        border-color: var(--color-gray-700);
+    }
+
+    .fi-topbar > nav {
+        background-color: var(--color-gray-900);
+        border-bottom: 1px solid var(--color-gray-700);
+    }
+}
+
+/*
+ * Cards and the stat strip.
+ */
+@layer components {
+    .fi-section,
+    .fi-wi-stats-overview-stat {
+        background-color: var(--color-gray-800);
+        border: 1px solid var(--color-gray-700);
+        border-radius: var(--radius-card);
+        box-shadow:
+            0 1px 3px rgba(0, 0, 0, 0.4),
+            0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .fi-wi-stats-overview-stat {
+        position: relative;
+        overflow: hidden;
+        transition: border-color 250ms ease, transform 250ms ease;
+    }
+
+    /* Sidra's 2px top accent, brand blue running into the gold. */
+    .fi-wi-stats-overview-stat::before {
+        content: '';
+        position: absolute;
+        inset-block-start: 0;
+        inset-inline: 0;
+        height: 2px;
+        background: linear-gradient(to left, var(--color-sidra-brand-500), var(--color-sidra-gold-500));
+    }
+
+    .fi-wi-stats-overview-stat:hover {
+        border-color: var(--color-gray-600);
+        transform: translateY(-1px);
+    }
+
+    /* Sidra sets its figures at 1.75rem weight 800, with tabular numerals
+       so a column of them lines up digit for digit. */
+    .fi-wi-stats-overview-stat-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: var(--color-gray-50);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .fi-wi-stats-overview-stat-label {
+        color: var(--color-gray-300);
+        font-weight: 500;
+    }
+
+    .fi-wi-stats-overview-stat-description {
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    /* The icon chip - Sidra's 10px radius over a 6% white wash, which is
+       what anchors each of its cards; Filament renders a bare icon there.
+       Sidra stacks a 44px chip ABOVE the figure, while Filament sets the
+       icon inline beside the label, so the chip is sized down to 34px to
+       sit on a text line instead. Matching the 44px stack would mean
+       re-ordering the card's internals, and a 44px square beside a short
+       Arabic label reads as a misplaced button. */
+    .fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-label-ctn .fi-icon {
+        box-sizing: content-box;
+        width: 1.125rem;
+        height: 1.125rem;
+        padding: 0.5rem;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.06);
+        color: var(--color-gray-100);
+    }
+
+    .fi-section-header-heading {
+        color: var(--color-gray-50);
+        font-weight: 600;
+    }
+
+    .fi-section-header-description {
+        color: var(--color-gray-300);
+        line-height: 1.6;
+    }
+}
+
+/*
+ * The brand lockup, which Filament renders in the topbar whenever the panel
+ * has a sidebar, and inside the sidebar header only when it does not.
  */
 @layer components {
     .fi-brand-lockup {
@@ -127,227 +252,46 @@
         width: auto;
     }
 
-    /* Filament renders this lockup in the light TOPBAR whenever the panel
-       has a sidebar, and inside the sidebar header only when it does not,
-       so the wordmark has to stay readable on both. Dark by default for
-       the topbar and the login card; white only when it really is on the
-       navy rail. Hard-coding white hid it on every light background. */
     .fi-brand-name {
         font-size: 1.0625rem;
-        font-weight: 600;
+        font-weight: 700;
         white-space: nowrap;
-        color: var(--color-gray-950);
-    }
-
-    .fi-sidebar .fi-brand-name {
-        color: var(--color-white);
+        color: var(--color-gray-50);
     }
 }
 
 /*
- * The navy sidebar.
- *
- * This is the single change that makes the panel read as Vibe Clean Pro
- * rather than as a stock Filament install: `ink` navy is the same dark
- * surface the public site uses for its CTA band and footer.
- *
- * It is applied in BOTH schemes on purpose. In Filament's dark mode the
- * sidebar would otherwise become near-black and lose the brand entirely,
- * and a navigation rail that changes identity with the theme toggle is
- * exactly the kind of inconsistency this pass is meant to remove. The
- * rules are written against `.fi-sidebar` without a `:where()` wrapper so
- * they outrank Filament's own utility-level defaults in both schemes.
+ * Sidra's SEO status bars, used by SeoHealthWidget. The track is 6px at a
+ * 3px radius; each fill is a gradient so even a short bar shows two tones
+ * instead of reading as a flat block.
  */
 @layer components {
-    .fi-sidebar,
-    .fi-sidebar .fi-sidebar-header {
-        background-color: var(--color-ink-950);
-        border-color: var(--color-ink-800);
-    }
-
-    /* Group headings: quiet, but still readable on navy. Filament's
-       default gray-500 drops to roughly 3:1 here, below AA for the small
-       size these render at. ink-400 clears it. */
-    .fi-sidebar .fi-sidebar-group-label {
-        color: var(--color-ink-400);
-    }
-
-    /* Resting navigation items. ink-200 rather than white keeps the
-       ACTIVE item the brightest thing in the rail, which is what makes
-       "where am I" readable at a glance.
-
-       The label span carries its own color from Filament, so colouring
-       only the button leaves the text at gray-700 on navy - measured at
-       1.81:1, far below the 4.5:1 AA floor and effectively unreadable.
-       Both have to be named. */
-    .fi-sidebar .fi-sidebar-item-btn,
-    .fi-sidebar .fi-sidebar-item-btn .fi-sidebar-item-label {
-        color: var(--color-ink-200);
-    }
-
-    .fi-sidebar .fi-sidebar-item-btn .fi-sidebar-item-icon {
-        color: var(--color-ink-400);
-    }
-
-    .fi-sidebar .fi-sidebar-item-btn:hover,
-    .fi-sidebar .fi-sidebar-item-btn:hover .fi-sidebar-item-label {
-        background-color: var(--color-ink-900);
-        color: var(--color-white);
-    }
-
-    .fi-sidebar .fi-sidebar-item-btn:hover .fi-sidebar-item-icon {
-        color: var(--color-ink-200);
-    }
-
-    /* The current page. Solid brand blue - the same fill the public site
-       reserves for its converting action - so the rail has exactly one
-       bright element and it is always the answer to "where am I". */
-    .fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
-    .fi-sidebar .fi-sidebar-item.fi-active > a.fi-sidebar-item-btn {
-        background-color: var(--color-primary-600);
-        font-weight: 500;
-    }
-
-    .fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
-    .fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label {
-        color: var(--color-white);
-    }
-
-    .fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-icon {
-        color: var(--color-white);
-    }
-
-    /* The hairline that ties grouped children to their parent. */
-    .fi-sidebar .fi-sidebar-item-grouped-border-part {
-        border-color: var(--color-ink-700);
-    }
-
-    /* The collapse / sidebar-toggle control sitting in the navy header. */
-    .fi-sidebar .fi-sidebar-header .fi-icon-btn {
-        color: var(--color-ink-300);
-    }
-
-    .fi-sidebar .fi-sidebar-header .fi-icon-btn:hover {
-        background-color: var(--color-ink-900);
-        color: var(--color-white);
-    }
-}
-
-/*
- * Primary buttons.
- *
- * Filament v5 styles them as a tinted surface: shade-400 background with
- * shade-950 text (`fi-bg-color-400 fi-text-color-950`). That is a valid
- * default, but it is not this brand's language - resources/css/app.css
- * reserves a SOLID blue fill to mean "this is the action", and a tinted
- * primary button is barely louder than a secondary one, so on a page like
- * the page list "إضافة صفحة" stops reading as the obvious next step.
- *
- * Scoped deliberately to `.fi-btn.fi-color-primary` rather than to the
- * color tokens: the 400/950 pair is shared with badges, tabs and other
- * tinted components where it is the right answer, and retuning the tokens
- * would silently restyle all of them.
- */
-@layer components {
-    .fi-btn.fi-color-primary:not(.fi-link):not(.fi-btn-outlined) {
-        background-color: var(--color-primary-600);
-        color: var(--color-white);
-    }
-
-    .fi-btn.fi-color-primary:not(.fi-link):not(.fi-btn-outlined):hover {
-        background-color: var(--color-primary-700);
-        color: var(--color-white);
-    }
-}
-
-/*
- * ============================================================
- *  Surfaces: cards, stats and charts
- * ============================================================
- *
- * Filament's default card is a white box with a hairline ring, repeated at
- * one weight for every kind of content. That is what makes a dense admin
- * page read as "classic": with no depth and no grouping, twelve panels are
- * one undifferentiated wall and the eye has nowhere to land first.
- *
- * The treatment below is deliberately restrained - a soft shadow, a larger
- * radius, and a lift on hover for the panels that are interactive. It is
- * not a style for its own sake: the shadow is what separates a card from
- * the page, and the page background is slightly cool so white reads as
- * raised rather than as more background.
- */
-@layer components {
-    .fi-section,
-    .fi-wi-stats-overview-stat {
-        border-radius: 1rem;
-        box-shadow:
-            0 1px 2px rgba(7, 18, 40, 0.04),
-            0 4px 16px -6px rgba(7, 18, 40, 0.08);
-    }
-
-    /* The stat cards are the first thing read, so they get the clearest
-       separation and a subtle top accent in the brand blue. */
-    .fi-wi-stats-overview-stat {
-        position: relative;
+    .vcp-meter {
+        height: 6px;
+        border-radius: 3px;
+        background-color: var(--color-gray-700);
         overflow: hidden;
-        transition: box-shadow 150ms ease, transform 150ms ease;
     }
 
-    .fi-wi-stats-overview-stat::before {
-        content: '';
-        position: absolute;
-        inset-block-start: 0;
-        inset-inline: 0;
-        height: 3px;
-        background: linear-gradient(to left, var(--color-primary-600), var(--color-primary-400));
+    .vcp-meter-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 800ms ease;
     }
 
-    .fi-wi-stats-overview-stat:hover {
-        box-shadow:
-            0 1px 2px rgba(7, 18, 40, 0.05),
-            0 12px 28px -10px rgba(7, 18, 40, 0.16);
-        transform: translateY(-1px);
+    .vcp-meter-fill-good {
+        background: linear-gradient(90deg, #2ea043, #3fb950);
     }
 
-    /* The number itself. Filament sizes this for a four-digit figure; these
-       are mostly one or two digits and are the point of the card, so they
-       get the weight a headline deserves. */
-    .fi-wi-stats-overview-stat-value {
-        font-size: 2rem;
-        line-height: 1.15;
-        font-weight: 600;
-        letter-spacing: normal;
+    .vcp-meter-fill-warn {
+        background: linear-gradient(90deg, #d29922, #e3b341);
     }
 
-    .fi-wi-stats-overview-stat-label {
-        font-weight: 500;
+    .vcp-meter-fill-bad {
+        background: linear-gradient(90deg, #da3633, #f85149);
     }
 
-    /* Section headings carry the brand navy rather than Filament's neutral
-       gray, which is what ties a page of panels back to the sidebar. */
-    .fi-section-header-heading {
-        color: var(--color-ink-900);
-        font-weight: 600;
-    }
-
-    .fi-section-header-description {
-        line-height: 1.6;
-    }
-}
-
-/*
- * Dark mode. The shadows above are tuned for a light canvas; on a dark one
- * they are invisible and the cards flatten back into the page, so the
- * separation is carried by a border instead.
- */
-@layer components {
-    .fi-theme-dark .fi-section,
-    .fi-theme-dark .fi-wi-stats-overview-stat {
-        box-shadow: none;
-        border: 1px solid var(--color-gray-800);
-    }
-
-    .fi-theme-dark .fi-section-header-heading {
-        color: var(--color-gray-100);
+    .vcp-meter-fill-brand {
+        background: linear-gradient(90deg, var(--color-sidra-brand-600), var(--color-sidra-brand-400));
     }
 }

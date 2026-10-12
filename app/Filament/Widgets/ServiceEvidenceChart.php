@@ -26,7 +26,7 @@ class ServiceEvidenceChart extends ChartWidget
 
     protected ?string $description = 'الخدمات بلا مشاريع في الأعلى — صفحتها بلا دليل مصوَّر، وهي أسرع ما يمكن تحسينه.';
 
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 5;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -87,12 +87,12 @@ class ServiceEvidenceChart extends ChartWidget
                     'beginAtZero' => true,
                     // Project counts are whole things; a "2.5 projects"
                     // gridline is noise.
-                    'ticks' => ['precision' => 0, 'stepSize' => 1],
-                    'grid' => ['color' => 'rgba(17, 24, 39, 0.06)'],
+                    'ticks' => ['precision' => 0, 'stepSize' => 1, 'color' => '#8b949e'],
+                    'grid' => ['color' => 'rgba(255, 255, 255, 0.06)'],
                 ],
                 'y' => [
                     'grid' => ['display' => false],
-                    'ticks' => ['autoSkip' => false, 'font' => ['size' => 12]],
+                    'ticks' => ['autoSkip' => false, 'font' => ['size' => 12], 'color' => '#b1bac4'],
                 ],
             ],
         ];

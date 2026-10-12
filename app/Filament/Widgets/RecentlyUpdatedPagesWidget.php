@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class RecentlyUpdatedPagesWidget extends TableWidget
 {
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 4;
 
     protected static ?string $heading = 'أحدث المحتوى المعدَّل';
 
