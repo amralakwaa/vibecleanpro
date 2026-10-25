@@ -9,7 +9,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 
-return Application::configure(basePath: dirname(__DIR__))
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
@@ -73,3 +73,24 @@ return Application::configure(basePath: dirname(__DIR__))
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
     })->create();
+
+/*
+ * On this host the web root is `public_html`, not Laravel's own `public`.
+ *
+ * Both directories existed, each with its own copy of build/manifest.json:
+ * the browser fetched assets out of public_html while public_path() resolved
+ * to public, so Vite could not find an entry that had only been deployed to
+ * the served directory and the whole panel answered 500. Pointing the
+ * framework at the directory the server actually serves makes one of them
+ * the single source of truth and removes that class of bug for good.
+ *
+ * Guarded by a directory check so local development, CI and any host that
+ * uses the conventional `public` are untouched.
+ */
+$publicHtml = dirname(__DIR__).'/public_html';
+
+if (is_dir($publicHtml)) {
+    $app->usePublicPath($publicHtml);
+}
+
+return $app;
