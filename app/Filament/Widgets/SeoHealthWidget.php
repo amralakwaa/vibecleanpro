@@ -61,19 +61,21 @@ class SeoHealthWidget extends Widget
         $mediaTotal = Media::query()->count();
         $mediaDescribed = Media::query()->whereNotNull('alt_text')->where('alt_text', '!=', '')->count();
 
-        // A title at or under 60 characters is the share Google is most
-        // likely to print whole; past that it truncates with an ellipsis and
-        // the tail of the title is never read.
+        // Google truncates SERP titles at ~600px, not at a fixed character count.
+        // Arabic glyphs are narrower than Latin ones; at the SERP rendering size
+        // an Arabic title fits roughly 80 characters before hitting that limit —
+        // vs. the often-quoted 60 chars, which is a Latin-derived heuristic that
+        // understates how much text Arabic can carry.
         $titlesThatFit = $published
             ->filter(fn (Page $page) => filled($page->seoMetadata?->meta_title)
-                && mb_strlen($page->seoMetadata->meta_title) <= 60)
+                && mb_strlen($page->seoMetadata->meta_title) <= 80)
             ->count();
 
         return [
             'rows' => [
                 $this->row('الصفحات مع Meta Title', $withTitle, $total, 'كل صفحة منشورة لها عنوان مخصص في نتائج البحث.'),
                 $this->row('الصفحات مع Meta Description', $withDescription, $total, 'الوصف هو السطر الذي يقرؤه الباحث تحت العنوان.'),
-                $this->row('عناوين لا يقطعها Google', $titlesThatFit, $total, 'العنوان فوق 60 حرفاً يُقطع بـ«…» فلا يُقرأ آخره.'),
+                $this->row('عناوين لا يقطعها Google', $titlesThatFit, $total, 'قوقل يقطع عند ~600 بكسل؛ للعربية هذا يعادل نحو 80 حرفاً.'),
                 $this->row('الصور مع Alt Text', $mediaDescribed, $mediaTotal, 'الصورة بلا نص بديل لا يقرؤها قارئ الشاشة ولا يفهرسها بحث الصور.'),
             ],
             'diagnostics' => $this->diagnostics(),
