@@ -18,6 +18,34 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Environment Mail Transport (raw)
+    |--------------------------------------------------------------------------
+    |
+    | MAIL_HOST and MAIL_MAILER exactly as the environment sets them, with no
+    | fallback, so MailSettings::environmentControlsMail() can tell "the
+    | environment named a transport" from "nobody set one".
+    |
+    | Neither can be read from its usual place. The smtp mailer below
+    | defaults MAIL_HOST to 127.0.0.1, which would make an unset host look
+    | configured; and 'default' above is the EFFECTIVE mailer, which
+    | MailSettings::applyRuntimeConfiguration() overwrites when the panel
+    | supplies SMTP - reading that would make the panel's own settings look
+    | like the environment's, and the check would latch true after the first
+    | request that applied them.
+    |
+    | It lives in config rather than being read through env() directly
+    | because env() returns null once config:cache has run, which would flip
+    | that check silently in production - the one environment where it
+    | matters.
+    |
+    */
+
+    'environment_host' => env('MAIL_HOST'),
+
+    'environment_mailer' => env('MAIL_MAILER'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Mailer Configurations
     |--------------------------------------------------------------------------
     |

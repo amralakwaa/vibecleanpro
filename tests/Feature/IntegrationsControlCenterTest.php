@@ -142,36 +142,24 @@ class IntegrationsControlCenterTest extends TestCase
     public function test_the_environment_transport_wins_over_the_panel(): void
     {
         $this->configureSmtp();
-        config(['mail.default' => 'log']);
 
-        // Captured so the exact previous state is restored: PHPUnit sets
-        // MAIL_MAILER=array for the whole suite, and deleting it would
-        // leave every later test without a test transport.
-        $original = ['MAIL_HOST' => getenv('MAIL_HOST'), 'MAIL_MAILER' => getenv('MAIL_MAILER')];
-        putenv('MAIL_HOST=env-host.test.invalid');
-        putenv('MAIL_MAILER=smtp');
-        $_ENV['MAIL_HOST'] = 'env-host.test.invalid';
-        $_ENV['MAIL_MAILER'] = 'smtp';
+        // The environment's transport is expressed through config, not
+        // through getenv(): env() returns null once config:cache has run, so
+        // reading it directly would make this check answer false on every
+        // production request. mail.environment_host is MAIL_HOST with no
+        // fallback - see config/mail.php. Setting config here is therefore
+        // the same thing the real environment does, and needs no putenv()
+        // juggling or restore block.
+        config([
+            'mail.environment_host' => 'env-host.test.invalid',
+            'mail.environment_mailer' => 'smtp',
+            'mail.default' => 'log',
+        ]);
 
-        try {
-            app(MailSettings::class)->applyRuntimeConfiguration();
+        app(MailSettings::class)->applyRuntimeConfiguration();
 
-            $this->assertSame('log', config('mail.default'), 'panel settings never override the environment');
-            $this->assertSame('not_configured', app(MailSettings::class)->readiness()['state']);
-        } finally {
-            // Restored even on failure: putenv() outlives the test.
-            foreach ($original as $key => $value) {
-                if ($value === false) {
-                    putenv($key);
-                    unset($_ENV[$key]);
-
-                    continue;
-                }
-
-                putenv("{$key}={$value}");
-                $_ENV[$key] = $value;
-            }
-        }
+        $this->assertSame('log', config('mail.default'), 'panel settings never override the environment');
+        $this->assertSame('not_configured', app(MailSettings::class)->readiness()['state']);
     }
 
     public function test_the_test_message_goes_to_the_stored_inbox_without_leaving_the_machine(): void

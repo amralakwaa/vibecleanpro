@@ -31,7 +31,17 @@ class MailSettings
      */
     public function environmentControlsMail(): bool
     {
-        return filled(env('MAIL_HOST')) && ! in_array((string) env('MAIL_MAILER'), ['', 'log', 'array'], true);
+        // Read through config, never env(): env() returns null once
+        // config:cache has run, which would make this silently answer false
+        // on every production request.
+        //
+        // Both keys are the RAW environment values (see config/mail.php).
+        // Not mail.default - that is the effective mailer, which
+        // applyRuntimeConfiguration() below overwrites with the panel's own
+        // SMTP settings, so this check would latch true once the panel had
+        // applied them and then refuse to let the panel configure anything.
+        return filled(config('mail.environment_host'))
+            && ! in_array((string) config('mail.environment_mailer'), ['', 'log', 'array'], true);
     }
 
     public function isEnabled(): bool
