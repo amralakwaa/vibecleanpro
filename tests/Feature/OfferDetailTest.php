@@ -76,7 +76,10 @@ class OfferDetailTest extends TestCase
         $offer->services()->attach($servicePage->pageable);
         $offer->areas()->attach($areaPage->pageable);
 
-        $content = $this->get('/offers/scoped-offer')->assertOk()->getContent();
+        // stripFooter: the footer lists every published service site-wide, so
+        // "this offer does not include that service" is a statement about the
+        // offer's own body.
+        $content = $this->stripFooter($this->get('/offers/scoped-offer')->assertOk()->getContent());
 
         $this->assertStringContainsString('يشمل العرض', $content);
         $this->assertStringContainsString('href="'.route('public.service', 'offer-svc').'"', $content);

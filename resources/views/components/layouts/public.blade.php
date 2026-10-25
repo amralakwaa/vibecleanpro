@@ -33,7 +33,7 @@
     // the resolved URL maps are cached and flushed on Page save/delete (see
     // PublicPageCache + AppServiceProvider) - ~9 queries per request become
     // one cache read.
-    [$aboutUrl, $legalLinks, $trustLinks] = \Illuminate\Support\Facades\Cache::remember(
+    [$aboutUrl, $legalLinks, $trustLinks, $footerServices] = \Illuminate\Support\Facades\Cache::remember(
         \App\Support\PublicPageCache::LAYOUT_CHROME,
         \App\Support\PublicPageCache::TTL_SECONDS,
         function () {
@@ -62,13 +62,23 @@
                 ->mapWithKeys(fn ($page) => [$legalPageTitles[$page->slug]['title'] => $urlResolver->urlForPage($page)])
                 ->all();
 
-            // Trust & policy hub links for the footer column.
+            // The footer links to the TRUST HUB, not to each policy leaf
+            // under it.
+            //
+            // It used to carry five: trust, complaints, cancellation,
+            // service-scope and licenses-compliance. Repeated on 122 pages
+            // those five accumulated more internal links than anything the
+            // company actually sells - Search Console measured /service-scope
+            // at 75 inbound and /terms at 70, against 11 for /pricing and 13
+            // for the best service page. The site's own structure was telling
+            // Google its policies were its most important pages.
+            //
+            // /trust already exists as a hub and links to every policy under
+            // it, so nothing becomes unreachable - the path is one click
+            // longer for a visitor who wants the cancellation policy, and the
+            // weight those four were absorbing goes to the services instead.
             $trustPolicyTitles = [
-                'trust'               => ['title' => 'مركز الثقة', 'type' => \App\Enums\PageType::Trust],
-                'complaints'          => ['title' => 'الشكاوى والتعويضات', 'type' => \App\Enums\PageType::Legal],
-                'cancellation'        => ['title' => 'الإلغاء والمدفوعات', 'type' => \App\Enums\PageType::Legal],
-                'service-scope'       => ['title' => 'نطاق الخدمة', 'type' => \App\Enums\PageType::Legal],
-                'licenses-compliance' => ['title' => 'الامتثال والتراخيص', 'type' => \App\Enums\PageType::Legal],
+                'trust' => ['title' => 'مركز الثقة والسياسات', 'type' => \App\Enums\PageType::Trust],
             ];
             $trustLinks = collect($trustPolicyTitles)
                 ->map(fn (array $meta, string $slug) => \App\Models\Page::query()
@@ -77,7 +87,22 @@
                 ->mapWithKeys(fn ($page) => [$trustPolicyTitles[$page->slug]['title'] => $urlResolver->urlForPage($page)])
                 ->all();
 
-            return [$aboutUrl, $legalLinks, $trustLinks];
+            // The services the footer lists, which is what a cleaning
+            // company's footer should carry and what the policy column was
+            // displacing. Featured first, then by the editor's own order, so
+            // the choice stays in the panel rather than hard-coded here.
+            // Only services whose page is actually published are linked.
+            $footerServices = \App\Models\Service::query()
+                ->whereHas('page', fn ($query) => $query->published())
+                ->with('page')
+                ->orderByDesc('is_featured')
+                ->orderBy('sort_order')
+                ->limit(8)
+                ->get()
+                ->mapWithKeys(fn ($service) => [$service->name => $urlResolver->urlForPage($service->page)])
+                ->all();
+
+            return [$aboutUrl, $legalLinks, $trustLinks, $footerServices];
         }
     );
 
@@ -218,7 +243,7 @@
         {{ $slot }}
     </main>
 
-    <x-public.footer :business-profile="$businessProfile" :nav-items="$navItems" :legal-links="$legalLinks" :trust-links="$trustLinks" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
+    <x-public.footer :business-profile="$businessProfile" :nav-items="$navItems" :legal-links="$legalLinks" :trust-links="$trustLinks" :service-links="$footerServices" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />
 
     @if ($mobileBar)
         <x-public.mobile-cta-bar :quote-url="route('public.quote')" :whatsapp-url="$whatsappUrl" :phone-url="$phoneUrl" />

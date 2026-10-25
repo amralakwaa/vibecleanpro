@@ -82,11 +82,14 @@ class AreaDetailTest extends TestCase
         $unpublishedService = Service::factory()->create(['name' => 'خدمة بلا صفحة منشورة']);
         $area->services()->attach($unpublishedService, ['is_active' => true]);
 
-        $response = $this->get('/areas/area-with-services');
+        // Asserted against the page BODY: the site footer lists every
+        // published service on every page as global navigation, so only the
+        // body can answer "is this service offered in this district".
+        $body = $this->stripFooter($this->get('/areas/area-with-services')->assertOk()->getContent());
 
-        $response->assertSee('تنظيف السجاد المحلي');
-        $response->assertDontSee('خدمة موقوفة محليًا');
-        $response->assertDontSee('خدمة بلا صفحة منشورة');
+        $this->assertStringContainsString('تنظيف السجاد المحلي', $body);
+        $this->assertStringNotContainsString('خدمة موقوفة محليًا', $body);
+        $this->assertStringNotContainsString('خدمة بلا صفحة منشورة', $body);
     }
 
     public function test_projects_section_is_hidden_when_the_area_has_no_projects(): void

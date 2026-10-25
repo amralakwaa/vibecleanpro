@@ -8,6 +8,7 @@
     'navItems' => [],
     'legalLinks' => [],
     'trustLinks' => [],
+    'serviceLinks' => [],
     'whatsappUrl' => null,
     'phoneUrl' => null,
 ])
@@ -202,11 +203,15 @@
                 </div>
             @endif
 
-            @if ($trustLinks)
+            {{-- Services, where the five-link policy column used to be. A
+                 cleaning company's footer should name what it cleans; the
+                 policies are one click away through the trust hub in the
+                 legal row below. --}}
+            @if ($serviceLinks)
                 <div>
-                    <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">الثقة والسياسات</p>
+                    <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">خدماتنا</p>
                     <ul class="space-y-2.5 text-sm">
-                        @foreach ($trustLinks as $label => $url)
+                        @foreach ($serviceLinks as $label => $url)
                             <li>
                                 <a href="{{ $url }}" class="inline-flex items-center gap-1.5 text-ink-200 hover:text-white hover:translate-x-[-2px] transition-all duration-150">
                                     <span class="w-1 h-1 rounded-full bg-primary-500/60 shrink-0"></span>
@@ -274,9 +279,15 @@
                 @endif
             </p>
 
-            @if ($legalLinks)
-                <ul class="flex items-center gap-4">
+            {{-- The trust hub joins the legal row, so every policy is still
+                 reachable from every page - through one link instead of the
+                 five that used to sit in their own column. --}}
+            @if ($legalLinks || $trustLinks)
+                <ul class="flex flex-wrap items-center gap-x-4 gap-y-2">
                     @foreach ($legalLinks as $label => $url)
+                        <li><a href="{{ $url }}" class="hover:text-white transition-colors">{{ $label }}</a></li>
+                    @endforeach
+                    @foreach ($trustLinks as $label => $url)
                         <li><a href="{{ $url }}" class="hover:text-white transition-colors">{{ $label }}</a></li>
                     @endforeach
                 </ul>

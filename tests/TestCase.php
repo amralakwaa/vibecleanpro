@@ -23,4 +23,19 @@ abstract class TestCase extends BaseTestCase
     {
         return preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html);
     }
+
+    /**
+     * Drop the site footer, for assertions about what a page's own RELATIONS
+     * put on it.
+     *
+     * The footer is site-wide navigation and lists every published service on
+     * every page by design, so "this service is not related to this area" can
+     * only be asserted against the page's own body. Without this, such a test
+     * passes or fails on whatever the footer happens to carry rather than on
+     * the relation it means to check.
+     */
+    protected function stripFooter(string $html): string
+    {
+        return preg_replace('/<footer\b[^>]*>.*?<\/footer>/is', '', $html);
+    }
 }
