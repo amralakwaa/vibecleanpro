@@ -70,7 +70,7 @@ class RoleResource extends Resource
             ])
             ->defaultSort('name')
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->iconButton(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

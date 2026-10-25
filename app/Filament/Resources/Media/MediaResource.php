@@ -170,7 +170,7 @@ class MediaResource extends Resource
                 SelectFilter::make('service_id')->label('الخدمة')->relationship('service', 'name'),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->iconButton(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

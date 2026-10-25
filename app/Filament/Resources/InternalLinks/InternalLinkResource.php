@@ -95,7 +95,7 @@ class InternalLinkResource extends Resource
                     ->preload(),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->iconButton(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

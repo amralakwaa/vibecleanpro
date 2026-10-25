@@ -104,7 +104,7 @@ class UserResource extends Resource
             ])
             ->defaultSort('name')
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->iconButton(),
                 Action::make('resetTwoFactor')
                     ->label('إعادة تعيين التحقق الثنائي')
                     ->icon(Heroicon::OutlinedKey)

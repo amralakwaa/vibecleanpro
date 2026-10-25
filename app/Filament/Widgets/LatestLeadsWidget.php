@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class LatestLeadsWidget extends TableWidget
 {
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 4;
 
     protected static ?string $heading = 'أحدث العملاء المحتملين';
 

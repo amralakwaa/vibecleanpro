@@ -64,14 +64,26 @@ class ServiceCategoryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label('الاسم')->searchable(),
-                TextColumn::make('slug')->label('الرابط')->searchable(),
+                // Name over slug in one column, matching every other table
+                // in this panel: the slug is what the name becomes, so they
+                // read as one fact rather than as two columns to line up by
+                // eye. The slug stays searchable through the description.
+                TextColumn::make('name')
+                    ->label('الاسم')
+                    ->searchable()
+                    ->weight('medium')
+                    ->description(fn (ServiceCategory $record): string => '/'.$record->slug),
+                TextColumn::make('slug')
+                    ->label('الرابط')
+                    ->searchable()
+                    ->copyable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('services_count')->label('عدد الخدمات')->counts('services'),
                 TextColumn::make('sort_order')->label('الترتيب')->sortable(),
             ])
             ->defaultSort('sort_order')
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->iconButton(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

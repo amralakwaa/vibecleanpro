@@ -31,7 +31,6 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -223,8 +222,24 @@ class ServiceResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('featuredMedia.path')->label('')->circular()->defaultImageUrl(url('/images/placeholder.svg')),
-                TextColumn::make('name')->label('الاسم')->searchable()->weight('medium'),
+                // Square, not circular: these are photographs of work, and a
+                // circle crops the corners off every one of them. Sidra's
+                // tables use the same rounded square.
+                ImageColumn::make('featuredMedia.path')
+                    ->label('')
+                    ->square()
+                    ->defaultImageUrl(url('/images/placeholder.svg')),
+                // Name over slug in one column, with the featured star inline
+                // beside the name rather than in a column of its own - the
+                // star is a property OF the service, so it belongs next to
+                // the service, and the column it used to cost is paid back.
+                TextColumn::make('name')
+                    ->label('الخدمة')
+                    ->searchable()
+                    ->weight('medium')
+                    ->formatStateUsing(fn (string $state, Service $record): string => $record->is_featured ? '★ '.$state : $state)
+                    ->description(fn (Service $record): ?string => $record->page?->slug ? '/'.$record->page->slug : null)
+                    ->wrap(),
                 TextColumn::make('category.name')->label('التصنيف')->badge(),
                 TextColumn::make('page.status')->label('حالة الصفحة')->badge()->formatStateUsing(fn ($state) => match ($state?->value) {
                     'draft' => 'مسودة',
@@ -237,7 +252,6 @@ class ServiceResource extends Resource
                     'archived' => 'warning',
                     default => 'gray',
                 }),
-                IconColumn::make('is_featured')->label('مميزة')->boolean(),
                 TextColumn::make('areas_count')->label('عدد المناطق')->counts('areas'),
                 TextColumn::make('sort_order')->label('الترتيب')->sortable(),
             ])
@@ -248,7 +262,7 @@ class ServiceResource extends Resource
                 TrashedFilter::make(),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->iconButton(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -73,7 +73,7 @@ class FaqResource extends Resource
             ->emptyStateDescription('الأسئلة المرتبطة بصفحة معيّنة تُحرَّر داخل صفحتها نفسها، من تبويب «الأسئلة الشائعة» في شاشة تحرير الصفحة. أضف سؤالاً هنا فقط إذا أردته أن يظهر في كل الموقع دون ارتباط بصفحة.')
             ->emptyStateIcon(Heroicon::OutlinedQuestionMarkCircle)
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->iconButton(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

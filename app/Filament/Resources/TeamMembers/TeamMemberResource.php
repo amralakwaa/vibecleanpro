@@ -80,7 +80,7 @@ class TeamMemberResource extends Resource
                 TernaryFilter::make('is_active')->label('ظاهر'),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->iconButton(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

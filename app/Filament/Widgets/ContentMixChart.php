@@ -24,7 +24,7 @@ class ContentMixChart extends ChartWidget
 
     protected ?string $description = 'ما يتكوّن منه الموقع فعلاً — الصفحات المنشورة فقط.';
 
-    protected static ?int $sort = 6;
+    protected static ?int $sort = 7;
 
     protected int|string|array $columnSpan = 1;
 
