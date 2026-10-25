@@ -110,7 +110,7 @@
         'خدماتنا' => route('public.services.index'),
         'أعمالنا' => route('public.projects.index'),
         'مناطق التغطية' => route('public.areas.index'),
-        'الأسعار' => url('/pricing'),
+        'الأسعار' => route('public.article', ['slug' => 'cleaning-prices-riyadh']),
         'من نحن' => $aboutUrl,
         'للشركات' => route('public.contact', ['for' => 'business']),
         'المدونة' => route('public.blog.index'),
