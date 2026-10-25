@@ -225,8 +225,15 @@ class ServiceResource extends Resource
                 // Square, not circular: these are photographs of work, and a
                 // circle crops the corners off every one of them. Sidra's
                 // tables use the same rounded square.
+                // ->disk('public') is load-bearing. Without it the column
+                // falls back to filesystems.default, which is `local` with
+                // its root at storage/app/private - media lives on the
+                // public disk, so every existence check failed and every
+                // row silently rendered defaultImageUrl instead. The
+                // thumbnails had never once appeared.
                 ImageColumn::make('featuredMedia.path')
                     ->label('')
+                    ->disk('public')
                     ->square()
                     ->defaultImageUrl(url('/images/placeholder.svg')),
                 // Name over slug in one column, with the featured star inline
@@ -239,9 +246,17 @@ class ServiceResource extends Resource
                     ->weight('medium')
                     ->formatStateUsing(fn (string $state, Service $record): string => $record->is_featured ? '★ '.$state : $state)
                     ->description(fn (Service $record): ?string => $record->page?->slug ? '/'.$record->page->slug : null)
-                    ->wrap(),
-                TextColumn::make('category.name')->label('التصنيف')->badge(),
-                TextColumn::make('page.status')->label('حالة الصفحة')->badge()->formatStateUsing(fn ($state) => match ($state?->value) {
+                    // grow(false) on the short columns was not enough on its
+                    // own: a wrapping cell can be squeezed to almost nothing,
+                    // and the name was ending up at 103px - narrower than the
+                    // category badge beside it - with every Arabic name
+                    // broken over three lines. An explicit floor fixes the
+                    // split; the name is the subject of the row and has to
+                    // win the slack.
+                    ->extraHeaderAttributes(['style' => 'min-width: 15rem'])
+                    ->extraAttributes(['style' => 'min-width: 15rem']),
+                TextColumn::make('category.name')->label('التصنيف')->badge()->grow(false),
+                TextColumn::make('page.status')->label('حالة الصفحة')->badge()->grow(false)->formatStateUsing(fn ($state) => match ($state?->value) {
                     'draft' => 'مسودة',
                     'published' => 'منشورة',
                     'archived' => 'مؤرشفة',
@@ -252,8 +267,8 @@ class ServiceResource extends Resource
                     'archived' => 'warning',
                     default => 'gray',
                 }),
-                TextColumn::make('areas_count')->label('عدد المناطق')->counts('areas'),
-                TextColumn::make('sort_order')->label('الترتيب')->sortable(),
+                TextColumn::make('areas_count')->label('عدد المناطق')->counts('areas')->grow(false),
+                TextColumn::make('sort_order')->label('الترتيب')->sortable()->grow(false),
             ])
             ->defaultSort('sort_order')
             ->filters([
