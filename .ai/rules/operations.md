@@ -46,3 +46,35 @@ are stored (never headers or cookies); the key keeps an **allowlist** of
 significant query parameters, so an unknown parameter cannot be used to
 bypass the cache and put the database back on the critical path; and a
 signed-in editor always gets the live page.
+
+## Production runs with cached config, routes, views and events
+`config:cache`, `route:cache`, `view:cache` and `event:cache` are all active
+on the live server. Two consequences, both of which have bitten before:
+
+**A `.env` edit does nothing until the config is rebuilt.** Changing a value
+and reloading will show the old one. Always follow an `.env` change with
+`php artisan config:cache` on the server (`/opt/alt/php84/usr/bin/php`).
+Likewise a deployed route or Blade change needs `optimize:clear` or the
+matching `*:cache` — a view edit that appears to have no effect is almost
+always this.
+
+**`env()` outside `config/` returns null.** Never call it from `app/`,
+`routes/` or a Blade view. `MailSettings::environmentControlsMail()` did,
+which is what blocked caching for months: it would have answered `false` on
+every production request, silently, and only in production. Values needed at
+runtime get their own config key. Two of them exist for this reason —
+`mail.environment_host` and `mail.environment_mailer` hold MAIL_HOST and
+MAIL_MAILER raw, because `mail.mailers.smtp.host` carries a 127.0.0.1
+fallback and `mail.default` is the *effective* mailer that
+`applyRuntimeConfiguration()` itself overwrites.
+
+## public_html is the web root; `public_path()` points at it
+`bootstrap/app.php` calls `usePublicPath()` on `public_html` when that
+directory exists, so the framework and the web server agree on one
+directory. Before that they did not: a duplicate `public/` existed with its
+own `build/manifest.json`, the browser fetched from `public_html` while
+`public_path()` resolved to `public`, and a stylesheet deployed to the served
+directory was invisible to Vite — the admin panel answered 500 until the
+entry was added to both. Deploy built assets to `public_html/build` only.
+The guard means local development and CI, which have no `public_html`, are
+unaffected.
