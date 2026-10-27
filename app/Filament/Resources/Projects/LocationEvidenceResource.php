@@ -14,8 +14,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -61,7 +61,7 @@ class LocationEvidenceResource extends Resource
 
                 TextColumn::make('location_evidence_type')
                     ->label('نوع الدليل')
-                    ->formatStateUsing(fn ($state) => $state ? LocationEvidenceType::tryFrom($state)?->label() : '—'),
+                    ->formatStateUsing(fn ($state) => $state instanceof LocationEvidenceType ? $state->label() : (LocationEvidenceType::tryFrom((string) $state)?->label() ?? '—')),
 
                 TextColumn::make('location_evidence_reference')
                     ->label('مرجع الدليل')
@@ -78,12 +78,16 @@ class LocationEvidenceResource extends Resource
                 TextColumn::make('location_confidence')
                     ->label('الثقة المقترحة')
                     ->badge()
-                    ->color(fn ($state) => match (true) {
-                        $state >= 3 => 'success',
-                        $state == 2 => 'warning',
-                        default => 'danger',
+                    ->color(function ($state) {
+                        $val = $state instanceof LocationConfidence ? $state->value : (int) $state;
+
+                        return match (true) {
+                            $val >= 3 => 'success',
+                            $val === 2 => 'warning',
+                            default => 'danger',
+                        };
                     })
-                    ->formatStateUsing(fn ($state) => $state ? LocationConfidence::tryFrom($state)?->label() : '—'),
+                    ->formatStateUsing(fn ($state) => $state instanceof LocationConfidence ? $state->label() : (LocationConfidence::tryFrom((string) $state)?->label() ?? '—')),
 
             ])
             ->actions([
