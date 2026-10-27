@@ -97,7 +97,7 @@ class StructuredDataGenerator
         }
 
         $faqs = $page->faqs()->where('is_active', true)->orderBy('sort_order')->get();
-        if ($faqs->isNotEmpty() && ! in_array($page->type, [PageType::Service, PageType::Area], true)) {
+        if ($faqs->isNotEmpty()) {
             $blocks[] = $this->faqPage($faqs);
         }
 
@@ -111,7 +111,7 @@ class StructuredDataGenerator
     {
         $data = [
             '@context' => 'https://schema.org',
-            '@type' => 'LocalBusiness',
+            '@type' => ['LocalBusiness', 'HomeAndConstructionBusiness'],
             '@id' => $this->urlResolver->absoluteUrl('/').'#business',
             'name' => $profile->name,
             ...(filled($profile->name_ar) ? ['alternateName' => $profile->name_ar] : []),
@@ -268,7 +268,8 @@ class StructuredDataGenerator
             '@context' => 'https://schema.org',
             '@type' => 'Service',
             'name' => $service->name,
-            'description' => $service->short_description,
+            'serviceType' => $service->category?->name ?? $service->name,
+            'description' => $service->short_description ?: $page->seoMetadata?->meta_description,
             'url' => $this->canonical->resolve($page),
             'provider' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],
         ]);
