@@ -356,6 +356,31 @@
         </section>
     @endif
 
+    {{-- ===== 9b. Guides about this service - same quiet rows as the area page ===== --}}
+    @if ($articles->isNotEmpty())
+        <section aria-labelledby="service-articles">
+            <x-public.container width="wide" class="py-14 md:py-20">
+                <h2 id="service-articles" class="text-sm font-medium tracking-wide text-neutral-500">مقالات مرتبطة</h2>
+                <ul class="mt-4 max-w-3xl divide-y divide-neutral-200 border-t border-neutral-200 reveal">
+                    @foreach ($articles as $article)
+                        <li>
+                            <a href="{{ $urlResolver->urlForPage($article->page) }}"
+                                class="group flex items-center justify-between gap-4 py-4 min-h-14 text-ink-950">
+                                <span class="min-w-0">
+                                    <span class="block font-medium group-hover:text-primary-700 transition-colors">{{ $article->title }}</span>
+                                    @if ($article->category?->name)
+                                        <span class="block mt-0.5 text-sm text-neutral-500">{{ $article->category->name }}</span>
+                                    @endif
+                                </span>
+                                <x-public.icon name="arrow-start" class="w-4 h-4 text-primary-600 rtl:rotate-180 shrink-0 transition-transform duration-300 group-hover:-translate-x-1" />
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </x-public.container>
+        </section>
+    @endif
+
     {{-- ===== 10. Remaining objections, right before the decision =====
          Second pass: the FAQ block only. blocks.blade.php still owns the
          heading and the markup, and still applies the rule that the FAQ

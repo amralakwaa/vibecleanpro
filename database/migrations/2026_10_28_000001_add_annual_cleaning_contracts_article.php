@@ -15,6 +15,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Content migration keyed to production IDs; an unseeded database has nothing to edit.
+        if (! DB::table('services')->exists()) {
+            return;
+        }
+
         $slug = 'annual-cleaning-contracts-riyadh';
 
         if (DB::table('pages')->where('slug', $slug)->exists()) {

@@ -2,16 +2,15 @@
 
 namespace App\Seo;
 
+use App\Enums\PageType;
+use App\Models\AreaGroup;
 use App\Models\Page;
 use App\Seo\ValueObjects\BreadcrumbItem;
 
 /**
- * Deliberately shallow right now: Home -> current page. Category/listing
- * pages (e.g. a "Services" index) don't exist yet in this phase, and a
- * breadcrumb segment must point at a real, working URL - inventing one
- * would itself be a broken link. Once those listing pages exist, add a
- * segment here for them; the shape (array of BreadcrumbItem) doesn't need
- * to change.
+ * Home -> listing index -> current page. The middle segment exists only for
+ * page types that have a real, published index route; its label must match
+ * that index page's own breadcrumb so the trail reads the same on both pages.
  *
  * @return array<int, BreadcrumbItem>
  */
@@ -19,9 +18,26 @@ class BreadcrumbResolver
 {
     public function resolve(Page $page): array
     {
-        return [
+        return array_values(array_filter([
             new BreadcrumbItem('الرئيسية', '/'),
+            $this->parent($page),
             new BreadcrumbItem($page->title, null),
-        ];
+        ]));
+    }
+
+    private function parent(Page $page): ?BreadcrumbItem
+    {
+        if ($page->type === PageType::Landing && $page->pageable_type === (new AreaGroup)->getMorphClass()) {
+            return new BreadcrumbItem('مناطق التغطية', '/areas');
+        }
+
+        return match ($page->type) {
+            PageType::Service => new BreadcrumbItem('خدماتنا', '/services'),
+            PageType::Area => new BreadcrumbItem('مناطق التغطية', '/areas'),
+            PageType::Project => new BreadcrumbItem('أعمالنا', '/projects'),
+            PageType::Article => new BreadcrumbItem('المدونة', '/blog'),
+            PageType::Offer => new BreadcrumbItem('العروض', '/offers'),
+            default => null,
+        };
     }
 }

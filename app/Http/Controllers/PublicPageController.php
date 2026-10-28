@@ -276,6 +276,13 @@ class PublicPageController extends Controller
         $hasManualRelatedBlock = $page->contentBlocks
             ->contains(fn ($block) => $block->type === 'related_content' && $block->is_active);
 
+        $articles = $service->articles()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->with(['category', 'page'])
+            ->orderBy('articles.id')
+            ->limit(4)
+            ->get();
+
         return response()->view('pages.service', [
             'page' => $page,
             'seo' => $seo,
@@ -288,6 +295,7 @@ class PublicPageController extends Controller
             'offers' => $offers,
             'testimonials' => $testimonials,
             'hasManualRelatedBlock' => $hasManualRelatedBlock,
+            'articles' => $articles,
         ], 200);
     }
 

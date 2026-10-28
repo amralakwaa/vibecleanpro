@@ -14,6 +14,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Content migration keyed to production IDs; an unseeded database has nothing to edit.
+        if (! DB::table('services')->exists()) {
+            return;
+        }
+
         $now = now()->toDateTimeString();
 
         $articles = [

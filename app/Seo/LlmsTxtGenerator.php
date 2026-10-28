@@ -5,6 +5,7 @@ namespace App\Seo;
 use App\Enums\PageType;
 use App\Models\BusinessProfile;
 use App\Models\Page;
+use Illuminate\Support\Collection;
 
 /**
  * Builds /llms.txt, the emerging llmstxt.org convention: a single Markdown
@@ -37,8 +38,13 @@ class LlmsTxtGenerator
         PageType::Area->value => 'مناطق الخدمة في الرياض',
         PageType::Offer->value => 'العروض والباقات',
         PageType::Article->value => 'مقالات ودلائل',
-        PageType::Project->value => 'نماذج من الأعمال المنفذة',
     ];
+
+    /**
+     * Listed last under llmstxt.org's "Optional" heading: individual project
+     * write-ups are secondary detail a client may skip, unlike the service map.
+     */
+    private const OPTIONAL_TYPE = PageType::Project;
 
     public function generate(): string
     {
@@ -70,39 +76,41 @@ class LlmsTxtGenerator
         $lines[] = '- ['.$name.']('.$this->urlResolver->absoluteUrl('/').'): الصفحة الرئيسية.';
         $lines[] = '- [خدمات التنظيف]('.$this->urlResolver->absoluteUrl('/services').'): فهرس كل الخدمات.';
         $lines[] = '- [مناطق الخدمة]('.$this->urlResolver->absoluteUrl('/areas').'): الأحياء التي نخدمها في الرياض.';
+        $lines[] = '- [المدونة]('.$this->urlResolver->absoluteUrl('/blog').'): أدلة ومقالات التنظيف.';
         $lines[] = '- [تواصل معنا]('.$this->urlResolver->absoluteUrl('/contact').'): طلب عرض سعر والتواصل.';
 
         foreach (self::SECTIONS as $type => $heading) {
-            $section = $pages->where('type', $type);
-
-            if ($section->isEmpty()) {
-                continue;
-            }
-
-            $lines[] = '';
-            $lines[] = "## {$heading}";
-            $lines[] = '';
-
-            foreach ($section as $page) {
-                $lines[] = $this->linkLine($page);
-            }
+            $this->appendSection($lines, $heading, $pages->filter(fn (Page $page) => $page->type->value === $type));
         }
 
         // Everything else that is indexable (About, Trust, legal policies)
         // under one trust-and-policies heading.
-        $rest = $pages->whereNotIn('type', array_keys(self::SECTIONS));
+        $this->appendSection($lines, 'التعريف والثقة والسياسات', $pages->reject(
+            fn (Page $page) => array_key_exists($page->type->value, self::SECTIONS) || $page->type === self::OPTIONAL_TYPE,
+        ));
 
-        if ($rest->isNotEmpty()) {
-            $lines[] = '';
-            $lines[] = '## التعريف والثقة والسياسات';
-            $lines[] = '';
-
-            foreach ($rest as $page) {
-                $lines[] = $this->linkLine($page);
-            }
-        }
+        $this->appendSection($lines, 'Optional', $pages->filter(fn (Page $page) => $page->type === self::OPTIONAL_TYPE));
 
         return implode("\n", $lines)."\n";
+    }
+
+    /**
+     * @param  array<int, string>  $lines
+     * @param  Collection<int, Page>  $section
+     */
+    private function appendSection(array &$lines, string $heading, Collection $section): void
+    {
+        if ($section->isEmpty()) {
+            return;
+        }
+
+        $lines[] = '';
+        $lines[] = "## {$heading}";
+        $lines[] = '';
+
+        foreach ($section as $page) {
+            $lines[] = $this->linkLine($page);
+        }
     }
 
     private function linkLine(Page $page): string

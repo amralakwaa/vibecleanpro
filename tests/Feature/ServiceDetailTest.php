@@ -6,6 +6,7 @@ use App\Enums\MediaStage;
 use App\Enums\PageStatus;
 use App\Enums\PageType;
 use App\Models\Area;
+use App\Models\Article;
 use App\Models\ContentBlock;
 use App\Models\Faq;
 use App\Models\Media;
@@ -62,6 +63,28 @@ class ServiceDetailTest extends TestCase
 
         $response->assertSee('منطقة-منشورة-فعليًا');
         $response->assertDontSee('منطقة-غير-منشورة');
+    }
+
+    public function test_the_service_page_links_to_its_published_guides_only(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'service-with-guides');
+        $service = $page->pageable;
+
+        $published = Article::factory()->create(['title' => 'دليل-منشور-للخدمة']);
+        $publishedPage = Page::factory()->create(['type' => PageType::Article, 'slug' => 'published-guide']);
+        $published->page()->save($publishedPage);
+        ContentBlock::factory()->for($publishedPage)->create(['type' => 'rich_text', 'data' => ['content' => 'نص الدليل.']]);
+        SeoMetadata::factory()->for($publishedPage)->create();
+        $publishedPage->update(['status' => PageStatus::Published]);
+
+        $draft = Article::factory()->create(['title' => 'دليل-مسودة-للخدمة']);
+        $draft->page()->save(Page::factory()->create(['type' => PageType::Article, 'slug' => 'draft-guide']));
+        $service->articles()->attach([$published->id, $draft->id]);
+
+        $response = $this->get('/services/service-with-guides');
+
+        $response->assertSee('href="'.rtrim(config('app.url'), '/').'/blog/published-guide"', false);
+        $response->assertDontSee('دليل-مسودة-للخدمة');
     }
 
     /**

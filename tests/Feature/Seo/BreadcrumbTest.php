@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Seo;
 
+use App\Enums\PageType;
 use App\Seo\BreadcrumbResolver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Seo\Concerns\BuildsSeoFixtures;
@@ -11,15 +12,34 @@ class BreadcrumbTest extends TestCase
 {
     use BuildsSeoFixtures, RefreshDatabase;
 
-    public function test_resolves_home_followed_by_the_current_page(): void
+    public function test_a_service_resolves_home_then_the_services_index_then_the_page(): void
     {
         $page = $this->createCompliantServicePage();
 
         $items = app(BreadcrumbResolver::class)->resolve($page);
 
+        $this->assertCount(3, $items);
+        $this->assertSame(['الرئيسية', '/'], [$items[0]->label, $items[0]->url]);
+        $this->assertSame(['خدماتنا', '/services'], [$items[1]->label, $items[1]->url]);
+        $this->assertSame($page->title, $items[2]->label);
+    }
+
+    public function test_an_article_sits_under_the_blog_index(): void
+    {
+        $page = $this->makeBarePage(['type' => PageType::Article, 'slug' => 'some-guide']);
+
+        $items = app(BreadcrumbResolver::class)->resolve($page);
+
+        $this->assertSame(['المدونة', '/blog'], [$items[1]->label, $items[1]->url]);
+    }
+
+    public function test_a_page_type_without_an_index_keeps_a_two_level_trail(): void
+    {
+        $page = $this->makeBarePage(['type' => PageType::Legal, 'slug' => 'privacy']);
+
+        $items = app(BreadcrumbResolver::class)->resolve($page);
+
         $this->assertCount(2, $items);
-        $this->assertSame('الرئيسية', $items[0]->label);
-        $this->assertSame('/', $items[0]->url);
         $this->assertSame($page->title, $items[1]->label);
     }
 
@@ -29,7 +49,7 @@ class BreadcrumbTest extends TestCase
 
         $items = app(BreadcrumbResolver::class)->resolve($page);
 
-        $this->assertNull($items[1]->url);
+        $this->assertNull(end($items)->url);
     }
 
     public function test_rendered_on_the_public_page_the_current_crumb_is_plain_text_not_a_link(): void

@@ -12,6 +12,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Content migration keyed to production IDs; an unseeded database has nothing to edit.
+        if (! DB::table('services')->exists()) {
+            return;
+        }
+
         $pageId = DB::table('pages')->where('slug', 'water-tank-cleaning-guide-riyadh')->value('id');
         $articleId = DB::table('pages')->where('slug', 'water-tank-cleaning-guide-riyadh')->value('pageable_id');
 
@@ -32,11 +37,11 @@ return new class extends Migration
 
             foreach ($faqs as $i => $faq) {
                 DB::table('faqs')->insert([
-                    'page_id'    => $pageId,
-                    'question'   => $faq[0],
-                    'answer'     => $faq[1],
+                    'page_id' => $pageId,
+                    'question' => $faq[0],
+                    'answer' => $faq[1],
                     'sort_order' => $i + 1,
-                    'is_active'  => true,
+                    'is_active' => true,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);

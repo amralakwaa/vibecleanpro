@@ -12,6 +12,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Content migration keyed to production IDs; an unseeded database has nothing to edit.
+        if (! DB::table('services')->exists()) {
+            return;
+        }
+
         $now = now()->toDateTimeString();
         $newAreaIds = [88, 89, 90, 91, 92];
         $allServiceIds = DB::table('services')->pluck('id')->toArray();

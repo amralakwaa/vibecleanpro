@@ -72,8 +72,10 @@ class StructuredDataGenerator
         $blocks = [[
             '@context' => 'https://schema.org',
             '@type' => 'WebPage',
+            '@id' => $url.'#webpage',
             'name' => $page->seoMetadata?->meta_title ?: $page->title,
             'url' => $url,
+            'inLanguage' => 'ar',
             ...($page->seoMetadata?->meta_description ? ['description' => $page->seoMetadata->meta_description] : []),
             ...($page->published_at ? ['datePublished' => $page->published_at->toAtomString()] : []),
             'dateModified' => $page->updated_at->toAtomString(),
@@ -511,12 +513,17 @@ class StructuredDataGenerator
 
     private function article(Page $page, Article $article): array
     {
+        $url = $this->canonical->resolve($page);
+
         $data = array_filter([
             '@context' => 'https://schema.org',
             '@type' => 'Article',
+            '@id' => $url.'#article',
+            'mainEntityOfPage' => ['@id' => $url.'#webpage'],
             'headline' => $page->title,
             'description' => $article->excerpt,
-            'url' => $this->canonical->resolve($page),
+            'url' => $url,
+            'inLanguage' => 'ar',
             'datePublished' => $page->published_at?->toAtomString(),
             'dateModified' => $page->updated_at->toAtomString(),
             'publisher' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],

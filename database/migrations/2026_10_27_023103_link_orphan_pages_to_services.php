@@ -7,6 +7,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Content migration keyed to production IDs; an unseeded database has nothing to edit.
+        if (! DB::table('services')->exists()) {
+            return;
+        }
+
         // Link orphan project pages → their primary service page
         $this->linkProjectsToServices();
 
@@ -111,8 +116,8 @@ return new class extends Migration
             ->whereNull('deleted_at')
             ->whereNotExists(function ($q) {
                 $q->select(DB::raw(1))
-                  ->from('internal_links')
-                  ->whereColumn('to_page_id', 'pages.id');
+                    ->from('internal_links')
+                    ->whereColumn('to_page_id', 'pages.id');
             })
             ->first(['id', 'title']);
 
@@ -133,13 +138,13 @@ return new class extends Migration
 
         DB::table('internal_links')->insert([
             'from_page_id' => $firstServicePage,
-            'to_page_id'   => $aboutPage->id,
-            'anchor_text'  => $aboutPage->title,
-            'context'      => 'روابط ذات صلة',
-            'sort_order'   => 0,
-            'is_active'    => true,
-            'created_at'   => now(),
-            'updated_at'   => now(),
+            'to_page_id' => $aboutPage->id,
+            'anchor_text' => $aboutPage->title,
+            'context' => 'روابط ذات صلة',
+            'sort_order' => 0,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 
@@ -149,13 +154,13 @@ return new class extends Migration
         foreach ($rows as $row) {
             DB::table('internal_links')->insertOrIgnore([
                 'from_page_id' => $row->from_page_id,
-                'to_page_id'   => $row->to_page_id,
-                'anchor_text'  => $row->anchor_text,
-                'context'      => $context,
-                'sort_order'   => 0,
-                'is_active'    => true,
-                'created_at'   => now(),
-                'updated_at'   => now(),
+                'to_page_id' => $row->to_page_id,
+                'anchor_text' => $row->anchor_text,
+                'context' => $context,
+                'sort_order' => 0,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
     }

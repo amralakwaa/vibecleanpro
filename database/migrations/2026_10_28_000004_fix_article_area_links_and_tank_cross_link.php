@@ -19,6 +19,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Content migration keyed to production IDs; an unseeded database has nothing to edit.
+        if (! DB::table('services')->exists()) {
+            return;
+        }
+
         $now = now()->toDateTimeString();
 
         // ── 1. article_area for A21 / A22 / A23 ─────────────────────────────

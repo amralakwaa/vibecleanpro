@@ -57,4 +57,23 @@ class LlmsTxtTest extends TestCase
 
         $this->assertStringNotContainsString('duplicate-variant', $body);
     }
+
+    public function test_each_page_is_listed_exactly_once(): void
+    {
+        $this->createCompliantServicePage(slug: 'deep-cleaning');
+        $this->createCompliantServicePage(slug: 'sofa-cleaning');
+
+        $body = $this->get('/llms.txt')->getContent();
+
+        preg_match_all('/\]\((https?:[^)]+)\)/', $body, $matches);
+        $this->assertSame(array_unique($matches[1]), $matches[1]);
+        $this->assertSame(1, substr_count($body, '/services/deep-cleaning)'));
+    }
+
+    public function test_main_links_point_to_the_blog_index(): void
+    {
+        $body = $this->get('/llms.txt')->getContent();
+
+        $this->assertStringContainsString('[المدونة]('.rtrim(config('app.url'), '/').'/blog)', $body);
+    }
 }

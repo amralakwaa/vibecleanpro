@@ -5,6 +5,7 @@ namespace Tests\Feature\Seo;
 use App\Enums\PageStatus;
 use App\Enums\PageType;
 use App\Models\Area;
+use App\Models\Article;
 use App\Models\BusinessProfile;
 use App\Models\ContentBlock;
 use App\Models\Faq;
@@ -189,6 +190,25 @@ class StructuredDataTest extends TestCase
         $this->assertArrayNotHasKey('areaServed', $service);
     }
 
+    public function test_an_article_is_linked_to_its_webpage_in_one_graph(): void
+    {
+        $article = Article::factory()->create();
+        $page = $this->makeBarePage([
+            'type' => PageType::Article,
+            'slug' => 'linked-guide',
+            'pageable_type' => $article->getMorphClass(),
+            'pageable_id' => $article->id,
+        ]);
+
+        $blocks = collect($this->generator->forPage($page->fresh()))->keyBy('@type');
+        $url = rtrim(config('app.url'), '/').'/blog/linked-guide';
+
+        $this->assertSame($url.'#webpage', $blocks['WebPage']['@id']);
+        $this->assertSame($url.'#article', $blocks['Article']['@id']);
+        $this->assertSame(['@id' => $url.'#webpage'], $blocks['Article']['mainEntityOfPage']);
+        $this->assertSame('ar', $blocks['Article']['inLanguage']);
+    }
+
     public function test_an_area_page_produces_no_service_or_article_typed_block(): void
     {
         $page = $this->createCompliantAreaPage();
@@ -205,10 +225,11 @@ class StructuredDataTest extends TestCase
 
         $breadcrumbList = collect($this->generator->forPage($page))->firstWhere('@type', 'BreadcrumbList');
 
-        $this->assertCount(2, $breadcrumbList['itemListElement']);
+        $this->assertCount(3, $breadcrumbList['itemListElement']);
         $this->assertSame(1, $breadcrumbList['itemListElement'][0]['position']);
         $this->assertSame('الرئيسية', $breadcrumbList['itemListElement'][0]['name']);
-        $this->assertArrayNotHasKey('item', $breadcrumbList['itemListElement'][1], 'The current page itself must not link to itself in the breadcrumb trail.');
+        $this->assertSame(rtrim(config('app.url'), '/').'/services', $breadcrumbList['itemListElement'][1]['item']);
+        $this->assertArrayNotHasKey('item', $breadcrumbList['itemListElement'][2], 'The current page itself must not link to itself in the breadcrumb trail.');
     }
 
     public function test_faq_page_schema_is_absent_for_area_pages_with_faqs(): void
