@@ -14,7 +14,7 @@ use Illuminate\Http\Response;
 
 /**
  * /projects - optional ?service= / ?area= filters narrow the *visible*
- * list only. The canonical always points at the bare /projects URL (see
+ * list only. A filtered view is always canonical to the bare /projects URL (see
  * the Phase 6 report's note on Phase 4's canonical policy): a filtered
  * view is a display convenience, not a distinct indexable page, so it
  * must never fragment ranking signal across dozens of parameter URLs.
@@ -67,16 +67,21 @@ class ProjectsIndexController extends Controller
             ],
         ];
 
+        // Filtered views stay canonical to the bare index (see class note);
+        // plain pagination is canonical to itself so page 2+ projects keep a crawl path.
+        $isPlainPage = $serviceFilter === null && $areaFilter === null && $projects->currentPage() > 1;
+        $canonical = $this->urlResolver->absoluteUrl($isPlainPage ? '/projects?page='.$projects->currentPage() : '/projects');
+
         $seo = new SeoHeadData(
             title: 'أعمالنا ومشاريعنا | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'نماذج من مشاريع التنظيف المنفذة بالرياض — فلل وشقق ومكاتب وواجهات. كل مشروع موثّق بالصور قبل وبعد لإثبات جودة العمل الميداني. تصفح الأعمال واحكم بنفسك.',
-            canonicalUrl: $this->urlResolver->absoluteUrl('/projects'),
+            canonicalUrl: $canonical,
             robotsContent: 'index, follow',
             openGraph: [
                 'title' => 'أعمالنا ومشاريعنا',
                 'description' => 'نماذج من مشاريع التنظيف المنفذة بالرياض — فلل وشقق ومكاتب وواجهات. كل مشروع موثّق بالصور قبل وبعد.',
                 'image' => $businessProfile?->logo?->url(),
-                'url' => $this->urlResolver->absoluteUrl('/projects'),
+                'url' => $canonical,
                 'type' => 'website',
             ],
             structuredData: [$itemList, $breadcrumbList],

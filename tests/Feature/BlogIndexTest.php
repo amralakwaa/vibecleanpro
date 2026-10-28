@@ -104,6 +104,10 @@ class BlogIndexTest extends TestCase
         $this->assertStringContainsString('مقال مرقّم 11', $pageTwo);
         $this->assertStringNotContainsString('مقال مرقّم 11', $pageOne);
         $this->assertStringContainsString('page=2', $pageOne);
+
+        $base = rtrim(config('app.url'), '/');
+        $this->assertStringContainsString('<link rel="canonical" href="'.$base.'/blog">', $pageOne);
+        $this->assertStringContainsString('<link rel="canonical" href="'.$base.'/blog?page=2">', $pageTwo);
     }
 
     public function test_the_index_triggers_no_lazy_loading(): void

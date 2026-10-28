@@ -3,6 +3,7 @@
 use App\Http\Middleware\CachePublicPages;
 use App\Http\Middleware\CaptureLeadAttribution;
 use App\Http\Middleware\RedirectWwwToApex;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\TriggerBackgroundWork;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -20,6 +21,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
         // so it has to apply to every entry point the server answers on -
         // the public site, /admin, sitemap.xml and robots.txt alike.
         $middleware->prepend(RedirectWwwToApex::class);
+
+        // Global so cached public pages, /admin, sitemap.xml and robots.txt
+        // all carry the same baseline headers.
+        $middleware->append(SecurityHeaders::class);
 
         // Only routes/web.php (the public site) resolves through the
         // named "web" group - Filament's admin panel registers its own

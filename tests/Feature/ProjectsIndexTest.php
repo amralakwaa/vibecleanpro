@@ -93,6 +93,7 @@ class ProjectsIndexTest extends TestCase
         $second = $this->get('/projects?page=2')->assertOk()->getContent();
         $this->assertStringNotContainsString('مشروع مميز', $second);
         $this->assertStringContainsString('plain-12', $second);
+        $this->assertStringContainsString('<link rel="canonical" href="'.rtrim(config('app.url'), '/').'/projects?page=2">', $second);
 
         // Even when every project is featured, only page one gets a lead.
         Project::query()->update(['is_featured' => true]);

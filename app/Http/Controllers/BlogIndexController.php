@@ -70,16 +70,20 @@ class BlogIndexController extends Controller
             ],
         ];
 
+        // Paginated pages are canonical to themselves (Google's guidance), so
+        // articles listed only on page 2+ keep a crawl path.
+        $canonical = $this->urlResolver->absoluteUrl($articles->currentPage() > 1 ? '/blog?page='.$articles->currentPage() : '/blog');
+
         $seo = new SeoHeadData(
             title: 'المدونة | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'أدلة تنظيف عملية من الرياض: أسعار شركات التنظيف وعواملها، قوائم تحقق قبل الاستلام، نصائح العناية بالرخام والكنب والمكيفات، ومعايير اختيار الشركة الموثوقة.',
-            canonicalUrl: $this->urlResolver->absoluteUrl('/blog'),
+            canonicalUrl: $canonical,
             robotsContent: 'index, follow',
             openGraph: [
                 'title' => 'المدونة',
                 'description' => 'أدلة تنظيف عملية من الرياض: أسعار شركات التنظيف وعواملها، قوائم تحقق قبل الاستلام، نصائح العناية بالرخام والكنب والمكيفات.',
                 'image' => $businessProfile?->logo?->url(),
-                'url' => $this->urlResolver->absoluteUrl('/blog'),
+                'url' => $canonical,
                 'type' => 'website',
             ],
             structuredData: [$itemList, $breadcrumbList],
