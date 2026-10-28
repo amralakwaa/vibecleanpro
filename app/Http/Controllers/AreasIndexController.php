@@ -92,12 +92,12 @@ class AreasIndexController extends Controller
 
         $seo = new SeoHeadData(
             title: 'مناطق التغطية | '.$businessProfileName,
-            metaDescription: 'تعرف على المناطق التي نقدم فيها خدمات التنظيف في الرياض.',
+            metaDescription: 'نقدم خدمات التنظيف الاحترافية في عشرات أحياء الرياض — من الملقا والنرجس إلى التعاون والياسمين. تصفح قائمة الأحياء التي نغطيها وتأكد من توفر الخدمة في منطقتك.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/areas'),
             robotsContent: 'index, follow',
             openGraph: [
                 'title' => 'مناطق التغطية',
-                'description' => 'تعرف على المناطق التي نقدم فيها خدمات التنظيف في الرياض.',
+                'description' => 'نقدم خدمات التنظيف الاحترافية في عشرات أحياء الرياض — من الملقا والنرجس إلى التعاون والياسمين. تصفح قائمة الأحياء التي نغطيها.',
                 'image' => $businessProfile?->logo?->url(),
                 'url' => $this->urlResolver->absoluteUrl('/areas'),
                 'type' => 'website',
