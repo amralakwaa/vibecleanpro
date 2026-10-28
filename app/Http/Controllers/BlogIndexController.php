@@ -43,6 +43,33 @@ class BlogIndexController extends Controller
             ->filter(fn (ArticleCategory $category) => $category->articles_count > 0)
             ->values();
 
+        $allOnPage = collect($featured ? [$featured] : [])
+            ->concat($articles->items())
+            ->filter(fn ($article) => $article->page !== null)
+            ->values();
+
+        $itemList = [
+            '@context' => 'https://schema.org',
+            '@type' => 'ItemList',
+            'name' => 'مقالات التنظيف في الرياض',
+            'numberOfItems' => $articles->total() + ($featured ? 1 : 0),
+            'itemListElement' => $allOnPage->map(fn ($article, int $i) => [
+                '@type' => 'ListItem',
+                'position' => $i + 1,
+                'name' => $article->title,
+                'url' => $this->urlResolver->absoluteUrl('/blog/'.$article->page->slug),
+            ])->all(),
+        ];
+
+        $breadcrumbList = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'الرئيسية', 'item' => $this->urlResolver->absoluteUrl('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'المدونة'],
+            ],
+        ];
+
         $seo = new SeoHeadData(
             title: 'المدونة | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'مقالات ونصائح حول التنظيف المنزلي والتجاري في الرياض.',
@@ -55,7 +82,7 @@ class BlogIndexController extends Controller
                 'url' => $this->urlResolver->absoluteUrl('/blog'),
                 'type' => 'website',
             ],
-            structuredData: [],
+            structuredData: [$itemList, $breadcrumbList],
             breadcrumbs: [
                 new BreadcrumbItem('الرئيسية', '/'),
                 new BreadcrumbItem('المدونة', null),

@@ -38,6 +38,28 @@ class OffersIndexController extends Controller
             ->sortBy(fn (Offer $offer) => $offer->availability() === OfferAvailability::Active ? 0 : 1)
             ->values();
 
+        $offerList = [
+            '@context' => 'https://schema.org',
+            '@type' => 'ItemList',
+            'name' => 'عروض التنظيف بالرياض',
+            'numberOfItems' => $offers->count(),
+            'itemListElement' => $offers->map(fn (Offer $offer, int $i) => array_filter([
+                '@type' => 'ListItem',
+                'position' => $i + 1,
+                'name' => $offer->title,
+                'url' => $offer->page ? $this->urlResolver->absoluteUrl('/offers/'.$offer->page->slug) : null,
+            ]))->values()->all(),
+        ];
+
+        $breadcrumbList = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'الرئيسية', 'item' => $this->urlResolver->absoluteUrl('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'العروض'],
+            ],
+        ];
+
         $seo = new SeoHeadData(
             title: 'عروض وباقات التنظيف بالرياض | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'عروض وباقات تنظيف بالرياض بأسعار موسمية — تنظيف فلل وشقق ومكاتب. عروض محدودة المدة تشمل التنظيف الشامل وجلي الرخام وتنظيف المكيفات. اطلع على التفاصيل واحجز الآن.',
@@ -50,7 +72,7 @@ class OffersIndexController extends Controller
                 'url' => $this->urlResolver->absoluteUrl('/offers'),
                 'type' => 'website',
             ],
-            structuredData: [],
+            structuredData: [$offerList, $breadcrumbList],
             breadcrumbs: [
                 new BreadcrumbItem('الرئيسية', '/'),
                 new BreadcrumbItem('العروض', null),

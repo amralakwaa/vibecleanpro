@@ -36,6 +36,23 @@ class ContactController extends Controller
 
         $businessProfile = BusinessProfile::query()->first();
 
+        $contactPage = [
+            '@context' => 'https://schema.org',
+            '@type' => 'ContactPage',
+            'name' => 'تواصل مع '.($businessProfile?->displayName() ?: config('app.name')),
+            'url' => $this->urlResolver->absoluteUrl('/contact'),
+            'about' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],
+        ];
+
+        $breadcrumbList = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'الرئيسية', 'item' => $this->urlResolver->absoluteUrl('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'تواصل معنا'],
+            ],
+        ];
+
         $seo = new SeoHeadData(
             title: 'تواصل معنا | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'تواصل مع فريقنا عبر الهاتف أو واتساب أو نموذج التواصل.',
@@ -48,7 +65,7 @@ class ContactController extends Controller
                 'url' => $this->urlResolver->absoluteUrl('/contact'),
                 'type' => 'website',
             ],
-            structuredData: [],
+            structuredData: [$contactPage, $breadcrumbList],
             breadcrumbs: [
                 new BreadcrumbItem('الرئيسية', '/'),
                 new BreadcrumbItem('تواصل معنا', null),

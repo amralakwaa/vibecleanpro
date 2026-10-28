@@ -45,6 +45,28 @@ class ProjectsIndexController extends Controller
         $filterServices = Service::query()->whereHas('page', fn ($query) => $query->published())->orderBy('sort_order')->get();
         $filterAreas = Area::query()->whereHas('page', fn ($query) => $query->published())->orderBy('sort_order')->get();
 
+        $itemList = [
+            '@context' => 'https://schema.org',
+            '@type' => 'ItemList',
+            'name' => 'مشاريع التنظيف المنفذة بالرياض',
+            'numberOfItems' => $projects->total(),
+            'itemListElement' => $projects->values()->map(fn ($project, int $i) => array_filter([
+                '@type' => 'ListItem',
+                'position' => $projects->firstItem() + $i,
+                'name' => $project->page?->title ?? '',
+                'url' => $project->page ? $this->urlResolver->absoluteUrl('/projects/'.$project->page->slug) : null,
+            ]))->values()->all(),
+        ];
+
+        $breadcrumbList = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'الرئيسية', 'item' => $this->urlResolver->absoluteUrl('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'أعمالنا'],
+            ],
+        ];
+
         $seo = new SeoHeadData(
             title: 'أعمالنا ومشاريعنا | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'نماذج من مشاريع التنظيف المنفذة بالرياض — فلل وشقق ومكاتب وواجهات. كل مشروع موثّق بالصور قبل وبعد لإثبات جودة العمل الميداني. تصفح الأعمال واحكم بنفسك.',
@@ -57,7 +79,7 @@ class ProjectsIndexController extends Controller
                 'url' => $this->urlResolver->absoluteUrl('/projects'),
                 'type' => 'website',
             ],
-            structuredData: [],
+            structuredData: [$itemList, $breadcrumbList],
             breadcrumbs: [
                 new BreadcrumbItem('الرئيسية', '/'),
                 new BreadcrumbItem('أعمالنا', null),
