@@ -64,12 +64,12 @@ class ServicesIndexController extends Controller
 
         $seo = new SeoHeadData(
             title: 'خدمات التنظيف في الرياض | '.($businessProfile?->displayName() ?: config('app.name')),
-            metaDescription: 'تصفح جميع خدمات التنظيف المتاحة لدينا في الرياض.',
+            metaDescription: 'خدمات التنظيف الاحترافية بالرياض: تنظيف فلل وشقق ومكاتب، جلي رخام، تنظيف مكيفات، تنظيف واجهات، تعقيم، ومكافحة حشرات. فريق متخصص وأسعار واضحة بدون مفاجآت.',
             canonicalUrl: $this->urlResolver->absoluteUrl($canonicalPath),
             robotsContent: 'index, follow',
             openGraph: [
                 'title' => 'خدمات التنظيف',
-                'description' => 'تصفح جميع خدمات التنظيف المتاحة لدينا في الرياض.',
+                'description' => 'خدمات التنظيف الاحترافية بالرياض: تنظيف فلل وشقق ومكاتب، جلي رخام، تنظيف مكيفات، تنظيف واجهات، تعقيم، ومكافحة حشرات.',
                 'image' => $businessProfile?->logo?->url(),
                 'url' => $this->urlResolver->absoluteUrl('/services'),
                 'type' => 'website',

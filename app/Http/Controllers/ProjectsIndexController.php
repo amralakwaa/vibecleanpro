@@ -47,12 +47,12 @@ class ProjectsIndexController extends Controller
 
         $seo = new SeoHeadData(
             title: 'أعمالنا ومشاريعنا | '.($businessProfile?->displayName() ?: config('app.name')),
-            metaDescription: 'تصفح نماذج من مشاريعنا المنفذة في الرياض.',
+            metaDescription: 'نماذج من مشاريع التنظيف المنفذة بالرياض — فلل وشقق ومكاتب وواجهات. كل مشروع موثّق بالصور قبل وبعد لإثبات جودة العمل الميداني. تصفح الأعمال واحكم بنفسك.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/projects'),
             robotsContent: 'index, follow',
             openGraph: [
                 'title' => 'أعمالنا ومشاريعنا',
-                'description' => 'تصفح نماذج من مشاريعنا المنفذة في الرياض.',
+                'description' => 'نماذج من مشاريع التنظيف المنفذة بالرياض — فلل وشقق ومكاتب وواجهات. كل مشروع موثّق بالصور قبل وبعد.',
                 'image' => $businessProfile?->logo?->url(),
                 'url' => $this->urlResolver->absoluteUrl('/projects'),
                 'type' => 'website',

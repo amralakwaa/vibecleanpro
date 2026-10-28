@@ -40,12 +40,12 @@ class OffersIndexController extends Controller
 
         $seo = new SeoHeadData(
             title: 'عروض وباقات التنظيف بالرياض | '.($businessProfile?->displayName() ?: config('app.name')),
-            metaDescription: 'العروض المتاحة حاليًا على خدمات التنظيف لدينا.',
+            metaDescription: 'عروض وباقات تنظيف بالرياض بأسعار موسمية — تنظيف فلل وشقق ومكاتب. عروض محدودة المدة تشمل التنظيف الشامل وجلي الرخام وتنظيف المكيفات. اطلع على التفاصيل واحجز الآن.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/offers'),
             robotsContent: 'index, follow',
             openGraph: [
                 'title' => 'العروض',
-                'description' => 'العروض المتاحة حاليًا على خدمات التنظيف لدينا.',
+                'description' => 'عروض وباقات تنظيف بالرياض بأسعار موسمية — تنظيف فلل وشقق ومكاتب. عروض محدودة المدة تشمل التنظيف الشامل وجلي الرخام وتنظيف المكيفات.',
                 'image' => $businessProfile?->logo?->url(),
                 'url' => $this->urlResolver->absoluteUrl('/offers'),
                 'type' => 'website',
