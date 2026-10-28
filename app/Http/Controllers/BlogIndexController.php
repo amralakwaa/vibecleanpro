@@ -72,12 +72,12 @@ class BlogIndexController extends Controller
 
         $seo = new SeoHeadData(
             title: 'المدونة | '.($businessProfile?->displayName() ?: config('app.name')),
-            metaDescription: 'مقالات ونصائح حول التنظيف المنزلي والتجاري في الرياض.',
+            metaDescription: 'أدلة تنظيف عملية من الرياض: أسعار شركات التنظيف وعواملها، قوائم تحقق قبل الاستلام، نصائح العناية بالرخام والكنب والمكيفات، ومعايير اختيار الشركة الموثوقة.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/blog'),
             robotsContent: 'index, follow',
             openGraph: [
                 'title' => 'المدونة',
-                'description' => 'مقالات ونصائح حول التنظيف المنزلي والتجاري في الرياض.',
+                'description' => 'أدلة تنظيف عملية من الرياض: أسعار شركات التنظيف وعواملها، قوائم تحقق قبل الاستلام، نصائح العناية بالرخام والكنب والمكيفات.',
                 'image' => $businessProfile?->logo?->url(),
                 'url' => $this->urlResolver->absoluteUrl('/blog'),
                 'type' => 'website',

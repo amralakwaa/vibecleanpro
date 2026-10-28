@@ -55,12 +55,12 @@ class ContactController extends Controller
 
         $seo = new SeoHeadData(
             title: 'تواصل معنا | '.($businessProfile?->displayName() ?: config('app.name')),
-            metaDescription: 'تواصل مع فريقنا عبر الهاتف أو واتساب أو نموذج التواصل.',
+            metaDescription: 'تواصل مع فايب كلين برو عبر واتساب أو الهاتف للحصول على عرض سعر مكتوب لخدمات التنظيف في الرياض — فلل وشقق ومكاتب وواجهات. نرد سريعًا ونرتّب المعاينة.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/contact'),
             robotsContent: 'index, follow',
             openGraph: [
                 'title' => 'تواصل معنا',
-                'description' => 'تواصل مع فريقنا عبر الهاتف أو واتساب أو نموذج التواصل.',
+                'description' => 'تواصل مع فايب كلين برو عبر واتساب أو الهاتف للحصول على عرض سعر مكتوب — فلل وشقق ومكاتب وواجهات. نرد سريعًا.',
                 'image' => $businessProfile?->logo?->url(),
                 'url' => $this->urlResolver->absoluteUrl('/contact'),
                 'type' => 'website',
