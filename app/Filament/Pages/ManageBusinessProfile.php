@@ -121,6 +121,7 @@ class ManageBusinessProfile extends Page
                                         ->label('')
                                         ->keyLabel('المنصة')
                                         ->valueLabel('الرابط')
+                                        ->helperText('حسابات المنشأة فقط، لا الحسابات الشخصية. اكتب اسم المنصة كما هو ليظهر بأيقونتها: instagram · tiktok · snapchat · facebook · whatsapp. تُعرض في الموقع وتُعرَّف بها المنشأة لدى Google ومحركات الذكاء الاصطناعي.')
                                         ->reorderable(),
                                 ]),
                             Section::make('ساعات العمل')

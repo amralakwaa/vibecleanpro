@@ -121,7 +121,7 @@ class StructuredDataGenerator
         ];
 
         if ($profile->phone) {
-            $data['telephone'] = $profile->phone;
+            $data['telephone'] = $this->internationalPhone($profile->phone);
         }
 
         if ($profile->email) {
@@ -152,7 +152,14 @@ class StructuredDataGenerator
             $data['image'] = $profile->logo->url();
         }
 
-        $socialLinks = array_values(array_filter((array) $profile->social_links));
+        // sameAs names profiles that represent the business; a WhatsApp chat
+        // link is a contact channel, not an entity profile.
+        $socialLinks = collect((array) $profile->social_links)
+            ->reject(fn ($url, $platform) => $platform === 'whatsapp' || str_contains((string) $url, 'wa.me'))
+            ->prepend($profile->publicGoogleBusinessProfileUrl())
+            ->filter()
+            ->values()
+            ->all();
 
         if ($socialLinks !== []) {
             $data['sameAs'] = $socialLinks;
@@ -192,6 +199,21 @@ class StructuredDataGenerator
         }
 
         return $data;
+    }
+
+    /**
+     * Saudi local numbers (05xxxxxxxx or 966…) become E.164; anything else is
+     * passed through untouched rather than guessed at.
+     */
+    private function internationalPhone(string $phone): string
+    {
+        $digits = preg_replace('/[\s\-()]/', '', $phone);
+
+        return match (true) {
+            (bool) preg_match('/^05\d{8}$/', $digits) => '+966'.substr($digits, 1),
+            (bool) preg_match('/^9665\d{8}$/', $digits) => '+'.$digits,
+            default => $phone,
+        };
     }
 
     /**

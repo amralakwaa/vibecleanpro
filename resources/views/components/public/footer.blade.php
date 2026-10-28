@@ -300,12 +300,12 @@
                     تصميم وتطوير
                     <span class="font-display font-semibold text-transparent bg-clip-text bg-gradient-to-l from-primary-300 to-primary-500">{{ $businessProfile->credit_name }}</span>
                 </p>
+                {{-- Plain text, not a tel: link: a second callable number on every
+                     page would compete with the business phone for extraction. --}}
                 @if (filled($businessProfile->credit_phone))
-                    <a href="tel:{{ preg_replace('/\s+/', '', $businessProfile->credit_phone) }}"
-                       class="inline-flex items-center gap-2 rounded-full bg-primary-500/15 ring-1 ring-primary-400/30 px-4 py-1.5 text-sm font-semibold text-primary-200 hover:bg-primary-500/25 hover:text-white transition-colors">
-                        <x-public.icon name="phone" class="w-4 h-4" />
+                    <span class="inline-flex items-center gap-2 rounded-full bg-primary-500/15 ring-1 ring-primary-400/30 px-4 py-1.5 text-sm font-semibold text-primary-200">
                         <span dir="ltr">{{ $businessProfile->credit_phone }}</span>
-                    </a>
+                    </span>
                 @endif
             </div>
         @endif

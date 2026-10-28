@@ -56,6 +56,21 @@ class StructuredDataTest extends TestCase
         $this->assertArrayNotHasKey('streetAddress', $localBusiness['address'], 'No street address was ever entered - it must not be fabricated.');
     }
 
+    public function test_business_identity_uses_e164_phone_and_only_entity_profiles_in_same_as(): void
+    {
+        BusinessProfile::query()->create([
+            'name' => 'Vibe Clean Pro',
+            'phone' => '0534999194',
+            'google_business_profile_url' => 'https://maps.google.com/?cid=123',
+            'social_links' => ['tiktok' => 'https://tiktok.com/@biz', 'whatsapp' => 'https://wa.me/966534999194'],
+        ]);
+
+        $business = collect($this->generator->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
+
+        $this->assertSame('+966534999194', $business['telephone']);
+        $this->assertSame(['https://maps.google.com/?cid=123', 'https://tiktok.com/@biz'], $business['sameAs']);
+    }
+
     public function test_never_emits_aggregate_rating_review_or_review_count_under_any_circumstances(): void
     {
         BusinessProfile::query()->create([
