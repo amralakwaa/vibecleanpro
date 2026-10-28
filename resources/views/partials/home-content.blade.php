@@ -43,7 +43,7 @@
     {{-- ===== 1. Hero ===== --}}
     <x-public.home-hero
         :image="$heroImage"
-        :eyebrow="$businessProfile?->tagline ?: 'شركة تنظيف في الرياض'"
+        :kicker="($businessProfile?->displayName() ?: config('app.name')).' — '.($businessProfile?->tagline ?: 'شركة تنظيف في الرياض')"
         heading="نظافة تراها من أول نظرة"
         description="تنظيف احترافي للفلل والشقق والمكاتب في الرياض - فريق مدرّب، سعر واضح قبل البدء، ونتيجة موثقة بالصور."
         :cta-url="$quoteUrl"
@@ -485,6 +485,40 @@
                                     class="inline-flex items-center gap-2 min-h-11 rounded-full bg-white px-4 text-ink-950 ring-1 ring-ink-950/10 shadow-sm hover:ring-primary-300 hover:text-primary-700 transition-colors">
                                     <x-public.icon name="map-pin" class="w-4 h-4 text-primary-600" />
                                     {{ $area->name }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </x-public.container>
+        </section>
+    @endif
+
+    {{-- ===== 7b. Guides - one per blog category, the same quiet rows as
+             the area and service pages' related reading. ===== --}}
+    @if ($guides->isNotEmpty())
+        <section class="bg-white" aria-labelledby="home-guides">
+            <x-public.container width="wide" class="py-14 md:py-20">
+                <div class="grid gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16 reveal">
+                    <div>
+                        <h2 id="home-guides" class="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-950">أدلة قبل أن تطلب</h2>
+                        <p class="mt-3 text-neutral-600 leading-relaxed">ما الذي يحدد السعر، وكيف تختار الشركة، وكيف تعتني بمكانك بعد التنظيف.</p>
+                        <a href="{{ route('public.blog.index') }}" class="mt-4 inline-flex items-center gap-2 min-h-11 font-medium text-primary-700 hover:text-primary-800">
+                            كل المقالات
+                            <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />
+                        </a>
+                    </div>
+                    <ul class="divide-y divide-neutral-200 border-t border-neutral-200">
+                        @foreach ($guides as $guide)
+                            <li>
+                                <a href="{{ $urlResolver->urlForPage($guide->page) }}" class="group flex items-center justify-between gap-4 py-4 min-h-14 text-ink-950">
+                                    <span class="min-w-0">
+                                        <span class="block font-medium group-hover:text-primary-700 transition-colors">{{ $guide->title }}</span>
+                                        @if ($guide->category?->name)
+                                            <span class="block mt-0.5 text-sm text-neutral-500">{{ $guide->category->name }}</span>
+                                        @endif
+                                    </span>
+                                    <x-public.icon name="arrow-start" class="w-4 h-4 text-primary-600 rtl:rotate-180 shrink-0 transition-transform duration-300 group-hover:-translate-x-1" />
                                 </a>
                             </li>
                         @endforeach

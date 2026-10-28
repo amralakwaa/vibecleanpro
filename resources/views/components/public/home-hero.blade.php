@@ -20,6 +20,7 @@
 @props([
     'image' => null,
     'eyebrow' => null,
+    'kicker' => null,   // small first line of the H1: who and where, read before the slogan
     'heading',
     'description' => null,
     'ctaUrl',
@@ -78,8 +79,11 @@
                 </p>
             @endif
 
-            <h1 class="mt-5 font-display text-[2.25rem] leading-[1.12] sm:text-5xl md:text-6xl md:leading-[1.06] font-medium tracking-tight text-white text-balance">
-                {{ $heading }}
+            <h1 @class(['font-display text-[2.25rem] leading-[1.12] sm:text-5xl md:text-6xl md:leading-[1.06] font-medium tracking-tight text-white text-balance', 'mt-5' => $eyebrow])>
+                @if ($kicker)
+                    <span class="block mb-4 font-sans text-base md:text-lg leading-normal font-medium tracking-normal text-primary-200">{{ $kicker }}</span>
+                @endif
+                <span class="block">{{ $heading }}</span>
             </h1>
 
             @if ($description)

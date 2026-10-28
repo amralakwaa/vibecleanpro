@@ -5,12 +5,15 @@ namespace Tests\Feature;
 use App\Enums\MediaStage;
 use App\Enums\PageStatus;
 use App\Enums\PageType;
+use App\Models\Article;
+use App\Models\ArticleCategory;
 use App\Models\BusinessProfile;
 use App\Models\ContentBlock;
 use App\Models\Media;
 use App\Models\Offer;
 use App\Models\Page;
 use App\Models\Project;
+use App\Models\SeoMetadata;
 use App\Models\Service;
 use App\Models\Testimonial;
 use Illuminate\Database\Eloquent\Model;
@@ -40,13 +43,31 @@ class HomepageV2Test extends TestCase
 
         $this->assertSame(1, substr_count($html, '<h1'));
         $this->assertStringContainsString('data-hero-cta', $html);
-        $this->assertStringContainsString('وصف-من-الإدارة', $html);
+        // The H1 opens with who and what (name + admin tagline), then the slogan.
+        $this->assertMatchesRegularExpression('/<h1[^>]*>\s*<span[^>]*>Vibe Clean Pro — وصف-من-الإدارة<\/span>/u', $html);
         $this->assertStringContainsString('مدينة-من-الإدارة', $html);
         // Chips are real links; the price rides along only when one exists.
         $this->assertMatchesRegularExpression('/<a href="'.preg_quote(route('public.service', 'chip-priced'), '/').'"[^>]*>\s*<span>خدمة-مسعّرة<\/span>\s*<span[^>]*>يبدأ من 299 ر\.س<\/span>/u', $html);
         $this->assertMatchesRegularExpression('/<a href="'.preg_quote(route('public.service', 'chip-quote'), '/').'"[^>]*>\s*<span>خدمة-بلا-سعر<\/span>\s*<\/a>/u', $html);
         // The hero action and the sticky bar are wired to each other.
         $this->assertStringContainsString("document.querySelector('[data-hero-cta]')", $html);
+    }
+
+    public function test_the_homepage_links_one_published_guide_per_blog_category(): void
+    {
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro']);
+        $category = ArticleCategory::factory()->create(['name' => 'تصنيف-أول', 'sort_order' => 1]);
+        $article = Article::factory()->create(['title' => 'دليل-منشور', 'article_category_id' => $category->id]);
+        $page = Page::factory()->create(['type' => PageType::Article, 'slug' => 'home-guide']);
+        $article->page()->save($page);
+        ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => 'نص.']]);
+        SeoMetadata::factory()->for($page)->create();
+        $page->update(['status' => PageStatus::Published]);
+
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertStringContainsString('أدلة قبل أن تطلب', $html);
+        $this->assertStringContainsString('href="'.rtrim(config('app.url'), '/').'/blog/home-guide"', $html);
     }
 
     public function test_hero_facts_appear_only_from_published_counts(): void

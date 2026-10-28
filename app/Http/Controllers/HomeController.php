@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Enums\OfferAvailability;
 use App\Models\Area;
+use App\Models\Article;
+use App\Models\ArticleCategory;
 use App\Models\BusinessProfile;
 use App\Models\Faq;
 use App\Models\Media;
@@ -121,12 +123,12 @@ class HomeController extends Controller
 
         return [
             'title' => $title,
-            'metaDescription' => 'خدمات تنظيف منزلي وتجاري احترافية في الرياض: فرق مدربة، مواعيد موثوقة، ونتائج تدوم.',
+            'metaDescription' => 'شركة تنظيف في الرياض للفلل والشقق والمكاتب والواجهات: نطاق عمل وسعر مكتوبان قبل البدء، فريق مدرّب، أعمال موثّقة بالصور، وضمان إعادة التنظيف خلال 24 ساعة.',
             'canonicalUrl' => $this->urlResolver->absoluteUrl('/'),
             'robotsContent' => 'index, follow',
             'openGraph' => [
                 'title' => $title,
-                'description' => 'خدمات تنظيف منزلي وتجاري احترافية في الرياض.',
+                'description' => 'شركة تنظيف في الرياض: نطاق عمل وسعر مكتوبان قبل البدء، وأعمال موثّقة بالصور.',
                 'image' => $profile?->logo?->url(),
                 'url' => $this->urlResolver->absoluteUrl('/'),
                 'type' => 'website',
@@ -226,6 +228,22 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
+        // One guide per blog category (the first published article of each of
+        // the first three, in the editor's category order), so the homepage
+        // reaches the blog without hard-coding any article.
+        $guides = ArticleCategory::query()
+            ->orderBy('sort_order')
+            ->limit(3)
+            ->get()
+            ->map(fn (ArticleCategory $category) => Article::query()
+                ->where('article_category_id', $category->id)
+                ->whereHas('page', fn ($query) => $query->published())
+                ->with(['page', 'category'])
+                ->orderBy('id')
+                ->first())
+            ->filter()
+            ->values();
+
         // Real counts for the hero fact strip - the same published sets
         // the /areas and /projects indexes list, so the homepage can only
         // claim what those pages can show.
@@ -243,6 +261,7 @@ class HomeController extends Controller
             'publishedProjects' => $publishedProjects,
             'offers' => $offers,
             'faqs' => $faqs,
+            'guides' => $guides,
         ];
     }
 }
