@@ -44,7 +44,7 @@ class StructuredDataTest extends TestCase
         BusinessProfile::query()->create(['name' => 'Vibe Clean Pro']);
 
         $blocks = $this->generator->sitewide();
-        $localBusiness = collect($blocks)->firstWhere('@type', 'LocalBusiness');
+        $localBusiness = collect($blocks)->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
 
         $this->assertNotNull($localBusiness);
         $this->assertSame('Vibe Clean Pro', $localBusiness['name']);
@@ -83,7 +83,7 @@ class StructuredDataTest extends TestCase
     {
         BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'latitude' => null, 'longitude' => null]);
 
-        $localBusiness = collect($this->generator->sitewide())->firstWhere('@type', 'LocalBusiness');
+        $localBusiness = collect($this->generator->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
 
         $this->assertArrayNotHasKey('geo', $localBusiness);
     }
@@ -92,7 +92,7 @@ class StructuredDataTest extends TestCase
     {
         BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'latitude' => 24.7136, 'longitude' => 46.6753]);
 
-        $localBusiness = collect($this->generator->sitewide())->firstWhere('@type', 'LocalBusiness');
+        $localBusiness = collect($this->generator->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
 
         $this->assertArrayHasKey('geo', $localBusiness);
         $this->assertSame(24.7136, $localBusiness['geo']['latitude']);
@@ -106,7 +106,7 @@ class StructuredDataTest extends TestCase
         // real" is an explicitly blanked-out city, not a null one.
         BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'address' => null, 'city' => '']);
 
-        $localBusiness = collect($this->generator->sitewide())->firstWhere('@type', 'LocalBusiness');
+        $localBusiness = collect($this->generator->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
 
         $this->assertArrayNotHasKey('address', $localBusiness);
     }
@@ -115,7 +115,7 @@ class StructuredDataTest extends TestCase
     {
         BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'city' => 'الرياض']);
 
-        $localBusiness = collect($this->generator->sitewide())->firstWhere('@type', 'LocalBusiness');
+        $localBusiness = collect($this->generator->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
 
         $this->assertArrayHasKey('address', $localBusiness);
         $this->assertSame('الرياض', $localBusiness['address']['addressLocality']);
@@ -128,7 +128,7 @@ class StructuredDataTest extends TestCase
             'working_hours' => ['sunday' => '9:00-21:00'],
         ]);
 
-        $localBusiness = collect($this->generator->sitewide())->firstWhere('@type', 'LocalBusiness');
+        $localBusiness = collect($this->generator->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
 
         $this->assertArrayNotHasKey('openingHoursSpecification', $localBusiness);
         $this->assertArrayNotHasKey('openingHours', $localBusiness);
@@ -137,13 +137,13 @@ class StructuredDataTest extends TestCase
     public function test_logo_and_image_only_appear_when_a_real_logo_media_is_set(): void
     {
         $profile = BusinessProfile::query()->create(['name' => 'Vibe Clean Pro']);
-        $localBusinessWithoutLogo = collect($this->generator->sitewide())->firstWhere('@type', 'LocalBusiness');
+        $localBusinessWithoutLogo = collect($this->generator->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
         $this->assertArrayNotHasKey('logo', $localBusinessWithoutLogo);
 
         $media = Media::factory()->create();
         $profile->update(['logo_media_id' => $media->id]);
 
-        $localBusinessWithLogo = collect($this->generator->sitewide())->firstWhere('@type', 'LocalBusiness');
+        $localBusinessWithLogo = collect($this->generator->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
         $this->assertArrayHasKey('logo', $localBusinessWithLogo);
         $this->assertSame($media->url(), $localBusinessWithLogo['logo']);
     }
@@ -232,17 +232,17 @@ class StructuredDataTest extends TestCase
         $this->assertArrayNotHasKey('item', $breadcrumbList['itemListElement'][2], 'The current page itself must not link to itself in the breadcrumb trail.');
     }
 
-    public function test_faq_page_schema_is_absent_for_area_pages_with_faqs(): void
+    public function test_faq_page_schema_mirrors_the_active_faqs_of_an_area_page(): void
     {
-        // Area pages show FAQs to users but do NOT emit FAQPage JSON-LD:
-        // Google limits FAQ rich results to authoritative sites; area pages are excluded.
+        // Since commit 7d29934 area pages emit FAQPage. No Google rich result
+        // is expected (that feature is removed); the markup only mirrors what readers see.
         $page = $this->createCompliantAreaPage();
         Faq::factory()->for($page)->create(['question' => 'ما هي خدماتكم؟', 'answer' => 'نقدم خدمات التنظيف المنزلي.', 'sort_order' => 1]);
         Faq::factory()->for($page)->create(['question' => 'هل تعملون في الرياض؟', 'answer' => 'نعم، نغطي جميع أحياء الرياض.', 'sort_order' => 2]);
 
-        $types = collect($this->generator->forPage($page->fresh()))->pluck('@type');
+        $faqPage = collect($this->generator->forPage($page->fresh()))->firstWhere('@type', 'FAQPage');
 
-        $this->assertFalse($types->contains('FAQPage'));
+        $this->assertSame(['ما هي خدماتكم؟', 'هل تعملون في الرياض؟'], collect($faqPage['mainEntity'])->pluck('name')->all());
     }
 
     public function test_faq_page_schema_is_absent_when_a_page_has_no_faqs(): void

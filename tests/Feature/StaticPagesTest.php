@@ -254,7 +254,7 @@ class StaticPagesTest extends TestCase
 
     public function test_the_business_schema_states_only_confirmed_facts(): void
     {
-        $business = collect(app(StructuredDataGenerator::class)->sitewide())->firstWhere('@type', 'LocalBusiness');
+        $business = collect(app(StructuredDataGenerator::class)->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
 
         $this->assertSame('+966534999194', $business['telephone']);
         $this->assertSame('info@vibecleanpro.com', $business['email']);
@@ -277,13 +277,13 @@ class StaticPagesTest extends TestCase
     {
         BusinessProfile::query()->first()->update(['working_hours' => ['حسب الطلب' => 'اتصل بنا']]);
 
-        $business = collect(app(StructuredDataGenerator::class)->sitewide())->firstWhere('@type', 'LocalBusiness');
+        $business = collect(app(StructuredDataGenerator::class)->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
 
         $this->assertArrayNotHasKey('openingHoursSpecification', $business);
         $this->assertStringContainsString('اتصل بنا', $this->get('/contact')->getContent());
     }
 
-    public function test_a_visible_faq_does_not_add_faqpage_markup(): void
+    public function test_a_visible_faq_is_mirrored_by_faqpage_markup_and_never_by_ratings(): void
     {
         $page = $this->createCompliantServicePage('villa-cleaning');
         $page->faqs()->create(['question' => 'كم يستغرق التنظيف؟', 'answer' => 'حسب المساحة.', 'sort_order' => 1, 'is_active' => true]);
@@ -291,11 +291,10 @@ class StaticPagesTest extends TestCase
 
         $html = $this->get('/services/villa-cleaning')->assertOk()->getContent();
 
-        // FAQ text must remain visible to users — content stays, schema does not
+        // The question is visible, and the FAQPage markup (emitted since commit
+        // 7d29934) carries the same question; no rating is ever invented.
         $this->assertStringContainsString('كم يستغرق التنظيف؟', $html);
-        // Service pages do not emit FAQPage JSON-LD: Google limits FAQ rich results
-        // to authoritative government/health sites; commercial cleaning pages are excluded
-        $this->assertStringNotContainsString('FAQPage', $html);
+        $this->assertMatchesRegularExpression('/"@type":\s*"FAQPage".*كم يستغرق التنظيف؟/su', $html);
         $this->assertStringNotContainsString('aggregateRating', $html);
     }
 }
