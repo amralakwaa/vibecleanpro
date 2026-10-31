@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\MediaStage;
 use App\Enums\PageStatus;
 use App\Enums\PageType;
+use App\Models\AreaGroup;
 use App\Models\Article;
 use App\Models\ArticleCategory;
 use App\Models\BusinessProfile;
@@ -68,6 +69,52 @@ class HomepageV2Test extends TestCase
 
         $this->assertStringContainsString('أدلة قبل أن تطلب', $html);
         $this->assertStringContainsString('href="'.rtrim(config('app.url'), '/').'/blog/home-guide"', $html);
+    }
+
+    public function test_the_homepage_links_every_published_service_beyond_the_five_tiles(): void
+    {
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro']);
+
+        foreach (range(1, 7) as $i) {
+            $service = $this->createCompliantServicePage(slug: "all-svc-$i")->pageable;
+            $service->update(['name' => "خدمة-$i", 'sort_order' => $i]);
+        }
+
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertStringContainsString('خدمات أخرى نقدّمها', $html);
+
+        foreach (range(1, 7) as $i) {
+            $this->assertStringContainsString('href="'.route('public.service', "all-svc-$i").'"', $html);
+        }
+    }
+
+    public function test_no_more_services_row_appears_when_the_tiles_already_show_everything(): void
+    {
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro']);
+        $this->createCompliantServicePage(slug: 'only-service');
+
+        $this->get('/')->assertOk()->assertDontSee('خدمات أخرى نقدّمها');
+    }
+
+    public function test_the_homepage_links_only_published_side_of_riyadh_pages(): void
+    {
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro']);
+        $this->createCompliantAreaPage(slug: 'home-coverage-area');
+
+        foreach ([['شمال-منشور', 'north-pub', PageStatus::Published], ['شرق-مسودة', 'east-draft', PageStatus::Draft]] as [$name, $slug, $status]) {
+            $group = AreaGroup::factory()->create(['name' => $name, 'slug' => $slug]);
+            $page = Page::factory()->create(['type' => PageType::Landing, 'slug' => $slug, 'published_at' => now()->subDay()]);
+            $page->pageable()->associate($group);
+            $page->status = $status;
+            $page->saveQuietly();
+        }
+
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertStringContainsString('أو تصفّح حسب جهة الرياض', $html);
+        $this->assertMatchesRegularExpression('/<a[^>]*href="[^"]*\/areas\/north-pub"[^>]*>\s*شمال-منشور\s*<\/a>/u', $html);
+        $this->assertStringNotContainsString('east-draft', $html);
     }
 
     public function test_hero_facts_appear_only_from_published_counts(): void

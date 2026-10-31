@@ -143,6 +143,22 @@
                         </a>
                     @endforeach
                 </div>
+
+                @if ($moreServices->isNotEmpty())
+                    <div class="mt-8 reveal">
+                        <p class="text-sm font-medium text-ink-700">خدمات أخرى نقدّمها</p>
+                        <ul class="mt-3 flex flex-wrap gap-2.5">
+                            @foreach ($moreServices as $service)
+                                <li>
+                                    <a href="{{ $urlResolver->urlForPage($service->page) }}"
+                                        class="inline-flex items-center min-h-11 rounded-full bg-white px-4 text-ink-950 ring-1 ring-ink-950/10 shadow-sm hover:ring-primary-300 hover:text-primary-700 transition-colors">
+                                        {{ $service->name }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             </x-public.container>
         </section>
     @endif
@@ -489,6 +505,22 @@
                             </li>
                         @endforeach
                     </ul>
+
+                    @if ($sidePages->isNotEmpty())
+                        <div class="lg:col-start-2">
+                            <p class="text-sm font-medium text-ink-700">أو تصفّح حسب جهة الرياض</p>
+                            <ul class="mt-3 flex flex-wrap gap-2.5">
+                                @foreach ($sidePages as $sidePage)
+                                    <li>
+                                        <a href="{{ $urlResolver->urlForPage($sidePage) }}"
+                                            class="inline-flex items-center min-h-11 rounded-full bg-white px-4 text-ink-950 ring-1 ring-ink-950/10 shadow-sm hover:ring-primary-300 hover:text-primary-700 transition-colors">
+                                            {{ $sidePage->pageable->name }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                 </div>
             </x-public.container>
         </section>

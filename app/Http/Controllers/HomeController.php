@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OfferAvailability;
+use App\Enums\PageType;
 use App\Models\Area;
+use App\Models\AreaGroup;
 use App\Models\Article;
 use App\Models\ArticleCategory;
 use App\Models\BusinessProfile;
 use App\Models\Faq;
 use App\Models\Media;
 use App\Models\Offer;
+use App\Models\Page;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\SiteSetting;
@@ -163,6 +166,29 @@ class HomeController extends Controller
             ->limit(5)
             ->get();
 
+        // Every other published service, as plain links under the five tiles,
+        // so the homepage reaches the whole catalogue directly instead of only
+        // through the /services index.
+        $moreServices = Service::query()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->whereNotIn('id', $services->modelKeys())
+            ->with('page')
+            ->orderBy('sort_order')
+            ->get();
+
+        // A side of Riyadh is linked only when a landing page is published for
+        // it - the same rule as AreasIndexController - so none is linked just
+        // for existing.
+        $sidePages = Page::query()
+            ->where('type', PageType::Landing)
+            ->where('pageable_type', (new AreaGroup)->getMorphClass())
+            ->published()
+            ->with('pageable')
+            ->orderBy('sort_order')
+            ->get()
+            ->filter(fn (Page $page) => $page->pageable instanceof AreaGroup)
+            ->values();
+
         $areas = Area::query()
             ->whereHas('page', fn ($query) => $query->published())
             ->with('page')
@@ -262,6 +288,8 @@ class HomeController extends Controller
             'offers' => $offers,
             'faqs' => $faqs,
             'guides' => $guides,
+            'moreServices' => $moreServices,
+            'sidePages' => $sidePages,
         ];
     }
 }

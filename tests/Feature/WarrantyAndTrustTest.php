@@ -93,7 +93,7 @@ class WarrantyAndTrustTest extends TestCase
         BusinessProfile::query()->sole()->update(['trust_points' => [['title' => 'نقطة محرّرة', 'description' => 'وصف']]]);
         $home = $this->get('/')->getContent();
         $this->assertStringContainsString('نقطة محرّرة', $home);
-        $this->assertStringNotContainsString('الفريق الذي يصل إليك هو فريقنا', $home);
+        $this->assertStringNotContainsString('مدرب على تنفيذ كل خدمة بمعاييرها', $home);
     }
 
     public function test_the_trust_strip_disappears_entirely_when_no_points_are_set(): void
