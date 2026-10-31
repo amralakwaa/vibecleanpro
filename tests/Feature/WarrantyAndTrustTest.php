@@ -42,9 +42,10 @@ class WarrantyAndTrustTest extends TestCase
 
         $html = $this->get('/warranty')->assertOk()->getContent();
 
-        $this->assertStringContainsString('يصل إلى 10 سنوات', $html);
-        $this->assertStringContainsString('شروط الاستفادة من الضمان', $html);
-        $this->assertStringContainsString('كيف تطلب مراجعة الضمان', $html);
+        $this->assertStringContainsString('نعيد التنظيف مجانًا', $html);
+        $this->assertStringNotContainsString('10 سنوات', $html);
+        $this->assertStringContainsString('ما الذي لا يشمله الضمان؟', $html);
+        $this->assertStringContainsString('كيف تقدم ملاحظتك؟', $html);
         $this->assertStringContainsString('info@vibecleanpro.com', $html);
         $this->assertSame(1, substr_count($html, '<h1'));
     }
@@ -81,7 +82,8 @@ class WarrantyAndTrustTest extends TestCase
 
         $home = $this->get('/')->getContent();
         $this->assertStringContainsString('فريق سعودي مدرب', $home);
-        $this->assertStringContainsString('ضمان يصل إلى 10 سنوات', $home);
+        $this->assertStringContainsString('ضمان إعادة التنظيف خلال 24 ساعة', $home);
+        $this->assertStringNotContainsString('10 سنوات', $home);
 
         // Editing the profile changes every surface at once. The edit goes
         // through the model instance (as the admin panel does) so the public
