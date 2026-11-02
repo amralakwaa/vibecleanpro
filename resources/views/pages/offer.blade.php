@@ -117,11 +117,13 @@
 
                     <div class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3" data-hero-cta>
                         @if ($isActive)
-                            <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle" class="!bg-white !text-primary-700 hover:!bg-primary-50 shadow-lg shadow-ink-950/20">اطلب هذا العرض</x-public.button>
+                            <x-public.call-button :business-profile="$businessProfile" class="!bg-white !text-primary-700 hover:!bg-primary-50 !shadow-ink-950/20" />
+                            <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle" :class="filled($businessProfile?->phoneUrl()) ? '!bg-transparent !text-white ring-1 ring-white/60 hover:!bg-white/10' : '!bg-white !text-primary-700 hover:!bg-primary-50 shadow-lg shadow-ink-950/20'">اطلب هذا العرض</x-public.button>
                             @if ($whatsappUrl)
                                 <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp">واتساب</x-public.button>
                             @endif
                         @elseif ($isScheduled)
+                            <x-public.call-button :business-profile="$businessProfile" />
                             @if ($whatsappUrl)
                                 <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer"
                                     class="inline-flex items-center gap-2 min-h-11 rounded-xl bg-white ring-1 ring-ink-950/10 px-5 font-medium text-ink-950 hover:text-primary-700 transition-colors">
