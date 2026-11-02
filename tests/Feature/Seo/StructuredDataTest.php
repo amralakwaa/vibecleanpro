@@ -60,14 +60,14 @@ class StructuredDataTest extends TestCase
     {
         BusinessProfile::query()->create([
             'name' => 'Vibe Clean Pro',
-            'phone' => '0534999194',
+            'phone' => '0557100772',
             'google_business_profile_url' => 'https://maps.google.com/?cid=123',
-            'social_links' => ['tiktok' => 'https://tiktok.com/@biz', 'whatsapp' => 'https://wa.me/966534999194'],
+            'social_links' => ['tiktok' => 'https://tiktok.com/@biz', 'whatsapp' => 'https://wa.me/966557100772'],
         ]);
 
         $business = collect($this->generator->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
 
-        $this->assertSame('+966534999194', $business['telephone']);
+        $this->assertSame('+966557100772', $business['telephone']);
         $this->assertSame(['https://maps.google.com/?cid=123', 'https://tiktok.com/@biz'], $business['sameAs']);
     }
 

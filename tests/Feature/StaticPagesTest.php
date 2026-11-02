@@ -25,8 +25,8 @@ class StaticPagesTest extends TestCase
 
         (new BusinessProfile)->forceFill([
             'name' => 'Vibe Clean Pro',
-            'phone' => '+966534999194',
-            'whatsapp_number' => '966534999194',
+            'phone' => '+966557100772',
+            'whatsapp_number' => '966557100772',
             'city' => 'الرياض',
             'email' => 'info@vibecleanpro.com',
             'service_area' => 'مدينة الرياض',
@@ -213,8 +213,8 @@ class StaticPagesTest extends TestCase
         $this->assertSeoBasics($this->get('/contact'), '/contact');
         $html = $this->get('/contact')->getContent();
 
-        $this->assertStringContainsString('tel:+966534999194', $html);
-        $this->assertStringContainsString('https://wa.me/966534999194', $html);
+        $this->assertStringContainsString('tel:+966557100772', $html);
+        $this->assertStringContainsString('https://wa.me/966557100772', $html);
         $this->assertStringContainsString('mailto:info@vibecleanpro.com', $html);
         $this->assertStringContainsString('من 08:00 إلى 14:00', $html);
         $this->assertStringContainsString('نقدم خدماتنا داخل مدينة الرياض.', $html);
@@ -256,7 +256,7 @@ class StaticPagesTest extends TestCase
     {
         $business = collect(app(StructuredDataGenerator::class)->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
 
-        $this->assertSame('+966534999194', $business['telephone']);
+        $this->assertSame('+966557100772', $business['telephone']);
         $this->assertSame('info@vibecleanpro.com', $business['email']);
         $this->assertSame(['@type' => 'City', 'name' => 'الرياض'], $business['areaServed']);
         $this->assertSame([[

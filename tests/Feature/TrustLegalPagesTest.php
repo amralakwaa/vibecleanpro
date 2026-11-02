@@ -159,14 +159,14 @@ class TrustLegalPagesTest extends TestCase
         $page = Page::factory()->create(['type' => PageType::Trust, 'slug' => 'warranty', 'title' => 'ضمان الخدمة']);
         ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => '<p>سياسة الضمان.</p>']]);
         ContentBlock::factory()->for($page)->create(['type' => 'cta', 'data' => [
-            'heading' => 'لديك ملاحظة؟', 'button_label' => 'تواصل', 'button_url' => 'https://wa.me/966534999194',
+            'heading' => 'لديك ملاحظة؟', 'button_label' => 'تواصل', 'button_url' => 'https://wa.me/966557100772',
         ]]);
         SeoMetadata::factory()->for($page)->create();
         $page->update(['status' => PageStatus::Published, 'published_at' => now()]);
 
         $this->get('/warranty')
             ->assertStatus(200)
-            ->assertSee('wa.me/966534999194', false);
+            ->assertSee('wa.me/966557100772', false);
     }
 
     public function test_faq_block_renders_faqs(): void

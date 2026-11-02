@@ -125,7 +125,7 @@ class ServiceEntityMapTest extends TestCase
     public function test_the_filter_leaves_external_links_and_action_routes_alone(): void
     {
         $filter = app(PublishedLinkFilter::class);
-        $html = '<p><a href="https://wa.me/966534999194">واتساب</a> و<a href="/quote">اطلب عرض سعر</a> و<a href="/warranty">الضمان</a>.</p>';
+        $html = '<p><a href="https://wa.me/966557100772">واتساب</a> و<a href="/quote">اطلب عرض سعر</a> و<a href="/warranty">الضمان</a>.</p>';
 
         $this->assertSame($html, $filter->filter($html));
     }

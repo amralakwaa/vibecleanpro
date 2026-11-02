@@ -12,6 +12,10 @@ function currentPath() {
 }
 
 function send(type) {
+    // GA4 (and Google Ads via the linked property) only exists when the
+    // analytics settings activate it; gtag is undefined otherwise.
+    window.gtag?.('event', type, { page_path: currentPath() });
+
     if (!endpoint || !csrfToken || !navigator.sendBeacon) {
         return;
     }

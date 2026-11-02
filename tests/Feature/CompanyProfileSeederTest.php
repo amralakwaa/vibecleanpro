@@ -19,8 +19,8 @@ class CompanyProfileSeederTest extends TestCase
 
         $profile = BusinessProfile::query()->sole();
         $this->assertSame('+966500000000', $profile->phone);
-        $this->assertSame('966534999194', $profile->whatsapp_number);
-        $this->assertSame('https://wa.me/966534999194', $profile->whatsappUrl());
+        $this->assertSame('966557100772', $profile->whatsapp_number);
+        $this->assertSame('https://wa.me/966557100772', $profile->whatsappUrl());
         // Confirmed values are filled in; anything still unconfirmed (a
         // street address, the internal notification inbox) stays empty.
         $this->assertSame('info@vibecleanpro.com', $profile->email);
@@ -35,6 +35,6 @@ class CompanyProfileSeederTest extends TestCase
         $this->seed(CompanyProfileSeeder::class);
 
         $this->assertSame(1, BusinessProfile::query()->count());
-        $this->assertSame('tel:+966534999194', BusinessProfile::query()->sole()->phoneUrl());
+        $this->assertSame('tel:+966557100772', BusinessProfile::query()->sole()->phoneUrl());
     }
 }

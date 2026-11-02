@@ -29,7 +29,7 @@ class BusinessProfileSingletonTest extends TestCase
 
     private function profileWithId(int $id): BusinessProfile
     {
-        $profile = (new BusinessProfile)->forceFill(['id' => $id, 'name' => 'Vibe Clean Pro', 'phone' => '+966534999194', 'city' => 'الرياض']);
+        $profile = (new BusinessProfile)->forceFill(['id' => $id, 'name' => 'Vibe Clean Pro', 'phone' => '+966557100772', 'city' => 'الرياض']);
         $profile->save();
 
         return $profile;
