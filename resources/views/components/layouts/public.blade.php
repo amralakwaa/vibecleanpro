@@ -219,9 +219,18 @@
     @if ($searchConsoleToken = $analytics->searchConsoleToken())
         <meta name="google-site-verification" content="{{ $searchConsoleToken }}">
     @endif
-    @if ($analytics->isGa4Active())
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $analytics->ga4MeasurementId() }}"></script>
-        <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', @json($analytics->ga4MeasurementId()));</script>
+    @if ($analytics->isGa4Active() || $analytics->isAdsActive())
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $analytics->isGa4Active() ? $analytics->ga4MeasurementId() : $analytics->adsId() }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date());
+            @if ($analytics->isGa4Active())
+                gtag('config', @json($analytics->ga4MeasurementId()));
+            @endif
+            @if ($analytics->isAdsActive())
+                gtag('config', @json($analytics->adsId()));
+                window.vcpAds = @json($analytics->adsConversionTargets());
+            @endif
+        </script>
     @endif
 </head>
 <body class="bg-background text-text-primary font-sans antialiased">

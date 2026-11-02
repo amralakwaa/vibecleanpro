@@ -16,6 +16,14 @@ function send(type) {
     // analytics settings activate it; gtag is undefined otherwise.
     window.gtag?.('event', type, { page_path: currentPath() });
 
+    // Google Ads conversion for the click, when the ads settings define one
+    // (window.vcpAds is printed by the layout only while the tag is active).
+    const adsTarget = window.vcpAds?.[type];
+
+    if (adsTarget) {
+        window.gtag?.('event', 'conversion', { send_to: adsTarget });
+    }
+
     if (!endpoint || !csrfToken || !navigator.sendBeacon) {
         return;
     }

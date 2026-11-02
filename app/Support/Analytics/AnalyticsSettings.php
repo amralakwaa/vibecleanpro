@@ -32,6 +32,22 @@ class AnalyticsSettings
     public const GA4_PATTERN = '/^G-[A-Z0-9]{4,15}$/';
 
     /**
+     * Google Ads conversion tracking: the account's tag id plus one
+     * conversion label per click event the site reports (see tracking.js).
+     */
+    public const ADS_ID_KEY = 'google_ads_id';
+
+    public const ADS_ENABLED_KEY = 'google_ads_enabled';
+
+    public const ADS_PHONE_LABEL_KEY = 'google_ads_phone_label';
+
+    public const ADS_WHATSAPP_LABEL_KEY = 'google_ads_whatsapp_label';
+
+    public const ADS_ID_PATTERN = '/^AW-\d{6,12}$/';
+
+    public const ADS_LABEL_PATTERN = '/^[A-Za-z0-9_\-]{8,40}$/';
+
+    /**
      * The token only when it is valid, switched on, and not a seeded
      * placeholder - so a demo token is never printed for visitors.
      */
@@ -81,6 +97,55 @@ class AnalyticsSettings
     public function isGa4Active(): bool
     {
         return $this->ga4State() === 'active';
+    }
+
+    public function adsId(): ?string
+    {
+        $id = strtoupper(trim((string) SiteSetting::get(self::ADS_ID_KEY)));
+
+        if (! preg_match(self::ADS_ID_PATTERN, $id) || DemoValue::isDemo($id)) {
+            return null;
+        }
+
+        return $id;
+    }
+
+    /**
+     * Ads tracking follows the same gate as GA4: a valid id, the explicit
+     * switch, and a published privacy policy.
+     */
+    public function isAdsActive(): bool
+    {
+        return $this->adsId() !== null
+            && (bool) SiteSetting::get(self::ADS_ENABLED_KEY, false)
+            && $this->privacyPolicyPublished();
+    }
+
+    /**
+     * The "AW-id/label" a click event reports as a conversion, keyed by the
+     * event type tracking.js sends. Only events with a valid label appear.
+     *
+     * @return array<string, string>
+     */
+    public function adsConversionTargets(): array
+    {
+        $adsId = $this->adsId();
+
+        if ($adsId === null) {
+            return [];
+        }
+
+        $targets = [];
+
+        foreach (['phone_click' => self::ADS_PHONE_LABEL_KEY, 'whatsapp_click' => self::ADS_WHATSAPP_LABEL_KEY] as $event => $key) {
+            $label = trim((string) SiteSetting::get($key));
+
+            if (preg_match(self::ADS_LABEL_PATTERN, $label)) {
+                $targets[$event] = $adsId.'/'.$label;
+            }
+        }
+
+        return $targets;
     }
 
     public function privacyPolicyPublished(): bool

@@ -94,6 +94,10 @@ class ManageIntegrations extends Page
             IntegrationSettings::SEARCH_CONSOLE_ENABLED => $settings->bool(IntegrationSettings::SEARCH_CONSOLE_ENABLED),
             AnalyticsSettings::GA4_ID_KEY => $settings->string(AnalyticsSettings::GA4_ID_KEY),
             AnalyticsSettings::GA4_ENABLED_KEY => $settings->bool(AnalyticsSettings::GA4_ENABLED_KEY),
+            AnalyticsSettings::ADS_ID_KEY => $settings->string(AnalyticsSettings::ADS_ID_KEY),
+            AnalyticsSettings::ADS_ENABLED_KEY => $settings->bool(AnalyticsSettings::ADS_ENABLED_KEY),
+            AnalyticsSettings::ADS_PHONE_LABEL_KEY => $settings->string(AnalyticsSettings::ADS_PHONE_LABEL_KEY),
+            AnalyticsSettings::ADS_WHATSAPP_LABEL_KEY => $settings->string(AnalyticsSettings::ADS_WHATSAPP_LABEL_KEY),
             IntegrationSettings::PAGE_CACHE_ENABLED => app(PageCacheSettings::class)->enabled(),
             IntegrationSettings::PAGE_CACHE_TTL_MINUTES => app(PageCacheSettings::class)->ttlMinutes(),
             IntegrationSettings::BACKGROUND_WORK_ENABLED => app(BackgroundHeartbeat::class)->enabled(),
@@ -219,6 +223,19 @@ class ManageIntegrations extends Page
                                             : 'سياسة الخصوصية غير منشورة — سيبقى GA4 متوقفًا حتى تُنشر.'),
                                 ])
                                 ->columns(2),
+                            Section::make('Google Ads — تتبّع التحويلات')
+                                ->description('يرسل نقرات الاتصال والواتساب كتحويلات إلى Google Ads. يعمل بالشروط نفسها: معرّف صحيح، وتفعيل، وسياسة خصوصية منشورة.')
+                                ->schema([
+                                    TextInput::make(AnalyticsSettings::ADS_ID_KEY)->label('معرّف الحساب')->placeholder('AW-XXXXXXXXXX')->regex(AnalyticsSettings::ADS_ID_PATTERN),
+                                    Toggle::make(AnalyticsSettings::ADS_ENABLED_KEY)->label('تفعيل تتبّع Google Ads')
+                                        ->helperText(fn (): string => app(AnalyticsSettings::class)->privacyPolicyPublished()
+                                            ? 'سياسة الخصوصية منشورة.'
+                                            : 'سياسة الخصوصية غير منشورة — سيبقى التتبّع متوقفًا حتى تُنشر.'),
+                                    TextInput::make(AnalyticsSettings::ADS_PHONE_LABEL_KEY)->label('تسمية تحويل نقرة الاتصال')->regex(AnalyticsSettings::ADS_LABEL_PATTERN)->maxLength(40)
+                                        ->helperText('الجزء بعد الشرطة المائلة في send_to.'),
+                                    TextInput::make(AnalyticsSettings::ADS_WHATSAPP_LABEL_KEY)->label('تسمية تحويل نقرة واتساب')->regex(AnalyticsSettings::ADS_LABEL_PATTERN)->maxLength(40),
+                                ])
+                                ->columns(2),
                             Section::make('الملف التجاري على Google والسجل التجاري')
                                 ->description('روابط Google والسجل التجاري تُدار من شاشة «بيانات المنشأة» حتى لا تتكرر في مكانين.')
                                 ->schema([
@@ -331,6 +348,10 @@ class ManageIntegrations extends Page
             IntegrationSettings::SEARCH_CONSOLE_ENABLED => 'bool',
             AnalyticsSettings::GA4_ID_KEY => 'string',
             AnalyticsSettings::GA4_ENABLED_KEY => 'bool',
+            AnalyticsSettings::ADS_ID_KEY => 'string',
+            AnalyticsSettings::ADS_ENABLED_KEY => 'bool',
+            AnalyticsSettings::ADS_PHONE_LABEL_KEY => 'string',
+            AnalyticsSettings::ADS_WHATSAPP_LABEL_KEY => 'string',
             IntegrationSettings::PAGE_CACHE_ENABLED => 'bool',
             IntegrationSettings::PAGE_CACHE_TTL_MINUTES => 'int',
             IntegrationSettings::BACKGROUND_WORK_ENABLED => 'bool',

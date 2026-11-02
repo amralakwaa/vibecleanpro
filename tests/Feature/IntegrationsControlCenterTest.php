@@ -249,6 +249,42 @@ class IntegrationsControlCenterTest extends TestCase
         $this->get('/')->assertSee('googletagmanager.com/gtag/js?id=G-ABC1234567', false);
     }
 
+    public function test_google_ads_conversions_print_only_when_valid_enabled_and_the_privacy_policy_is_published(): void
+    {
+        $this->settings()->set(AnalyticsSettings::ADS_ID_KEY, 'AW-18535507739');
+        $this->settings()->set(AnalyticsSettings::ADS_PHONE_LABEL_KEY, 'AbCdEf12345');
+        $this->settings()->set(AnalyticsSettings::ADS_WHATSAPP_LABEL_KEY, 'ZyXwVu67890');
+        $this->settings()->set(AnalyticsSettings::ADS_ENABLED_KEY, true, 'bool');
+
+        $this->get('/')->assertOk()->assertDontSee('googletagmanager.com/gtag', false);
+
+        $privacy = Page::factory()->create(['type' => PageType::Legal, 'title' => 'privacy', 'slug' => 'privacy', 'status' => PageStatus::Draft]);
+        ContentBlock::factory()->for($privacy)->create(['type' => 'rich_text', 'data' => ['content' => '<p>سياسة معتمدة.</p>']]);
+        $privacy->update(['status' => PageStatus::Published]);
+
+        $this->assertTrue(app(AnalyticsSettings::class)->isAdsActive());
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertStringContainsString('googletagmanager.com/gtag/js?id=AW-18535507739', $html);
+        $this->assertStringContainsString("gtag('config', \"AW-18535507739\")", $html);
+        $this->assertStringContainsString('"phone_click":"AW-18535507739\/AbCdEf12345"', $html);
+        $this->assertStringContainsString('"whatsapp_click":"AW-18535507739\/ZyXwVu67890"', $html);
+    }
+
+    public function test_google_ads_ignores_an_invalid_id_and_a_bad_label(): void
+    {
+        $this->settings()->set(AnalyticsSettings::ADS_ID_KEY, 'AW-DEMO');
+        $this->settings()->set(AnalyticsSettings::ADS_ENABLED_KEY, true, 'bool');
+        $this->assertNull(app(AnalyticsSettings::class)->adsId());
+        $this->assertSame([], app(AnalyticsSettings::class)->adsConversionTargets());
+
+        $this->settings()->set(AnalyticsSettings::ADS_ID_KEY, 'AW-18535507739');
+        $this->settings()->set(AnalyticsSettings::ADS_PHONE_LABEL_KEY, 'bad label!');
+        $this->settings()->set(AnalyticsSettings::ADS_WHATSAPP_LABEL_KEY, 'ZyXwVu67890');
+
+        $this->assertSame(['whatsapp_click' => 'AW-18535507739/ZyXwVu67890'], app(AnalyticsSettings::class)->adsConversionTargets());
+    }
+
     public function test_a_demo_measurement_id_never_activates_tracking(): void
     {
         $this->settings()->set(AnalyticsSettings::GA4_ID_KEY, 'G-DEMO000000');
