@@ -120,7 +120,7 @@ class LeadResource extends Resource
                 ->columns(3),
 
             Section::make('مصدر الطلب')
-                ->description('طلبات واتساب والاتصال تُسجل يدويًا هنا. الصق "رمز الصفحة" الموجود في رسالة واتساب ليُربط الطلب بالصفحة والخدمة والحي تلقائيًا.')
+                ->description('طلبات واتساب والاتصال تُسجل يدويًا هنا. الصق اسم الصفحة الموجود في رسالة واتساب (سطر "الصفحة: ...") ليُربط الطلب بالصفحة والخدمة والحي تلقائيًا.')
                 ->schema([
                     Select::make('source')
                         ->label('القناة')
@@ -133,10 +133,9 @@ class LeadResource extends Resource
                         ->content(fn (?Lead $record) => LeadSource::labelFor($record?->source))
                         ->hiddenOn('create'),
                     TextInput::make('attribution_code')
-                        ->label('رمز الصفحة (من رسالة واتساب)')
-                        ->placeholder('V-XXXXXXX')
-                        ->maxLength(12)
-                        ->regex('/^(V-)?[0-9A-Za-z]{7}$/'),
+                        ->label('اسم الصفحة (من رسالة واتساب)')
+                        ->placeholder('تنظيف الفلل بالرياض')
+                        ->maxLength(120),
                     Placeholder::make('source_page_info')
                         ->label('الصفحة المصدر')
                         ->content(fn (?Lead $record) => $record?->sourcePage?->title ?? '—'),

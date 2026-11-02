@@ -27,29 +27,31 @@ function send(type) {
     navigator.sendBeacon(endpoint, body);
 }
 
-// FNV-1a 32-bit, identical to App\Support\Tracking\AttributionCode::forPath.
-export function attributionCode(path) {
-    let hash = 0x811c9dc5;
-
-    for (const byte of new TextEncoder().encode(path)) {
-        hash = Math.imul(hash ^ byte, 0x01000193) >>> 0;
-    }
-
-    return 'V-' + hash.toString(36).toUpperCase().padStart(7, '0');
-}
-
 const DEFAULT_GREETING = 'مرحبًا، أرغب في الاستفسار';
 
-function withAttributionCode(link) {
+// The visible page name (its H1 is the page title), so the chat shows the
+// customer a readable "الصفحة: ..." line and the team can still trace the
+// chat back to the page (App\Support\Tracking\AttributionCode::resolveByName).
+function currentPageName() {
+    if (currentPath() === '/') {
+        return 'الصفحة الرئيسية';
+    }
+
+    const name = (document.querySelector('h1')?.textContent ?? '').replace(/\s+/g, ' ').trim();
+
+    return name.length > 0 && name.length <= 80 ? name : '';
+}
+
+function withPageName(link) {
     try {
         const url = new URL(link.href);
-        const code = attributionCode(currentPath());
+        const name = currentPageName();
         const text = url.searchParams.get('text') || DEFAULT_GREETING;
 
-        if (!text.includes(code)) {
+        if (name && !text.includes(name)) {
             // encodeURIComponent (%20), matching BusinessProfile::whatsappUrl() -
             // URLSearchParams would write "+", which WhatsApp may show literally.
-            url.search = '?text=' + encodeURIComponent(text + '\n' + 'رمز الصفحة: ' + code);
+            url.search = '?text=' + encodeURIComponent(text + '\n' + 'الصفحة: ' + name);
             link.href = url.toString();
         }
     } catch {
@@ -67,7 +69,7 @@ document.addEventListener('click', (event) => {
     const href = link.getAttribute('href');
 
     if (/^https:\/\/(wa\.me|api\.whatsapp\.com)\//i.test(href)) {
-        withAttributionCode(link);
+        withPageName(link);
         send('whatsapp_click');
     } else if (/^tel:/i.test(href)) {
         send('phone_click');

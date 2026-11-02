@@ -31,6 +31,25 @@ class AttributionCode
     }
 
     /**
+     * The published page a WhatsApp message named ("الصفحة: ..."): the name
+     * is the page title, shown as the page's H1. Only a name that matches
+     * exactly one page counts - an ambiguous name attributes nothing.
+     */
+    public function resolveByName(string $name): ?Page
+    {
+        $name = trim((string) preg_replace('/\s+/u', ' ', $name));
+        $name = trim((string) preg_replace('/^الصفحة\s*[:：]\s*/u', '', $name));
+
+        if ($name === '') {
+            return null;
+        }
+
+        $pages = Page::query()->published()->where('title', $name)->limit(2)->get();
+
+        return $pages->count() === 1 ? $pages->first() : null;
+    }
+
+    /**
      * The published page whose path produces this code, if any.
      */
     public function resolve(string $code): ?Page

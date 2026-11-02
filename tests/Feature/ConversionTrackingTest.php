@@ -175,6 +175,17 @@ class ConversionTrackingTest extends TestCase
         $this->assertNull(app(AttributionCode::class)->resolve('V-0000000'));
     }
 
+    public function test_a_page_name_from_a_whatsapp_message_resolves_to_its_published_page(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'villa-cleaning');
+        $resolver = app(AttributionCode::class);
+
+        $this->assertTrue($page->is($resolver->resolveByName($page->title)));
+        $this->assertTrue($page->is($resolver->resolveByName("الصفحة:  {$page->title} ")));
+        $this->assertNull($resolver->resolveByName('اسم لا يطابق أي صفحة'));
+        $this->assertNull($resolver->resolveByName(''));
+    }
+
     public function test_the_layout_exposes_the_tracking_endpoint_and_a_csrf_token(): void
     {
         $this->get('/quote')

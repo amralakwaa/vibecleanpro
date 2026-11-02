@@ -46,9 +46,11 @@ class LeadObserver
     }
 
     /**
-     * A salesperson logging a WhatsApp chat pastes the "V-…" code the
-     * message carried; the page it came from then fills the source page,
-     * and the service/area only where they are still empty.
+     * A salesperson logging a WhatsApp chat pastes what the message carried:
+     * the page name ("الصفحة: ...") or, for older chats, a "V-…" code. The
+     * page it came from then fills the source page, and the service/area
+     * only where they are still empty. A name is stored as the resolved
+     * page's code (the column holds a short code); an unknown name is dropped.
      */
     private function applyAttributionCode(Lead $lead): void
     {
@@ -56,10 +58,16 @@ class LeadObserver
             return;
         }
 
-        $code = strtoupper(trim($lead->attribution_code));
-        $lead->attribution_code = str_starts_with($code, AttributionCode::PREFIX) ? $code : AttributionCode::PREFIX.$code;
+        $entered = trim((string) $lead->attribution_code);
 
-        $page = $this->codes->resolve($lead->attribution_code);
+        if (preg_match('/^(V-)?[0-9A-Za-z]{7}$/', $entered)) {
+            $code = strtoupper($entered);
+            $lead->attribution_code = str_starts_with($code, AttributionCode::PREFIX) ? $code : AttributionCode::PREFIX.$code;
+            $page = $this->codes->resolve($lead->attribution_code);
+        } else {
+            $page = $this->codes->resolveByName($entered);
+            $lead->attribution_code = $page ? AttributionCode::forPath($this->urls->pathForPage($page)) : null;
+        }
 
         if (! $page) {
             return;

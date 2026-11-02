@@ -71,6 +71,36 @@ class LeadsCrmTest extends TestCase
         $this->assertSame($page->pageable_id, $lead->service_id);
     }
 
+    public function test_a_whatsapp_chat_logged_with_its_page_name_is_attributed_to_that_page(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'villa-cleaning');
+        $this->actingAsRole('Sales');
+
+        Livewire::test(CreateLead::class)
+            ->fillForm([
+                'name' => 'عميل واتساب',
+                'phone' => '0533333333',
+                'status' => LeadStatus::New->value,
+                'source' => 'whatsapp',
+                'attribution_code' => 'الصفحة: '.$page->title,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $lead = Lead::query()->sole();
+        $this->assertSame($page->id, $lead->source_page_id);
+        $this->assertSame($page->pageable_id, $lead->service_id);
+        $this->assertSame(AttributionCode::forPath('/services/villa-cleaning'), $lead->attribution_code);
+    }
+
+    public function test_an_unknown_page_name_attributes_nothing_and_is_not_stored_as_a_code(): void
+    {
+        $lead = Lead::factory()->create(['attribution_code' => 'صفحة غير موجودة']);
+
+        $this->assertNull($lead->source_page_id);
+        $this->assertNull($lead->attribution_code);
+    }
+
     public function test_an_unknown_code_is_kept_but_attributes_nothing(): void
     {
         $lead = Lead::factory()->create(['attribution_code' => 'V-ZZZZZZZ']);
