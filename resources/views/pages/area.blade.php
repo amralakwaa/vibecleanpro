@@ -142,7 +142,8 @@
                 @endif
 
                 <div class="mt-8 flex flex-wrap items-center gap-3" data-hero-cta>
-                    <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle" class="shadow-lg shadow-primary-600/25">اطلب عرض سعر</x-public.button>
+                    <x-public.call-button :business-profile="$businessProfile" />
+                    <x-public.button :href="$quoteUrl" :variant="filled($businessProfile?->phoneUrl()) ? 'secondary' : 'cta'" size="lg" icon="check-circle" :class="filled($businessProfile?->phoneUrl()) ? '' : 'shadow-lg shadow-primary-600/25'">اطلب عرض سعر</x-public.button>
 
                     @if ($whatsappUrl)
                         <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp">واتساب</x-public.button>

@@ -49,6 +49,7 @@
         :cta-url="$quoteUrl"
         cta-label="اطلب عرض سعر"
         :whatsapp-url="$whatsappUrl"
+        :business-profile="$businessProfile"
         :secondary-url="route('public.projects.index')"
         secondary-label="شاهد أعمالنا"
         :services="$services"

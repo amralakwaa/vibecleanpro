@@ -80,6 +80,7 @@
         :cta-url="$quoteUrl"
         cta-label="اطلب عرض سعر"
         :whatsapp-url="$whatsappUrl"
+        :business-profile="$businessProfile"
         :price="$service->publicPrice()"
         :cues="$cues"
         :offer="$leadOffer ? ['url' => $urlResolver->urlForPage($leadOffer->page), 'title' => $leadOffer->title, 'label' => $leadOffer->discount_label] : null"

@@ -111,7 +111,8 @@
                     <p class="mt-6 text-lg md:text-2xl text-white/85 leading-relaxed md:leading-relaxed">{{ $profile->identity_statement }}</p>
                 @endif
                 <div class="mt-8 flex flex-wrap items-center gap-3" data-hero-cta>
-                    <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle" class="shadow-lg shadow-primary-900/40">اطلب عرض سعر</x-public.button>
+                    <x-public.call-button :business-profile="$profile" class="!shadow-primary-900/40" />
+                    <x-public.button :href="$quoteUrl" :variant="filled($profile?->phoneUrl()) ? 'secondary' : 'cta'" size="lg" icon="check-circle" :class="filled($profile?->phoneUrl()) ? '' : 'shadow-lg shadow-primary-900/40'">اطلب عرض سعر</x-public.button>
                     <a href="{{ route('public.projects.index') }}" class="inline-flex items-center gap-2 min-h-11 px-1 font-medium text-white/90 underline-offset-4 hover:underline">
                         شاهد أعمالنا
                         <x-public.icon name="arrow-start" class="w-4 h-4 rtl:rotate-180" />

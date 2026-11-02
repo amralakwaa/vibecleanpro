@@ -26,6 +26,7 @@
     'ctaUrl',
     'ctaLabel',
     'whatsappUrl' => null,
+    'businessProfile' => null, // when it has a phone, the direct-call button leads and the quote becomes secondary
     'secondaryUrl' => null,
     'secondaryLabel' => null,
     'services' => null, // Collection of Service with ->page loaded
@@ -91,7 +92,8 @@
             @endif
 
             <div class="mt-8 flex flex-wrap items-center gap-3" data-hero-cta>
-                <x-public.button :href="$ctaUrl" variant="cta" size="lg" icon="check-circle" class="shadow-lg shadow-primary-900/40">{{ $ctaLabel }}</x-public.button>
+                <x-public.call-button :business-profile="$businessProfile" class="!shadow-primary-900/40" />
+                <x-public.button :href="$ctaUrl" :variant="filled($businessProfile?->phoneUrl()) ? 'secondary' : 'cta'" size="lg" icon="check-circle" :class="filled($businessProfile?->phoneUrl()) ? '' : 'shadow-lg shadow-primary-900/40'">{{ $ctaLabel }}</x-public.button>
 
                 @if ($whatsappUrl)
                     <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp">واتساب</x-public.button>

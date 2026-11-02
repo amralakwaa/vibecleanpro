@@ -97,9 +97,12 @@
                 @endforeach
             </nav>
 
-            <div class="hidden lg:block shrink-0">
+            <div class="hidden lg:flex shrink-0 items-center gap-2">
+                {{-- Most customers prefer to ring, so the call leads and the
+                     quote is the secondary action next to it. --}}
+                <x-public.call-button :business-profile="$businessProfile" size="md" number-class="hidden xl:inline" class="!shadow-sm" />
                 @if ($quoteUrl)
-                    <x-public.button :href="$quoteUrl" variant="cta" icon="check-circle">اطلب عرض سعر</x-public.button>
+                    <x-public.button :href="$quoteUrl" :variant="filled($businessProfile?->phoneUrl()) ? 'secondary' : 'cta'" icon="check-circle">اطلب عرض سعر</x-public.button>
                 @else
                     {{-- On the quote page itself the action would only link to
                          the page the visitor is on. An inert, invisible stand-in
@@ -196,22 +199,21 @@
         </nav>
 
         <div class="px-5 pb-6 pt-5 mt-auto shrink-0 space-y-3">
-            @if ($quoteUrl)
-                <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle" class="w-full">اطلب عرض سعر</x-public.button>
+            @if ($phoneUrl)
+                <x-public.button :href="$phoneUrl" variant="cta" size="lg" icon="phone" class="w-full">اتصل الآن</x-public.button>
             @endif
 
-            <div class="flex items-center gap-3">
-                @if ($whatsappUrl)
+            @if ($quoteUrl)
+                <x-public.button :href="$quoteUrl" :variant="$phoneUrl ? 'secondary' : 'cta'" size="lg" icon="check-circle" class="w-full">اطلب عرض سعر</x-public.button>
+            @endif
+
+            @if ($whatsappUrl)
+                <div class="flex items-center gap-3">
                     <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-success-50 text-success-700 text-sm font-medium hover:bg-success-100 transition-colors">
                         <x-public.icon name="whatsapp" class="w-4 h-4" /> واتساب
                     </a>
-                @endif
-                @if ($phoneUrl)
-                    <a href="{{ $phoneUrl }}" class="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 text-sm font-medium hover:bg-neutral-200 transition-colors">
-                        <x-public.icon name="phone" class="w-4 h-4" /> اتصل بنا
-                    </a>
-                @endif
-            </div>
+                </div>
+            @endif
 
             @if ($businessProfile?->social_links)
                 <div class="flex items-center justify-center gap-3 pt-1">

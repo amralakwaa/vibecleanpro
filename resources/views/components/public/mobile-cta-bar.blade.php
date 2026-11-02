@@ -1,8 +1,9 @@
 {{--
     Mobile conversion bar: three actions with clear hierarchy.
-    1. Quote (blue, dominant width) — the main conversion action
-    2. Phone (secondary, icon-only) — direct call for impatient customers
+    1. Call (blue, dominant width) — most customers prefer to ring
+    2. Quote (secondary, compact) — the written-estimate path
     3. WhatsApp (green, icon-only) — async channel
+    With no phone on file the quote button takes the dominant slot again.
 
     Fixed height, safe-area aware, lg:hidden; the layout gives <main>
     matching bottom padding so this never covers page content.
@@ -22,16 +23,22 @@
         class="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white/95 backdrop-blur border-t border-neutral-200 pb-[env(safe-area-inset-bottom)] transition-transform duration-300"
     >
         <div class="flex items-center gap-2 p-3">
-            @if ($quoteUrl)
-                <x-public.button :href="$quoteUrl" variant="cta" size="md" icon="check-circle" class="grow min-h-12">
-                    طلب خدمة
+            @if ($phoneUrl)
+                <x-public.button :href="$phoneUrl" variant="cta" size="md" icon="phone" class="grow min-h-12">
+                    اتصل الآن
                 </x-public.button>
             @endif
 
-            @if ($phoneUrl)
-                <a href="{{ $phoneUrl }}" class="shrink-0 inline-flex items-center justify-center min-h-12 min-w-12 rounded-xl bg-ink-950 text-white hover:bg-neutral-800 active:bg-neutral-900 transition-colors shadow-sm" aria-label="اتصل بنا">
-                    <x-public.icon name="phone" class="w-5 h-5" />
-                </a>
+            @if ($quoteUrl)
+                <x-public.button
+                    :href="$quoteUrl"
+                    :variant="$phoneUrl ? 'secondary' : 'cta'"
+                    size="md"
+                    icon="check-circle"
+                    :class="$phoneUrl ? 'shrink-0 min-h-12 !px-4' : 'grow min-h-12'"
+                >
+                    طلب خدمة
+                </x-public.button>
             @endif
 
             @if ($whatsappUrl)
