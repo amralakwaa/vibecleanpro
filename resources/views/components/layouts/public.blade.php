@@ -186,6 +186,7 @@
     <link rel="icon" href="/favicon.ico" sizes="32x32">
     <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
     <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png">
+    <link rel="icon" href="/android-chrome-192x192.png" sizes="192x192" type="image/png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
 
@@ -220,7 +221,12 @@
         <meta name="google-site-verification" content="{{ $searchConsoleToken }}">
     @endif
     @if ($analytics->isGa4Active() || $analytics->isAdsActive())
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $analytics->isGa4Active() ? $analytics->ga4MeasurementId() : $analytics->adsId() }}"></script>
+        {{-- gtag.js is ~140 KB of JavaScript that cost mobile PageSpeed about 30
+             points (96 -> 68) once GA4 and the Ads tag went live. The dataLayer
+             stub and the config calls stay inline so every event queues
+             immediately; only the download waits for the first interaction, or
+             for 6 s after load, whichever comes first. Queued events are
+             processed as soon as the script arrives. --}}
         <script>
             window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date());
             @if ($analytics->isGa4Active())
@@ -230,6 +236,24 @@
                 gtag('config', @json($analytics->adsId()));
                 window.vcpAds = @json($analytics->adsConversionTargets());
             @endif
+            (function () {
+                var src = 'https://www.googletagmanager.com/gtag/js?id={{ $analytics->isGa4Active() ? $analytics->ga4MeasurementId() : $analytics->adsId() }}';
+                var triggers = ['pointerdown', 'touchstart', 'keydown', 'scroll'];
+                var started = false;
+
+                function start() {
+                    if (started) { return; }
+                    started = true;
+                    triggers.forEach(function (name) { window.removeEventListener(name, start); });
+                    var tag = document.createElement('script');
+                    tag.async = true;
+                    tag.src = src;
+                    document.head.appendChild(tag);
+                }
+
+                triggers.forEach(function (name) { window.addEventListener(name, start, { passive: true }); });
+                window.addEventListener('load', function () { setTimeout(start, 6000); });
+            })();
         </script>
     @endif
 </head>
