@@ -121,8 +121,8 @@ class HomeController extends Controller
     private function buildSeoArgs(?BusinessProfile $profile): array
     {
         $title = $profile
-            ? "{$profile->displayName()} | شركة تنظيف احترافية في الرياض"
-            : 'شركة تنظيف احترافية في الرياض';
+            ? "شركة تنظيف بالرياض — واجهات وفلل ومنازل | {$profile->displayName()}"
+            : 'شركة تنظيف بالرياض — واجهات وفلل ومنازل';
 
         return [
             'title' => $title,
