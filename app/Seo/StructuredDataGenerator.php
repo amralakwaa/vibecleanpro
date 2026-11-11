@@ -79,6 +79,7 @@ class StructuredDataGenerator
             ...($page->seoMetadata?->meta_description ? ['description' => $page->seoMetadata->meta_description] : []),
             ...($page->published_at ? ['datePublished' => $page->published_at->toAtomString()] : []),
             'dateModified' => $page->updated_at->toAtomString(),
+            ...$this->reviewer($page),
         ]];
 
         $blocks[] = $this->breadcrumbList($page);
@@ -104,6 +105,30 @@ class StructuredDataGenerator
         }
 
         return $blocks;
+    }
+
+    /**
+     * The content reviewer printed on service pages, as WebPage
+     * reviewedBy/lastReviewed - only where the page actually shows it.
+     *
+     * @return array<string, mixed>
+     */
+    private function reviewer(Page $page): array
+    {
+        $profile = $page->type === PageType::Service ? BusinessProfile::query()->first() : null;
+
+        if (! filled($profile?->content_reviewer_name)) {
+            return [];
+        }
+
+        return [
+            'reviewedBy' => array_filter([
+                '@type' => 'Person',
+                'name' => $profile->content_reviewer_name,
+                'jobTitle' => $profile->content_reviewer_title,
+            ]),
+            'lastReviewed' => $page->updated_at->toDateString(),
+        ];
     }
 
     /**

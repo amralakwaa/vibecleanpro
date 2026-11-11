@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'latitude', 'longitude', 'working_hours', 'social_links', 'logo_media_id',
     'tagline', 'identity_statement', 'story', 'mission', 'vision', 'values',
     'founder_name', 'founder_title', 'founder_photo_media_id', 'founder_bio', 'founder_long_bio',
-    'show_founder', 'show_team', 'trust_points',
+    'show_founder', 'show_team', 'trust_points', 'content_reviewer_name', 'content_reviewer_title',
     'commercial_registration_number', 'display_commercial_registration', 'service_area',
     'google_business_profile_url', 'google_review_url', 'google_maps_place_id',
 ])]

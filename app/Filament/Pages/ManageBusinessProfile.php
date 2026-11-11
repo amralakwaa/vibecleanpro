@@ -208,6 +208,13 @@ class ManageBusinessProfile extends Page
                                     RichEditor::make('founder_long_bio')->label('نبذة موسعة')->helperText('اختياري.')->columnSpanFull(),
                                 ])
                                 ->columns(2),
+                            Section::make('مراجعة المحتوى الفني')
+                                ->description('يظهر سطر «مراجعة المحتوى الفني» في كل صفحة خدمة، ويُضاف للبيانات المنظمة لمحركات البحث. اتركه فارغًا لإخفائه. اكتب اسم شخص حقيقي وافق على نشر اسمه.')
+                                ->schema([
+                                    TextInput::make('content_reviewer_name')->label('اسم المراجِع')->maxLength(150),
+                                    TextInput::make('content_reviewer_title')->label('الصفة')->maxLength(150)->helperText('مثل: الأستاذة المهندسة.'),
+                                ])
+                                ->columns(2),
                         ]),
 
                         Tab::make('الإشعارات')->schema([
