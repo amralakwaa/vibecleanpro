@@ -5,12 +5,14 @@ namespace Tests\Feature;
 use App\Enums\PageStatus;
 use App\Enums\PageType;
 use App\Enums\ProjectCluster;
+use App\Models\Area;
 use App\Models\Article;
 use App\Models\ContentBlock;
 use App\Models\Page;
 use App\Models\Project;
 use App\Models\SeoMetadata;
 use App\Models\Service;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -91,6 +93,28 @@ class RelatedContentOrderingTest extends TestCase
         $articles = $this->get('/services/tanks')->assertOk()->viewData('articles');
 
         $this->assertSame(['tank-specific', 'site-wide-guide'], $articles->map(fn (Article $a) => $a->page->slug)->all());
+    }
+
+    public function test_a_verified_project_alone_in_its_district_is_filled_with_its_own_kind_of_work(): void
+    {
+        $area = Area::factory()->create();
+        $lonely = $this->project('district-only', ProjectCluster::Facade);
+        $lonely->forceFill([
+            'area_id' => $area->id,
+            'location_status' => 'verified',
+            'location_confidence' => 3,
+            'location_evidence_type' => 'manual_record',
+            'location_evidence_reference' => 'owner-confirmation',
+            'verified_at' => now(),
+            'verified_by' => User::factory()->create()->id,
+        ])->save();
+        $this->project('facade-elsewhere', ProjectCluster::Facade);
+        $this->project('villa-elsewhere', ProjectCluster::Villa);
+
+        $response = $this->get('/projects/district-only')->assertOk();
+
+        $this->assertSame(['facade-elsewhere'], $response->viewData('relatedProjects')->map(fn (Project $p) => $p->page->slug)->all());
+        $this->assertSame('مشاريع أخرى من النوع نفسه', $response->viewData('relatedProjectsLabel'));
     }
 
     public function test_projects_in_a_cluster_link_to_their_next_neighbours_and_wrap_round(): void

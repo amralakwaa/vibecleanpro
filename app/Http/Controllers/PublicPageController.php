@@ -448,24 +448,37 @@ class PublicPageController extends Controller
         // link to nothing at all, because no project carries an area yet.
         $serviceIds = $relatedServices->pluck('id');
 
-        $relatedProjects = $this->nextInRing(
-            $displayArea
-                ? Project::query()
+        $sameKind = Project::query()
+            ->when(
+                // Cluster first: a facade job belongs beside another
+                // facade job, not beside whatever shares its service.
+                filled($project->cluster),
+                fn ($query) => $query->where('cluster', $project->cluster),
+                fn ($query) => $query->whereHas('services', fn ($inner) => $inner->whereIn('services.id', $serviceIds)),
+            )
+            ->whereHas('page', fn ($query) => $query->published())
+            ->with(['media', 'page']);
+
+        $relatedProjects = $displayArea
+            ? $this->nextInRing(
+                Project::query()
                     ->where('area_id', $project->area_id)
                     ->whereHas('page', fn ($query) => $query->published())
-                    ->with(['media', 'page'])
-                : Project::query()
-                    ->when(
-                        // Cluster first: a facade job belongs beside another
-                        // facade job, not beside whatever shares its service.
-                        filled($project->cluster),
-                        fn ($query) => $query->where('cluster', $project->cluster),
-                        fn ($query) => $query->whereHas('services', fn ($inner) => $inner->whereIn('services.id', $serviceIds)),
-                    )
-                    ->whereHas('page', fn ($query) => $query->published())
                     ->with(['media', 'page']),
-            $project->id,
-        );
+                $project->id,
+            )
+            : $this->nextInRing($sameKind, $project->id);
+
+        // A district with one or two case studies would otherwise leave the
+        // page with no neighbours at all; the rest come from the same kind
+        // of work, so the label below must stop claiming "same district".
+        $areaNeighbourCount = $displayArea ? $relatedProjects->count() : 0;
+
+        if ($displayArea && $relatedProjects->count() < 3) {
+            $relatedProjects = $relatedProjects->concat(
+                $this->nextInRing((clone $sameKind)->whereNotIn('projects.id', $relatedProjects->pluck('id')), $project->id, 3 - $relatedProjects->count())
+            );
+        }
 
         // Article -> Service -> Project: the supporting reading for this
         // case study is whatever explains the service it evidences. No new
@@ -489,9 +502,10 @@ class PublicPageController extends Controller
             'relatedServices' => $relatedServices,
             'relatedProjects' => $relatedProjects,
             'relatedArticles' => $relatedArticles,
-            'relatedProjectsAreByArea' => (bool) $displayArea,
+            'relatedProjectsAreByArea' => $areaNeighbourCount > 0 && $areaNeighbourCount === $relatedProjects->count(),
             'relatedProjectsLabel' => match (true) {
-                (bool) $displayArea => 'مشاريع أخرى في نفس المنطقة',
+                $areaNeighbourCount > 0 && $areaNeighbourCount === $relatedProjects->count() => 'مشاريع أخرى في نفس المنطقة',
+                $areaNeighbourCount > 0 => 'مشاريع أخرى في المنطقة ومن النوع نفسه',
                 filled($project->cluster) => 'مشاريع أخرى من النوع نفسه',
                 default => 'مشاريع أخرى في نفس الخدمة',
             },
