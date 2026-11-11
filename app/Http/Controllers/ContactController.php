@@ -54,7 +54,7 @@ class ContactController extends Controller
         ];
 
         $seo = new SeoHeadData(
-            title: 'تواصل معنا | '.($businessProfile?->displayName() ?: config('app.name')),
+            title: 'تواصل معنا — طلب عرض سعر تنظيف بالرياض | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'تواصل مع فايب كلين برو عبر واتساب أو الهاتف للحصول على عرض سعر مكتوب لخدمات التنظيف في الرياض — فلل وشقق ومكاتب وواجهات. نرد سريعًا ونرتّب المعاينة.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/contact'),
             robotsContent: 'index, follow',

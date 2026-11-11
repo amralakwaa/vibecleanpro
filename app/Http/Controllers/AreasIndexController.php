@@ -91,8 +91,8 @@ class AreasIndexController extends Controller
         ];
 
         $seo = new SeoHeadData(
-            title: 'مناطق التغطية | '.$businessProfileName,
-            metaDescription: 'نقدم خدمات التنظيف الاحترافية في عشرات أحياء الرياض — من الملقا والنرجس إلى التعاون والياسمين. تصفح قائمة الأحياء التي نغطيها وتأكد من توفر الخدمة في منطقتك.',
+            title: 'أحياء الرياض التي نخدمها — شمال وشرق ووسط الرياض | '.$businessProfileName,
+            metaDescription: 'أحياء الرياض التي نخدمها في الشمال والشرق والوسط — من الملقا والنرجس إلى التعاون والياسمين. لكل حي صفحة بالخدمات الأكثر طلبًا فيه، وتأكد من توفر الخدمة في منطقتك.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/areas'),
             robotsContent: 'index, follow',
             openGraph: [

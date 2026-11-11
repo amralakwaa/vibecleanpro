@@ -21,6 +21,7 @@ use App\Seo\StructuredDataGenerator;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\SeoHeadData;
 use App\Support\PublicPageCache;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 
@@ -118,6 +119,19 @@ class HomeController extends Controller
         return $heroProject?->media->firstWhere('pivot.stage', 'after');
     }
 
+    /**
+     * @return Collection<int, Faq>
+     */
+    private function homeFaqs(): Collection
+    {
+        return Faq::query()
+            ->whereNull('page_id')
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->limit(6)
+            ->get();
+    }
+
     private function buildSeoArgs(?BusinessProfile $profile): array
     {
         $title = $profile
@@ -136,7 +150,12 @@ class HomeController extends Controller
                 'url' => $this->urlResolver->absoluteUrl('/'),
                 'type' => 'website',
             ],
-            'structuredData' => $this->structuredData->sitewide(),
+            // The FAQ block describes the same sitewide questions the page
+            // renders (homeFaqs()), so the markup never claims hidden content.
+            'structuredData' => [
+                ...$this->structuredData->sitewide(),
+                ...(($faqs = $this->homeFaqs())->isNotEmpty() ? [$this->structuredData->faqPage($faqs)] : []),
+            ],
             'breadcrumbs' => [],
         ];
     }
@@ -247,12 +266,7 @@ class HomeController extends Controller
         // Sitewide FAQs (page_id = null - the same scope the Filament FAQ
         // resource already manages, see FaqResource::getEloquentQuery()),
         // not any single page's FAQ block.
-        $faqs = Faq::query()
-            ->whereNull('page_id')
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->limit(6)
-            ->get();
+        $faqs = $this->homeFaqs();
 
         // One guide per blog category (the first published article of each of
         // the first three, in the editor's category order), so the homepage

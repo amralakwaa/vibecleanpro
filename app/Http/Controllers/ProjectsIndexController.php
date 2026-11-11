@@ -73,7 +73,7 @@ class ProjectsIndexController extends Controller
         $canonical = $this->urlResolver->absoluteUrl($isPlainPage ? '/projects?page='.$projects->currentPage() : '/projects');
 
         $seo = new SeoHeadData(
-            title: 'أعمالنا ومشاريعنا | '.($businessProfile?->displayName() ?: config('app.name')),
+            title: 'أعمال تنظيف منفذة بالرياض موثقة بالصور | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'نماذج من مشاريع التنظيف المنفذة بالرياض — فلل وشقق ومكاتب وواجهات. كل مشروع موثّق بالصور قبل وبعد لإثبات جودة العمل الميداني. تصفح الأعمال واحكم بنفسك.',
             canonicalUrl: $canonical,
             robotsContent: 'index, follow',

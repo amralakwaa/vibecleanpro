@@ -75,7 +75,7 @@ class BlogIndexController extends Controller
         $canonical = $this->urlResolver->absoluteUrl($articles->currentPage() > 1 ? '/blog?page='.$articles->currentPage() : '/blog');
 
         $seo = new SeoHeadData(
-            title: 'المدونة | '.($businessProfile?->displayName() ?: config('app.name')),
+            title: 'دليل التنظيف في الرياض: أسعار وقوائم تحقق ونصائح | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'أدلة تنظيف عملية من الرياض: أسعار شركات التنظيف وعواملها، قوائم تحقق قبل الاستلام، نصائح العناية بالرخام والكنب والمكيفات، ومعايير اختيار الشركة الموثوقة.',
             canonicalUrl: $canonical,
             robotsContent: 'index, follow',

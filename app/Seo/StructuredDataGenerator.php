@@ -52,11 +52,18 @@ class StructuredDataGenerator
 
         $blocks = [$this->localBusiness($profile)];
 
+        // The site name Google shows is read from WebSite.name, so it carries
+        // the Arabic brand the titles and the interface use; the Latin name
+        // stays as an alternate so both spellings resolve to one entity.
         $blocks[] = [
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',
-            'name' => $profile->name,
+            '@id' => $this->websiteId(),
+            'name' => $profile->displayName(),
+            ...($profile->displayName() !== $profile->name ? ['alternateName' => $profile->name] : []),
             'url' => $this->urlResolver->absoluteUrl('/'),
+            'inLanguage' => 'ar',
+            'publisher' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],
         ];
 
         return $blocks;
@@ -76,6 +83,7 @@ class StructuredDataGenerator
             'name' => $page->seoMetadata?->meta_title ?: $page->title,
             'url' => $url,
             'inLanguage' => 'ar',
+            'isPartOf' => ['@id' => $this->websiteId()],
             ...($page->seoMetadata?->meta_description ? ['description' => $page->seoMetadata->meta_description] : []),
             ...($page->published_at ? ['datePublished' => $page->published_at->toAtomString()] : []),
             'dateModified' => $page->updated_at->toAtomString(),
@@ -151,6 +159,16 @@ class StructuredDataGenerator
 
         if ($profile->email) {
             $data['email'] = $profile->email;
+        }
+
+        // Only the number the owner chose to display publicly - the same
+        // value the footer and About page show, never a stored-but-hidden one.
+        if ($registration = $profile->publicCommercialRegistration()) {
+            $data['identifier'] = [
+                '@type' => 'PropertyValue',
+                'propertyID' => 'السجل التجاري',
+                'value' => $registration,
+            ];
         }
 
         if ($profile->address || $profile->city) {
@@ -590,8 +608,19 @@ class StructuredDataGenerator
         return $data;
     }
 
-    /** @param Collection<int, Faq> $faqs */
-    private function faqPage(Collection $faqs): array
+    private function websiteId(): string
+    {
+        return $this->urlResolver->absoluteUrl('/').'#website';
+    }
+
+    /**
+     * Public so the homepage, which renders its sitewide FAQs outside the
+     * Page system, can describe exactly the questions it shows.
+     *
+     * @param  Collection<int, Faq>  $faqs
+     * @return array<string, mixed>
+     */
+    public function faqPage(Collection $faqs): array
     {
         return [
             '@context' => 'https://schema.org',

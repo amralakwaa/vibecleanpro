@@ -18,7 +18,9 @@ use App\Seo\RedirectResolver;
 use App\Seo\SeoHeadResolver;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\SeoHeadData;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Redirect as RedirectFacade;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -276,10 +278,15 @@ class PublicPageController extends Controller
         $hasManualRelatedBlock = $page->contentBlocks
             ->contains(fn ($block) => $block->type === 'related_content' && $block->is_active);
 
+        // Most specific reading first: an article written for this service
+        // alone outranks a site-wide guide attached to every service, which
+        // would otherwise take a slot on every service page by being oldest.
         $articles = $service->articles()
             ->whereHas('page', fn ($query) => $query->published())
             ->with(['category', 'page'])
-            ->orderBy('articles.id')
+            ->withCount('services')
+            ->orderBy('services_count')
+            ->orderByDesc('articles.id')
             ->limit(4)
             ->get();
 
@@ -441,37 +448,35 @@ class PublicPageController extends Controller
         // link to nothing at all, because no project carries an area yet.
         $serviceIds = $relatedServices->pluck('id');
 
-        $relatedProjects = $displayArea
-            ? Project::query()
-                ->whereKeyNot($project->id)
-                ->where('area_id', $project->area_id)
-                ->whereHas('page', fn ($query) => $query->published())
-                ->with(['media', 'page'])
-                ->limit(3)
-                ->get()
-            : Project::query()
-                ->whereKeyNot($project->id)
-                ->when(
-                    // Cluster first: a facade job belongs beside another
-                    // facade job, not beside whatever shares its service.
-                    filled($project->cluster),
-                    fn ($query) => $query->where('cluster', $project->cluster),
-                    fn ($query) => $query->whereHas('services', fn ($inner) => $inner->whereIn('services.id', $serviceIds)),
-                )
-                ->whereHas('page', fn ($query) => $query->published())
-                ->with(['media', 'page'])
-                ->limit(3)
-                ->get();
+        $relatedProjects = $this->nextInRing(
+            $displayArea
+                ? Project::query()
+                    ->where('area_id', $project->area_id)
+                    ->whereHas('page', fn ($query) => $query->published())
+                    ->with(['media', 'page'])
+                : Project::query()
+                    ->when(
+                        // Cluster first: a facade job belongs beside another
+                        // facade job, not beside whatever shares its service.
+                        filled($project->cluster),
+                        fn ($query) => $query->where('cluster', $project->cluster),
+                        fn ($query) => $query->whereHas('services', fn ($inner) => $inner->whereIn('services.id', $serviceIds)),
+                    )
+                    ->whereHas('page', fn ($query) => $query->published())
+                    ->with(['media', 'page']),
+            $project->id,
+        );
 
         // Article -> Service -> Project: the supporting reading for this
         // case study is whatever explains the service it evidences. No new
         // table - the relation already exists through the service.
-        $relatedArticles = $serviceIds->isEmpty() ? collect() : Article::query()
-            ->whereHas('page', fn ($query) => $query->published())
-            ->whereHas('services', fn ($query) => $query->whereIn('services.id', $serviceIds))
-            ->with('page')
-            ->limit(3)
-            ->get();
+        $relatedArticles = $serviceIds->isEmpty() ? collect() : $this->rankByTopic(
+            Article::query()
+                ->whereHas('page', fn ($query) => $query->published())
+                ->whereHas('services', fn ($query) => $query->whereIn('services.id', $serviceIds))
+                ->with('page'),
+            $serviceIds,
+        )->limit(3)->get();
 
         return response()->view('pages.project', [
             'page' => $page,
@@ -502,19 +507,21 @@ class PublicPageController extends Controller
         $related = $article->services()->whereHas('page', fn ($query) => $query->published())->with('page')->limit(3)->get();
         $relatedAreas = $article->areas()->whereHas('page', fn ($query) => $query->published())->with('page')->limit(3)->get();
 
-        $relatedArticles = Article::query()
-            ->whereKeyNot($article->id)
-            ->whereHas('page', fn ($query) => $query->published())
-            ->when($article->article_category_id, fn ($query) => $query->where('article_category_id', $article->article_category_id))
-            ->with(['featuredMedia', 'category', 'page'])
-            ->limit(3)
-            ->get();
+        $topicServiceIds = $article->services()->pluck('services.id');
+
+        $relatedArticles = $this->rankByTopic(
+            Article::query()
+                ->whereKeyNot($article->id)
+                ->whereHas('page', fn ($query) => $query->published())
+                ->when($article->article_category_id, fn ($query) => $query->where('article_category_id', $article->article_category_id))
+                ->with(['featuredMedia', 'category', 'page']),
+            $topicServiceIds,
+        )->limit(3)->get();
 
         // No direct Article -> Project relation exists (and per the Phase
         // 6 report, item 25, none is being added) - "related" projects
         // here are purely inferred from the topics (Service/Area) this
         // Article already shares real relations with, never stored.
-        $topicServiceIds = $article->services()->pluck('services.id');
         $topicAreaIds = $article->areas()->pluck('areas.id');
 
         $relatedProjects = ($topicServiceIds->isEmpty() && $topicAreaIds->isEmpty())
@@ -552,6 +559,49 @@ class PublicPageController extends Controller
             'relatedProjects' => $relatedProjects,
             'readingMinutes' => $readingMinutes,
         ], 200);
+    }
+
+    /**
+     * Orders related articles by relevance instead of by id, which handed
+     * the same oldest articles a link from every page: the most services
+     * shared with the current topic first, then the most specific article
+     * (fewest services attached), then the newest.
+     *
+     * @param  Builder<Article>  $query
+     * @param  SupportCollection<int, int>  $serviceIds
+     * @return Builder<Article>
+     */
+    private function rankByTopic(Builder $query, SupportCollection $serviceIds): Builder
+    {
+        return $query
+            ->when($serviceIds->isNotEmpty(), fn (Builder $inner) => $inner
+                ->withCount(['services as shared_services_count' => fn (Builder $q) => $q->whereIn('services.id', $serviceIds)])
+                ->orderByDesc('shared_services_count'))
+            ->withCount('services')
+            ->orderBy('services_count')
+            ->orderByDesc('articles.id');
+    }
+
+    /**
+     * The projects that follow this one by id, wrapping round to the start.
+     * Every case study in a group then links to its next neighbours, so each
+     * one receives links instead of the first few rows taking them all, and
+     * the choice stays stable between requests (no random order to cache).
+     *
+     * @param  Builder<Project>  $query
+     * @return SupportCollection<int, Project>
+     */
+    private function nextInRing(Builder $query, int $currentId, int $limit = 3): SupportCollection
+    {
+        $after = (clone $query)->where('projects.id', '>', $currentId)->orderBy('projects.id')->limit($limit)->get();
+
+        if ($after->count() >= $limit) {
+            return $after;
+        }
+
+        $before = (clone $query)->where('projects.id', '<', $currentId)->orderBy('projects.id')->limit($limit - $after->count())->get();
+
+        return $after->concat($before);
     }
 
     private function renderOffer(Page $page, SeoHeadData $seo, ?BusinessProfile $businessProfile, $faqs): Response

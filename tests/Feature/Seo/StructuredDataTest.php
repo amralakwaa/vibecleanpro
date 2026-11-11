@@ -354,6 +354,53 @@ class StructuredDataTest extends TestCase
         $this->assertSame(config('pricing.currency'), $offerBlock['priceCurrency']);
     }
 
+    public function test_the_website_node_carries_the_arabic_brand_and_links_to_the_business(): void
+    {
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'name_ar' => 'فايب كلين برو']);
+
+        $website = collect($this->generator->sitewide())->firstWhere('@type', 'WebSite');
+
+        $this->assertSame('فايب كلين برو', $website['name']);
+        $this->assertSame('Vibe Clean Pro', $website['alternateName']);
+        $this->assertSame('ar', $website['inLanguage']);
+        $this->assertStringEndsWith('/#website', $website['@id']);
+        $this->assertStringEndsWith('/#business', $website['publisher']['@id']);
+    }
+
+    public function test_every_webpage_is_part_of_the_website(): void
+    {
+        $service = $this->publishedService('graph-service', 'خدمة');
+
+        $webPage = collect($this->generator->forPage($service->page))->firstWhere('@type', 'WebPage');
+
+        $this->assertStringEndsWith('/#website', $webPage['isPartOf']['@id']);
+    }
+
+    public function test_the_commercial_registration_is_an_identifier_only_when_shown_publicly(): void
+    {
+        $profile = BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'commercial_registration_number' => '7056323897']);
+        $business = fn () => collect($this->generator->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
+
+        $this->assertArrayNotHasKey('identifier', $business());
+
+        $profile->update(['display_commercial_registration' => true]);
+
+        $this->assertSame('7056323897', $business()['identifier']['value']);
+    }
+
+    public function test_the_homepage_marks_up_the_sitewide_faqs_it_renders(): void
+    {
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro']);
+        Faq::query()->create(['question' => 'هل تعملون يوم الجمعة؟', 'answer' => 'نعم بموعد مسبق.', 'is_active' => true, 'sort_order' => 1]);
+        Faq::query()->create(['question' => 'سؤال مخفي', 'answer' => 'لا يظهر.', 'is_active' => false, 'sort_order' => 2]);
+
+        $response = $this->get('/')->assertOk();
+
+        $response->assertSee('"@type":"FAQPage"', false);
+        $response->assertSee('هل تعملون يوم الجمعة؟');
+        $response->assertDontSee('سؤال مخفي');
+    }
+
     private function publishedService(string $slug, string $name): Service
     {
         $service = Service::factory()->create(['name' => $name]);
