@@ -42,6 +42,10 @@ class ProjectsIndexController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        // A page past the last one is not an empty listing: answering it with
+        // 200 and a self-canonical let ?page=99 pass as a real, indexable page.
+        abort_if($projects->currentPage() > max(1, $projects->lastPage()), 404);
+
         $filterServices = Service::query()->whereHas('page', fn ($query) => $query->published())->orderBy('sort_order')->get();
         $filterAreas = Area::query()->whereHas('page', fn ($query) => $query->published())->orderBy('sort_order')->get();
 

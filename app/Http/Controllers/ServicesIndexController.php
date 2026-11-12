@@ -37,6 +37,10 @@ class ServicesIndexController extends Controller
             ->paginate(24)
             ->withQueryString();
 
+        // A page past the last one is not an empty listing: answering it with
+        // 200 and a self-canonical let ?page=99 pass as a real, indexable page.
+        abort_if($services->currentPage() > max(1, $services->lastPage()), 404);
+
         $canonicalPath = '/services'.($services->currentPage() > 1 ? '?page='.$services->currentPage() : '');
 
         $itemList = [

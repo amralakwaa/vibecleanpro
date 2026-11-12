@@ -39,7 +39,12 @@ class QuoteController extends Controller
             title: 'اطلب عرض سعر | '.($businessProfile?->name ?? config('app.name')),
             metaDescription: 'اطلب عرض سعر لخدمة التنظيف التي تحتاجها في الرياض.',
             canonicalUrl: $this->urlResolver->absoluteUrl('/quote'),
-            robotsContent: 'index, follow',
+            // A form, not an answer to a search: Search Console showed its
+            // ?area= / ?service= variants collecting impressions despite the
+            // canonical. noindex keeps every variant out of results while
+            // follow keeps the links on it crawlable; /contact is the
+            // indexable page for "how do I reach you" searches.
+            robotsContent: 'noindex, follow',
             openGraph: [
                 'title' => 'اطلب عرض سعر',
                 'description' => 'اطلب عرض سعر لخدمة التنظيف التي تحتاجها في الرياض.',

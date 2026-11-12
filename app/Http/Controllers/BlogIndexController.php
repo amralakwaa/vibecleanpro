@@ -33,6 +33,10 @@ class BlogIndexController extends Controller
             ->paginate(9)
             ->withQueryString();
 
+        // A page past the last one is not an empty listing: answering it with
+        // 200 and a self-canonical let ?page=99 pass as a real, indexable page.
+        abort_if($articles->currentPage() > max(1, $articles->lastPage()), 404);
+
         // Categories are organising labels only (no category route exists):
         // listed with the real count of published articles in each, so the
         // legend never names an empty topic.

@@ -57,6 +57,18 @@ class ConversionPagesV2Test extends TestCase
         }
     }
 
+    public function test_the_quote_form_and_its_prefilled_variants_stay_out_of_the_index(): void
+    {
+        foreach (['/quote', '/quote?area=1', '/quote?service=9'] as $url) {
+            $html = $this->get($url)->assertOk()->getContent();
+
+            $this->assertStringContainsString('<meta name="robots" content="noindex, follow">', $html, $url);
+            $this->assertStringContainsString('<link rel="canonical" href="'.url('/quote').'">', $html, $url);
+        }
+
+        $this->get('/contact')->assertOk()->assertSee('<meta name="robots" content="index, follow">', false);
+    }
+
     public function test_contact_and_quote_share_one_form_system_with_a_focusable_error_summary(): void
     {
         BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'phone' => '+966500000000']);
