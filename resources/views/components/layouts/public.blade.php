@@ -190,24 +190,25 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
 
+    @php($shareImage = $seo->openGraph['image'] ?: app(\App\Seo\DefaultShareImage::class)->url())
     <meta property="og:title" content="{{ $seo->openGraph['title'] }}">
     @if ($seo->openGraph['description'])
         <meta property="og:description" content="{{ $seo->openGraph['description'] }}">
     @endif
-    @if ($seo->openGraph['image'])
-        <meta property="og:image" content="{{ $seo->openGraph['image'] }}">
+    @if ($shareImage)
+        <meta property="og:image" content="{{ $shareImage }}">
     @endif
     <meta property="og:url" content="{{ $seo->openGraph['url'] }}">
     <meta property="og:type" content="{{ $seo->openGraph['type'] }}">
     <meta property="og:locale" content="ar_SA">
 
-    <meta name="twitter:card" content="{{ $seo->openGraph['image'] ? 'summary_large_image' : 'summary' }}">
+    <meta name="twitter:card" content="{{ $shareImage ? 'summary_large_image' : 'summary' }}">
     <meta name="twitter:title" content="{{ $seo->openGraph['title'] }}">
     @if ($seo->openGraph['description'])
         <meta name="twitter:description" content="{{ $seo->openGraph['description'] }}">
     @endif
-    @if ($seo->openGraph['image'])
-        <meta name="twitter:image" content="{{ $seo->openGraph['image'] }}">
+    @if ($shareImage)
+        <meta name="twitter:image" content="{{ $shareImage }}">
     @endif
 
     @foreach ($seo->structuredData as $block)

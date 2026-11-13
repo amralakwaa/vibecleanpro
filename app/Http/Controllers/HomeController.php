@@ -15,8 +15,8 @@ use App\Models\Offer;
 use App\Models\Page;
 use App\Models\Project;
 use App\Models\Service;
-use App\Models\SiteSetting;
 use App\Models\Testimonial;
+use App\Seo\DefaultShareImage;
 use App\Seo\StructuredDataGenerator;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\SeoHeadData;
@@ -37,6 +37,7 @@ class HomeController extends Controller
     public function __construct(
         private readonly UrlResolver $urlResolver,
         private readonly StructuredDataGenerator $structuredData,
+        private readonly DefaultShareImage $defaultShareImage,
     ) {}
 
     public function index(): Response
@@ -102,21 +103,7 @@ class HomeController extends Controller
      */
     private function resolveHeroImage(): ?Media
     {
-        if ($heroMediaId = SiteSetting::get(SiteSetting::HOME_HERO_MEDIA_ID)) {
-            if ($hero = Media::query()->find($heroMediaId)) {
-                return $hero;
-            }
-        }
-
-        $heroProject = Project::query()
-            ->whereHas('page', fn ($query) => $query->published())
-            ->whereHas('media', fn ($query) => $query->where('project_media.stage', 'after'))
-            ->with('media')
-            ->orderByDesc('is_featured')
-            ->orderByDesc('completed_at')
-            ->first();
-
-        return $heroProject?->media->firstWhere('pivot.stage', 'after');
+        return $this->defaultShareImage->media();
     }
 
     /**

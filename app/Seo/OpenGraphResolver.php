@@ -5,6 +5,7 @@ namespace App\Seo;
 use App\Enums\PageType;
 use App\Models\BusinessProfile;
 use App\Models\Page;
+use App\Models\Project;
 
 /**
  * Fallback chain, in order: explicit OG field -> SEO metadata (meta title/
@@ -16,6 +17,7 @@ class OpenGraphResolver
 {
     public function __construct(
         private readonly CanonicalResolver $canonical,
+        private readonly DefaultShareImage $defaultShareImage,
     ) {}
 
     /**
@@ -25,7 +27,11 @@ class OpenGraphResolver
     {
         $seo = $page->seoMetadata;
 
-        $image = $seo?->ogImage?->url();
+        $image = $seo?->ogImage?->url() ?: null;
+
+        $image ??= $this->pageImage($page);
+
+        $image ??= $this->defaultShareImage->url();
 
         if (! $image) {
             $image = BusinessProfile::query()->first()?->logo?->url();
@@ -38,5 +44,27 @@ class OpenGraphResolver
             'url' => $this->canonical->resolve($page),
             'type' => $page->type === PageType::Article ? 'article' : 'website',
         ];
+    }
+
+    /**
+     * The photograph the page itself is about: a service, article or offer's
+     * featured image, or a project's "after" photo (its first photo if it has
+     * no after stage).
+     */
+    private function pageImage(Page $page): ?string
+    {
+        $pageable = $page->pageable;
+
+        if ($pageable instanceof Project) {
+            $media = $pageable->media()->wherePivot('stage', 'after')->first() ?? $pageable->media()->first();
+
+            return $media?->url();
+        }
+
+        if ($pageable && method_exists($pageable, 'featuredMedia')) {
+            return $pageable->featuredMedia?->url();
+        }
+
+        return null;
     }
 }
