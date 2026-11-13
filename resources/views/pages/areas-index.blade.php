@@ -142,6 +142,8 @@
         </section>
     @endif
 
+    @include('pages.partials.index-companion')
+
     {{-- ===== 3. Not listed? A tinted note with the real channels ===== --}}
     @if ($whatsappUrl || $phoneUrl)
         <section class="surface-tint relative overflow-hidden">

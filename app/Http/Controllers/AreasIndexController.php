@@ -11,6 +11,7 @@ use App\Models\Page;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
+use App\Support\Content\IndexCompanion;
 use Illuminate\Http\Response;
 
 /**
@@ -21,11 +22,15 @@ use Illuminate\Http\Response;
  */
 class AreasIndexController extends Controller
 {
-    public function __construct(private readonly UrlResolver $urlResolver) {}
+    public function __construct(
+        private readonly UrlResolver $urlResolver,
+        private readonly IndexCompanion $indexCompanion,
+    ) {}
 
     public function index(): Response
     {
         $businessProfile = BusinessProfile::query()->first();
+        $companion = $this->indexCompanion->find('areas');
 
         // The directory is the coverage list: every district the company
         // serves (Tier A and B). Only an area whose own page is published
@@ -91,8 +96,8 @@ class AreasIndexController extends Controller
         ];
 
         $seo = new SeoHeadData(
-            title: 'أحياء الرياض التي نخدمها — شمال وشرق ووسط الرياض | '.$businessProfileName,
-            metaDescription: 'أحياء الرياض التي نخدمها في الشمال والشرق والوسط — من الملقا والنرجس إلى التعاون والياسمين. لكل حي صفحة بالخدمات الأكثر طلبًا فيه، وتأكد من توفر الخدمة في منطقتك.',
+            title: $this->indexCompanion->title($companion, 'أحياء الرياض التي نخدمها — شمال وشرق ووسط الرياض | '.$businessProfileName),
+            metaDescription: $this->indexCompanion->description($companion, 'أحياء الرياض التي نخدمها في الشمال والشرق والوسط — من الملقا والنرجس إلى التعاون والياسمين. لكل حي صفحة بالخدمات الأكثر طلبًا فيه، وتأكد من توفر الخدمة في منطقتك.'),
             canonicalUrl: $this->urlResolver->absoluteUrl('/areas'),
             robotsContent: 'index, follow',
             openGraph: [
@@ -102,7 +107,7 @@ class AreasIndexController extends Controller
                 'url' => $this->urlResolver->absoluteUrl('/areas'),
                 'type' => 'website',
             ],
-            structuredData: [$itemList, $breadcrumbList],
+            structuredData: [$itemList, $breadcrumbList, ...$this->indexCompanion->structuredData($companion)],
             breadcrumbs: [
                 new BreadcrumbItem('الرئيسية', '/'),
                 new BreadcrumbItem('مناطق التغطية', null),
@@ -110,6 +115,7 @@ class AreasIndexController extends Controller
         );
 
         return response()->view('pages.areas-index', [
+            'companion' => $companion,
             'seo' => $seo,
             'businessProfile' => $businessProfile,
             'groups' => $groups,

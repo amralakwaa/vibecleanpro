@@ -8,6 +8,7 @@ use App\Models\Offer;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
+use App\Support\Content\IndexCompanion;
 use Illuminate\Http\Response;
 
 /**
@@ -17,11 +18,15 @@ use Illuminate\Http\Response;
  */
 class OffersIndexController extends Controller
 {
-    public function __construct(private readonly UrlResolver $urlResolver) {}
+    public function __construct(
+        private readonly UrlResolver $urlResolver,
+        private readonly IndexCompanion $indexCompanion,
+    ) {}
 
     public function index(): Response
     {
         $businessProfile = BusinessProfile::query()->first();
+        $companion = $this->indexCompanion->find('offers');
 
         // 'page' is eager-loaded because the view resolves each offer's
         // URL through UrlResolver::urlForPage() - without it every listed
@@ -61,8 +66,8 @@ class OffersIndexController extends Controller
         ];
 
         $seo = new SeoHeadData(
-            title: 'عروض وباقات التنظيف بالرياض | '.($businessProfile?->displayName() ?: config('app.name')),
-            metaDescription: 'عروض وباقات تنظيف بالرياض بأسعار موسمية — تنظيف فلل وشقق ومكاتب. عروض محدودة المدة تشمل التنظيف الشامل وجلي الرخام وتنظيف المكيفات. اطلع على التفاصيل واحجز الآن.',
+            title: $this->indexCompanion->title($companion, 'عروض وباقات التنظيف بالرياض | '.($businessProfile?->displayName() ?: config('app.name'))),
+            metaDescription: $this->indexCompanion->description($companion, 'عروض وباقات تنظيف بالرياض بأسعار موسمية — تنظيف فلل وشقق ومكاتب. عروض محدودة المدة تشمل التنظيف الشامل وجلي الرخام وتنظيف المكيفات. اطلع على التفاصيل واحجز الآن.'),
             canonicalUrl: $this->urlResolver->absoluteUrl('/offers'),
             robotsContent: 'index, follow',
             openGraph: [
@@ -72,7 +77,7 @@ class OffersIndexController extends Controller
                 'url' => $this->urlResolver->absoluteUrl('/offers'),
                 'type' => 'website',
             ],
-            structuredData: [$offerList, $breadcrumbList],
+            structuredData: [$offerList, $breadcrumbList, ...$this->indexCompanion->structuredData($companion)],
             breadcrumbs: [
                 new BreadcrumbItem('الرئيسية', '/'),
                 new BreadcrumbItem('العروض', null),
@@ -80,6 +85,7 @@ class OffersIndexController extends Controller
         );
 
         return response()->view('pages.offers-index', [
+            'companion' => $companion,
             'seo' => $seo,
             'businessProfile' => $businessProfile,
             'offers' => $offers,

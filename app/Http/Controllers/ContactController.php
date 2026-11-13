@@ -10,6 +10,7 @@ use App\Models\Lead;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
+use App\Support\Content\IndexCompanion;
 use App\Support\Tracking\ConversionRecorder;
 use App\Support\Tracking\VisitorClassifier;
 use Illuminate\Http\RedirectResponse;
@@ -24,7 +25,10 @@ use Illuminate\Support\Facades\Redirect;
  */
 class ContactController extends Controller
 {
-    public function __construct(private readonly UrlResolver $urlResolver) {}
+    public function __construct(
+        private readonly UrlResolver $urlResolver,
+        private readonly IndexCompanion $indexCompanion,
+    ) {}
 
     public function index(Request $request): Response
     {
@@ -35,6 +39,7 @@ class ContactController extends Controller
         $isBusinessContext = $request->query('for') === 'business';
 
         $businessProfile = BusinessProfile::query()->first();
+        $companion = $this->indexCompanion->find('contact');
 
         $contactPage = [
             '@context' => 'https://schema.org',
@@ -54,8 +59,8 @@ class ContactController extends Controller
         ];
 
         $seo = new SeoHeadData(
-            title: 'تواصل معنا — طلب عرض سعر تنظيف بالرياض | '.($businessProfile?->displayName() ?: config('app.name')),
-            metaDescription: 'تواصل مع فايب كلين برو عبر واتساب أو الهاتف للحصول على عرض سعر مكتوب لخدمات التنظيف في الرياض — فلل وشقق ومكاتب وواجهات. نرد سريعًا ونرتّب المعاينة.',
+            title: $this->indexCompanion->title($companion, 'تواصل معنا — طلب عرض سعر تنظيف بالرياض | '.($businessProfile?->displayName() ?: config('app.name'))),
+            metaDescription: $this->indexCompanion->description($companion, 'تواصل مع فايب كلين برو عبر واتساب أو الهاتف للحصول على عرض سعر مكتوب لخدمات التنظيف في الرياض — فلل وشقق ومكاتب وواجهات. نرد سريعًا ونرتّب المعاينة.'),
             canonicalUrl: $this->urlResolver->absoluteUrl('/contact'),
             robotsContent: 'index, follow',
             openGraph: [
@@ -65,7 +70,7 @@ class ContactController extends Controller
                 'url' => $this->urlResolver->absoluteUrl('/contact'),
                 'type' => 'website',
             ],
-            structuredData: [$contactPage, $breadcrumbList],
+            structuredData: [$contactPage, $breadcrumbList, ...$this->indexCompanion->structuredData($companion)],
             breadcrumbs: [
                 new BreadcrumbItem('الرئيسية', '/'),
                 new BreadcrumbItem('تواصل معنا', null),
@@ -73,6 +78,7 @@ class ContactController extends Controller
         );
 
         return response()->view('pages.contact', [
+            'companion' => $companion,
             'seo' => $seo,
             'businessProfile' => $businessProfile,
             'submitted' => session('lead_submitted', false),

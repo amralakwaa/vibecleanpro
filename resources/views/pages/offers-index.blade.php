@@ -191,4 +191,6 @@
             </x-public.container>
         </section>
     @endif
+
+    @include('pages.partials.index-companion')
 </x-layouts.public>

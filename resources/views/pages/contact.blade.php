@@ -278,4 +278,6 @@
             </div>
         </div>
     </x-public.container>
+
+    @include('pages.partials.index-companion')
 </x-layouts.public>
