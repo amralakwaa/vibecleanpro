@@ -206,10 +206,10 @@ class ManageIntegrations extends Page
                             Section::make('Google Search Console')
                                 ->schema([
                                     TextInput::make(AnalyticsSettings::SEARCH_CONSOLE_KEY)
-                                        ->label('رمز التحقق (google-site-verification)')
-                                        ->regex(AnalyticsSettings::TOKEN_PATTERN)
-                                        ->maxLength(100)
-                                        ->helperText('قيمة content فقط، لا الوسم كاملًا.'),
+                                        ->label('رموز التحقق (google-site-verification)')
+                                        ->regex(AnalyticsSettings::TOKEN_LIST_PATTERN)
+                                        ->maxLength(500)
+                                        ->helperText('قيمة content فقط، لا الوسم كاملًا. لأكثر من مالك: افصل الرموز بمسافة أو فاصلة، ولا تحذف رمزًا ما زال مستخدمًا.'),
                                     Toggle::make(IntegrationSettings::SEARCH_CONSOLE_ENABLED)->label('طباعة وسم التحقق في الموقع'),
                                 ])
                                 ->columns(2),

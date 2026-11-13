@@ -224,6 +224,18 @@ class IntegrationsControlCenterTest extends TestCase
         $this->get('/')->assertSee('<meta name="google-site-verification" content="AbC123_def-456ghi">', false);
     }
 
+    public function test_a_second_search_console_owner_keeps_the_first_owners_tag(): void
+    {
+        $this->settings()->set(AnalyticsSettings::SEARCH_CONSOLE_KEY, "AbC123_def-456ghi, Second_owner-789xyz\nDEMO_SEARCH_CONSOLE_TOKEN <bad>");
+        $this->settings()->set(IntegrationSettings::SEARCH_CONSOLE_ENABLED, true, 'bool');
+
+        $this->get('/')->assertOk()
+            ->assertSee('<meta name="google-site-verification" content="AbC123_def-456ghi">', false)
+            ->assertSee('<meta name="google-site-verification" content="Second_owner-789xyz">', false)
+            ->assertDontSee('DEMO_SEARCH_CONSOLE_TOKEN', false);
+        $this->assertSame(['AbC123_def-456ghi', 'Second_owner-789xyz'], app(AnalyticsSettings::class)->searchConsoleTokens());
+    }
+
     public function test_a_demo_verification_token_is_never_printed(): void
     {
         $this->settings()->set(AnalyticsSettings::SEARCH_CONSOLE_KEY, 'DEMO_SEARCH_CONSOLE_TOKEN');

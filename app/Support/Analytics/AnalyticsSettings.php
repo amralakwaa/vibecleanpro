@@ -29,6 +29,9 @@ class AnalyticsSettings
 
     public const TOKEN_PATTERN = '/^[A-Za-z0-9_\-]{10,100}$/';
 
+    /** One or more tokens separated by spaces, commas or new lines. */
+    public const TOKEN_LIST_PATTERN = '/^[A-Za-z0-9_\-]{10,100}([\s,]+[A-Za-z0-9_\-]{10,100})*$/';
+
     public const GA4_PATTERN = '/^G-[A-Z0-9]{4,15}$/';
 
     /**
@@ -48,18 +51,24 @@ class AnalyticsSettings
     public const ADS_LABEL_PATTERN = '/^[A-Za-z0-9_\-]{8,40}$/';
 
     /**
-     * The token only when it is valid, switched on, and not a seeded
-     * placeholder - so a demo token is never printed for visitors.
+     * The first token to print, or null. See searchConsoleTokens().
      */
     public function searchConsoleToken(): ?string
     {
-        $token = trim((string) SiteSetting::get(self::SEARCH_CONSOLE_KEY));
+        return $this->searchConsoleTokens()[0] ?? null;
+    }
 
-        if (! preg_match(self::TOKEN_PATTERN, $token) || DemoValue::isDemo($token)) {
-            return null;
-        }
-
-        return SiteSetting::get(IntegrationSettings::SEARCH_CONSOLE_ENABLED, false) ? $token : null;
+    /**
+     * Every token to print, only when switched on. The setting may hold
+     * several tokens (one per Search Console owner or property, separated
+     * by spaces, commas or new lines) so adding an owner never removes
+     * the tag that keeps an existing owner verified.
+     *
+     * @return list<string>
+     */
+    public function searchConsoleTokens(): array
+    {
+        return SiteSetting::get(IntegrationSettings::SEARCH_CONSOLE_ENABLED, false) ? $this->storedSearchConsoleTokens() : [];
     }
 
     /**
@@ -67,9 +76,23 @@ class AnalyticsSettings
      */
     public function hasSearchConsoleToken(): bool
     {
-        $token = trim((string) SiteSetting::get(self::SEARCH_CONSOLE_KEY));
+        return $this->storedSearchConsoleTokens() !== [];
+    }
 
-        return preg_match(self::TOKEN_PATTERN, $token) && ! DemoValue::isDemo($token);
+    /**
+     * Stored tokens that are valid and not a seeded placeholder - so a demo
+     * token is never printed for visitors.
+     *
+     * @return list<string>
+     */
+    private function storedSearchConsoleTokens(): array
+    {
+        $tokens = preg_split('/[\s,]+/', trim((string) SiteSetting::get(self::SEARCH_CONSOLE_KEY)), -1, PREG_SPLIT_NO_EMPTY);
+
+        return array_values(array_unique(array_filter(
+            $tokens,
+            fn (string $token): bool => preg_match(self::TOKEN_PATTERN, $token) === 1 && ! DemoValue::isDemo($token),
+        )));
     }
 
     public function ga4MeasurementId(): ?string

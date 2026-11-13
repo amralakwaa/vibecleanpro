@@ -218,9 +218,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="vcp-track" content="{{ route('public.track') }}">
     @php($analytics = app(\App\Support\Analytics\AnalyticsSettings::class))
-    @if ($searchConsoleToken = $analytics->searchConsoleToken())
+    @foreach ($analytics->searchConsoleTokens() as $searchConsoleToken)
         <meta name="google-site-verification" content="{{ $searchConsoleToken }}">
-    @endif
+    @endforeach
     @if ($analytics->isGa4Active() || $analytics->isAdsActive())
         {{-- gtag.js is ~140 KB of JavaScript that cost mobile PageSpeed about 30
              points (96 -> 68) once GA4 and the Ads tag went live. The dataLayer
