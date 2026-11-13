@@ -182,6 +182,7 @@
 
     {{-- ===== 2. Scope of work and any other editor blocks (FAQ deferred) ===== --}}
     <div @class(['bg-white pt-8 md:pt-12' => (bool) $heroImage])>
+        <x-public.page-byline :business-profile="$businessProfile" :updated-at="$page->updated_at" />
         <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" />
     </div>
 

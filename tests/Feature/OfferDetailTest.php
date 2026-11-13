@@ -81,7 +81,7 @@ class OfferDetailTest extends TestCase
         // offer's own body.
         $content = $this->stripFooter($this->get('/offers/scoped-offer')->assertOk()->getContent());
 
-        $this->assertStringContainsString('يشمل العرض', $content);
+        $this->assertStringContainsString('الخدمات المشمولة في العرض', $content);
         $this->assertStringContainsString('href="'.route('public.service', 'offer-svc').'"', $content);
         $this->assertStringContainsString('متاح في', $content);
         $this->assertStringContainsString('href="'.route('public.area', 'offer-area').'"', $content);
@@ -90,7 +90,7 @@ class OfferDetailTest extends TestCase
         // No relations: both lists vanish, no empty state.
         $this->publishedOffer('bare-offer', starts: now()->subDay(), ends: now()->addDays(10));
         $bare = $this->get('/offers/bare-offer')->assertOk()->getContent();
-        $this->assertStringNotContainsString('يشمل العرض', $bare);
+        $this->assertStringNotContainsString('الخدمات المشمولة في العرض', $bare);
         $this->assertStringNotContainsString('متاح في', $bare);
         $this->assertNoCustomerFacingEmptyState($bare);
     }

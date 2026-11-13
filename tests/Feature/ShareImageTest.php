@@ -12,6 +12,7 @@ use App\Models\SeoMetadata;
 use App\Models\Service;
 use App\Models\SiteSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Feature\Seo\Concerns\BuildsSeoFixtures;
 use Tests\TestCase;
 
 /**
@@ -21,7 +22,7 @@ use Tests\TestCase;
  */
 class ShareImageTest extends TestCase
 {
-    use RefreshDatabase;
+    use BuildsSeoFixtures, RefreshDatabase;
 
     private function ogImage(string $url): ?string
     {
@@ -71,6 +72,57 @@ class ShareImageTest extends TestCase
 
         $this->assertSame($after->url(), $this->ogImage('/areas'));
         $this->assertSame($after->url(), $this->ogImage('/projects/real-job'));
+    }
+
+    public function test_an_area_shares_its_own_project_photo_instead_of_a_stock_og_override(): void
+    {
+        $page = $this->createCompliantAreaPage(slug: 'al-taawun');
+        $stock = Media::factory()->create(['path' => 'media/library/apartment-cleaning.jpg']);
+        $page->seoMetadata->update(['og_image_media_id' => $stock->id]);
+        $project = $page->pageable->projects()->first();
+        $after = Media::factory()->create(['path' => 'media/vibe/office-after.webp']);
+        $project->media()->attach($after->id, ['stage' => 'after', 'sort_order' => 0]);
+        $projectPage = Page::factory()->create(['type' => PageType::Project, 'slug' => 'office-job']);
+        $project->page()->save($projectPage);
+        ContentBlock::factory()->for($projectPage)->create(['type' => 'rich_text', 'data' => ['content' => 'نص.']]);
+        $projectPage->update(['status' => PageStatus::Published]);
+
+        $this->assertSame($after->url(), $this->ogImage('/areas/al-taawun'));
+    }
+
+    public function test_an_area_falls_back_to_a_supporting_projects_first_photo(): void
+    {
+        $page = $this->createCompliantAreaPage(slug: 'al-ghadir');
+        $stock = Media::factory()->create(['path' => 'media/library/villa-cleaning.jpg']);
+        $page->seoMetadata->update(['og_image_media_id' => $stock->id]);
+        $project = Project::factory()->create();
+        $photo = Media::factory()->create(['path' => 'media/vibe/during.webp']);
+        $project->media()->attach($photo->id, ['stage' => 'during', 'sort_order' => 0]);
+        $projectPage = Page::factory()->create(['type' => PageType::Project, 'slug' => 'support-job']);
+        $project->page()->save($projectPage);
+        ContentBlock::factory()->for($projectPage)->create(['type' => 'rich_text', 'data' => ['content' => 'نص.']]);
+        $projectPage->update(['status' => PageStatus::Published]);
+        $page->pageable->supportingProjects()->attach($project->id, ['support_type' => 'supporting', 'sort_order' => 0, 'is_active' => true]);
+
+        $this->assertSame($photo->url(), $this->ogImage('/areas/al-ghadir'));
+    }
+
+    public function test_a_stock_og_override_stays_when_the_page_has_no_real_photo(): void
+    {
+        $page = $this->createCompliantAreaPage(slug: 'al-malaz');
+        $stock = Media::factory()->create(['path' => 'media/library/villa-cleaning.jpg']);
+        $page->seoMetadata->update(['og_image_media_id' => $stock->id]);
+
+        $this->assertSame($stock->url(), $this->ogImage('/areas/al-malaz'));
+    }
+
+    public function test_a_real_photo_chosen_by_the_editor_always_wins(): void
+    {
+        $page = $this->createCompliantAreaPage(slug: 'al-olaya');
+        $chosen = Media::factory()->create(['path' => 'media/vibe/chosen.webp']);
+        $page->seoMetadata->update(['og_image_media_id' => $chosen->id]);
+
+        $this->assertSame($chosen->url(), $this->ogImage('/areas/al-olaya'));
     }
 
     public function test_without_any_image_no_og_image_tag_is_emitted(): void

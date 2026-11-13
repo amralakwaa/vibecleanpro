@@ -31,6 +31,9 @@
 <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" width="narrow" />
 <x-public.blocks :blocks="$page->contentBlocks" :only="['faq']" :faqs="$faqs" width="narrow" />
 
+{{-- After the content, so the opening's curve still meets the first block. --}}
+<x-public.page-byline :business-profile="$businessProfile" :updated-at="$page->updated_at" width="narrow" class="pt-8" />
+
 @if ($whatsappUrl || $phoneUrl)
     <x-public.container width="narrow" class="pb-16 md:pb-24">
         <div class="surface-tint relative overflow-hidden rounded-3xl ring-1 ring-primary-200/60 p-6 md:p-8 grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-center reveal">

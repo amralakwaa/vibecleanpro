@@ -111,6 +111,7 @@
         </header>
 
         {{-- ===== 2. The body - reading column, editor blocks, FAQ deferred ===== --}}
+        <x-public.page-byline :business-profile="$businessProfile" :updated-at="$page->updated_at" width="narrow" />
         <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" width="narrow" />
 
         {{-- ===== 3. Contextual navigation - a tinted aside in the reading

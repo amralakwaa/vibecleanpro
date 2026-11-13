@@ -61,7 +61,7 @@
                     <h1 class="mt-5 font-display text-[2rem] leading-[1.15] md:text-5xl md:leading-[1.08] font-medium tracking-tight text-ink-950 text-balance">تواصل بخصوص حلول النظافة لمنشأتك</h1>
                     <p class="mt-4 text-lg text-neutral-600 leading-relaxed">أخبرنا عن احتياج منشأتك - تنظيف دوري، عقود تشغيل، أو إدارة مرافق - وسنتواصل معك لتحديد خطة مناسبة.</p>
                 @else
-                    <h1 class="font-display text-[2rem] leading-[1.15] md:text-5xl md:leading-[1.08] font-medium tracking-tight text-ink-950">تواصل معنا</h1>
+                    <h1 class="font-display text-[2rem] leading-[1.15] md:text-5xl md:leading-[1.08] font-medium tracking-tight text-ink-950">تواصل معنا: واتساب واتصال وعرض سعر مكتوب</h1>
                     <p class="mt-4 text-lg text-neutral-600 leading-relaxed">لأي سؤال أو استفسار، اختر القناة الأنسب لك أو اترك لنا رسالة.</p>
                     <p class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-neutral-600">
                         تريد سعرًا لخدمة محددة؟

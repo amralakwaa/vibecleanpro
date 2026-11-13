@@ -58,7 +58,7 @@
         <x-public.container width="wide" class="relative pt-8 pb-12 md:pt-12 md:pb-16">
             <x-public.breadcrumb :items="$seo->breadcrumbs" class="mb-6" />
             <div class="max-w-2xl">
-                <h1 class="font-display text-[2rem] leading-[1.15] md:text-5xl md:leading-[1.08] font-medium tracking-tight text-ink-950">مناطق التغطية</h1>
+                <h1 class="font-display text-[2rem] leading-[1.15] md:text-5xl md:leading-[1.08] font-medium tracking-tight text-ink-950">أحياء الرياض التي نخدمها</h1>
                 <p class="mt-4 text-lg text-neutral-600 leading-relaxed">
                     @if ($totalAreas >= 3)
                         نصل حاليًا إلى {{ $totalAreas }} {{ $totalAreas <= 10 ? 'أحياء' : 'حيًا' }} في الرياض وما حولها. ابحث عن منطقتك في الدليل أدناه.

@@ -302,6 +302,7 @@
     @endif
 
     {{-- ===== 3. Local editorial content (CMS only, FAQ deferred) ===== --}}
+    <x-public.page-byline :business-profile="$businessProfile" :updated-at="$page->updated_at" class="pt-8" />
     <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" :related="$services" related-item-type="service" />
 
     {{-- ===== 4. Services genuinely available here - image-led rows,

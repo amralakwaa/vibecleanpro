@@ -98,16 +98,7 @@
 
     {{-- Who stands behind this page's technical claims, and when it was
          last checked. Mirrors the WebPage reviewedBy/lastReviewed data. --}}
-    @if (filled($businessProfile?->content_reviewer_name))
-        <x-public.container width="wide" class="pb-6">
-            <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-neutral-600">
-                <x-public.icon name="badge-check" class="w-4 h-4 text-primary-600 shrink-0" />
-                <span>مراجعة المحتوى الفني: <strong class="font-medium text-ink-950">{{ trim($businessProfile->content_reviewer_title.' '.$businessProfile->content_reviewer_name) }}</strong></span>
-                <span aria-hidden="true">·</span>
-                <span>آخر تحديث: <time datetime="{{ $page->updated_at->toDateString() }}">{{ $page->updated_at->translatedFormat('j F Y') }}</time></span>
-            </p>
-        </x-public.container>
-    @endif
+    <x-public.page-byline :business-profile="$businessProfile" :updated-at="$page->updated_at" show-reviewer />
 
     <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" :related="$related" related-item-type="service" />
 

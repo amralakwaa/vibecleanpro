@@ -52,7 +52,7 @@
             <x-public.breadcrumb :items="$seo->breadcrumbs" class="mb-6" />
             <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16 items-end">
                 <div>
-                    <h1 class="font-display text-[2rem] leading-[1.15] md:text-5xl md:leading-[1.08] font-medium tracking-tight text-ink-950">خدماتنا</h1>
+                    <h1 class="font-display text-[2rem] leading-[1.15] md:text-5xl md:leading-[1.08] font-medium tracking-tight text-ink-950">خدمات التنظيف في الرياض</h1>
                     <p class="mt-4 text-lg text-neutral-600 max-w-xl leading-relaxed">اختر ما يناسب مساحتك واحتياجك. كل خدمة لها صفحة تشرح ما تشمله وكيف ننفذها.</p>
                 </div>
 

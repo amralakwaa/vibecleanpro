@@ -41,7 +41,7 @@
         <div class="glow-primary absolute -top-24 -end-24 w-[26rem] h-[26rem] -z-10 opacity-60" aria-hidden="true"></div>
         <x-public.container width="wide" class="pt-8 pb-12 md:pt-12 md:pb-16">
             <x-public.breadcrumb :items="$seo->breadcrumbs" class="mb-6" />
-            <h1 class="font-display text-[2rem] leading-[1.15] md:text-5xl md:leading-[1.08] font-medium tracking-tight text-ink-950">العروض</h1>
+            <h1 class="font-display text-[2rem] leading-[1.15] md:text-5xl md:leading-[1.08] font-medium tracking-tight text-ink-950">عروض وباقات التنظيف في الرياض</h1>
             <p class="mt-4 text-lg text-neutral-600 max-w-2xl leading-relaxed">عروض حقيقية على خدماتنا، بشروط واضحة وتواريخ معلنة.</p>
         </x-public.container>
     </section>

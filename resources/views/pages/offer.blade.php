@@ -175,7 +175,7 @@
                             <div class="glow-primary absolute -top-16 -end-16 w-48 h-48 opacity-60" aria-hidden="true"></div>
                             <h2 class="relative flex items-center gap-2.5 font-display text-lg font-medium text-ink-950">
                                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-600 text-white" aria-hidden="true"><x-public.icon name="check" class="w-4 h-4" /></span>
-                                يشمل العرض
+                                الخدمات المشمولة في العرض
                             </h2>
                             <ol class="relative mt-5 space-y-2">
                                 @foreach ($offerServices as $service)
@@ -218,6 +218,7 @@
     @endif
 
     {{-- ===== 3. Details and terms - editor content in the reading system ===== --}}
+    <x-public.page-byline :business-profile="$businessProfile" :updated-at="$page->updated_at" width="narrow" />
     <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" :related="$related" related-item-type="service" width="narrow" />
 
     {{-- ===== 4. FAQ ===== --}}
