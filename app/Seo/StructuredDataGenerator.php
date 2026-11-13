@@ -37,6 +37,7 @@ class StructuredDataGenerator
         private readonly UrlResolver $urlResolver,
         private readonly CanonicalResolver $canonical,
         private readonly BreadcrumbResolver $breadcrumbs,
+        private readonly DefaultShareImage $defaultShareImage,
     ) {}
 
     /**
@@ -193,6 +194,10 @@ class StructuredDataGenerator
         if ($profile->logo) {
             $data['logo'] = $profile->logo->url();
             $data['image'] = $profile->logo->url();
+        } elseif ($photo = $this->defaultShareImage->url()) {
+            // No logo yet: a real documented project photo represents the
+            // business (never a stock image, never a logo it does not have).
+            $data['image'] = $photo;
         }
 
         // sameAs names profiles that represent the business; a WhatsApp chat

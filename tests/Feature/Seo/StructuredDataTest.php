@@ -12,6 +12,7 @@ use App\Models\Faq;
 use App\Models\Media;
 use App\Models\Offer;
 use App\Models\Page;
+use App\Models\Project;
 use App\Models\Service;
 use App\Seo\StructuredDataGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -352,6 +353,25 @@ class StructuredDataTest extends TestCase
 
         $this->assertSame(499.0, $offerBlock['price']);
         $this->assertSame(config('pricing.currency'), $offerBlock['priceCurrency']);
+    }
+
+    public function test_without_a_logo_the_business_image_is_a_real_project_photo_never_invented(): void
+    {
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro']);
+        $business = fn () => collect(app(StructuredDataGenerator::class)->sitewide())->first(fn (array $block) => in_array('LocalBusiness', (array) $block['@type'], true));
+
+        $this->assertArrayNotHasKey('image', $business(), 'no photo exists yet, so none is claimed');
+
+        $project = Project::factory()->create(['is_featured' => true]);
+        $after = Media::factory()->create(['path' => 'media/projects/after.jpg']);
+        $project->media()->attach($after->id, ['stage' => 'after', 'sort_order' => 0]);
+        $page = Page::factory()->create(['type' => PageType::Project, 'slug' => 'proof']);
+        $project->page()->save($page);
+        ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => 'نص.']]);
+        $page->update(['status' => PageStatus::Published]);
+
+        $this->assertSame($after->url(), $business()['image']);
+        $this->assertArrayNotHasKey('logo', $business());
     }
 
     public function test_the_website_node_carries_the_arabic_brand_and_links_to_the_business(): void
