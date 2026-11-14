@@ -390,14 +390,7 @@ class PublicPageController extends Controller
         // inbound link each, from /areas, while forty district pages named
         // their side in plain text. The hub every spoke already names is
         // the natural link, so no new copy is invented to carry it.
-        $areaGroupUrl = $area->area_group_id && Page::query()
-            ->where('type', PageType::Landing)
-            ->where('pageable_type', (new AreaGroup)->getMorphClass())
-            ->where('pageable_id', $area->area_group_id)
-            ->published()
-            ->exists()
-            ? $this->urlResolver->pathFor(PageType::Area, $area->group->slug)
-            : null;
+        $areaGroupUrl = $this->areaGroupUrl($area);
 
         return response()->view('pages.area', [
             'page' => $page,
@@ -414,6 +407,27 @@ class PublicPageController extends Controller
             'testimonials' => $testimonials,
             'articles' => $articles,
         ], 200);
+    }
+
+    /**
+     * The side of Riyadh a district belongs to, as a URL, only when a landing
+     * page has actually been published against that AreaGroup - the rule
+     * AreasIndexController applies, so a side never gets a link for existing.
+     */
+    private function areaGroupUrl(?Area $area): ?string
+    {
+        if (! $area?->area_group_id || ! $area->group) {
+            return null;
+        }
+
+        $published = Page::query()
+            ->where('type', PageType::Landing)
+            ->where('pageable_type', (new AreaGroup)->getMorphClass())
+            ->where('pageable_id', $area->area_group_id)
+            ->published()
+            ->exists();
+
+        return $published ? $this->urlResolver->pathFor(PageType::Area, $area->group->slug) : null;
     }
 
     private function renderProject(Page $page, SeoHeadData $seo, ?BusinessProfile $businessProfile, $faqs): Response
@@ -499,6 +513,8 @@ class PublicPageController extends Controller
             'faqs' => $faqs,
             'displayArea' => $displayArea,
             'linkedArea' => $linkedArea,
+            'areaGroupName' => $displayArea?->group?->name,
+            'areaGroupUrl' => $this->areaGroupUrl($displayArea),
             'relatedServices' => $relatedServices,
             'relatedProjects' => $relatedProjects,
             'relatedArticles' => $relatedArticles,

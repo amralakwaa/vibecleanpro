@@ -108,7 +108,12 @@ class StructuredDataGenerator
             }
         }
 
-        $faqs = $page->faqs()->where('is_active', true)->orderBy('sort_order')->get();
+        // FAQPage only describes questions the visitor can actually read. On
+        // these page types the FAQ renders through an active 'faq' content
+        // block; without one the questions stay out of the markup too.
+        $faqs = $this->rendersFaqs($page)
+            ? $page->faqs()->where('is_active', true)->orderBy('sort_order')->get()
+            : collect();
         if ($faqs->isNotEmpty()) {
             $blocks[] = $this->faqPage($faqs);
         }
@@ -616,6 +621,21 @@ class StructuredDataGenerator
     private function websiteId(): string
     {
         return $this->urlResolver->absoluteUrl('/').'#website';
+    }
+
+    /**
+     * Whether the page shows its FAQs. Service, Area, Project, Article and
+     * Offer pages render them only through an active 'faq' content block.
+     */
+    private function rendersFaqs(Page $page): bool
+    {
+        $blockRendered = [PageType::Service, PageType::Area, PageType::Project, PageType::Article, PageType::Offer];
+
+        if (! in_array($page->type, $blockRendered, true)) {
+            return true;
+        }
+
+        return $page->contentBlocks()->where('type', 'faq')->where('is_active', true)->exists();
     }
 
     /**

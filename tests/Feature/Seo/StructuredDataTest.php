@@ -253,12 +253,25 @@ class StructuredDataTest extends TestCase
         // Since commit 7d29934 area pages emit FAQPage. No Google rich result
         // is expected (that feature is removed); the markup only mirrors what readers see.
         $page = $this->createCompliantAreaPage();
+        ContentBlock::factory()->for($page)->create(['type' => 'faq', 'data' => ['heading' => 'الأسئلة الشائعة', 'source' => 'page']]);
         Faq::factory()->for($page)->create(['question' => 'ما هي خدماتكم؟', 'answer' => 'نقدم خدمات التنظيف المنزلي.', 'sort_order' => 1]);
         Faq::factory()->for($page)->create(['question' => 'هل تعملون في الرياض؟', 'answer' => 'نعم، نغطي جميع أحياء الرياض.', 'sort_order' => 2]);
 
         $faqPage = collect($this->generator->forPage($page->fresh()))->firstWhere('@type', 'FAQPage');
 
         $this->assertSame(['ما هي خدماتكم؟', 'هل تعملون في الرياض؟'], collect($faqPage['mainEntity'])->pluck('name')->all());
+    }
+
+    public function test_faq_page_schema_is_absent_when_the_page_does_not_show_its_faqs(): void
+    {
+        // FAQs exist but no active 'faq' block renders them, so a reader
+        // never sees them and the markup must not claim them either.
+        $page = $this->createCompliantAreaPage();
+        Faq::factory()->for($page)->create(['question' => 'سؤال مخفي؟', 'answer' => 'جواب.', 'sort_order' => 1]);
+
+        $types = collect($this->generator->forPage($page->fresh()))->pluck('@type');
+
+        $this->assertFalse($types->contains('FAQPage'));
     }
 
     public function test_faq_page_schema_is_absent_when_a_page_has_no_faqs(): void

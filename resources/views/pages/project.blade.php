@@ -130,6 +130,14 @@
                                     @else
                                         <span class="inline-flex min-h-11 items-center gap-1.5"><x-public.icon name="map-pin" class="w-4 h-4 text-primary-600" />{{ $displayArea->name }}</span>
                                     @endif
+                                    @if (filled($areaGroupName))
+                                        <span class="text-neutral-400"> · </span>
+                                        @if ($areaGroupUrl)
+                                            <a href="{{ $areaGroupUrl }}" class="inline-flex min-h-11 items-center hover:text-primary-700 underline-offset-4 hover:underline transition-colors">{{ $areaGroupName }}</a>
+                                        @else
+                                            <span class="inline-flex min-h-11 items-center">{{ $areaGroupName }}</span>
+                                        @endif
+                                    @endif
                                 </dd>
                             </div>
                         @endif
@@ -342,7 +350,7 @@
 
                 @if ($unpairedAfter->isNotEmpty())
                     <div class="mt-12 reveal">
-                        <h3 class="text-sm font-medium tracking-wide text-neutral-500 mb-4">{{ $pairs->isNotEmpty() ? 'المزيد من النتيجة' : 'النتيجة' }}</h3>
+                        <h3 class="text-sm font-medium tracking-wide text-neutral-500 mb-4">{{ $pairs->isNotEmpty() ? 'صور أخرى بعد التنفيذ' : 'صور بعد التنفيذ' }}</h3>
                         <div @class(['grid gap-4 sm:grid-cols-2', 'lg:grid-cols-3' => $unpairedAfter->count() > 2])>
                             @foreach ($unpairedAfter as $image)
                                 <figure class="relative overflow-hidden rounded-2xl ring-1 ring-ink-950/5 bg-neutral-100">
