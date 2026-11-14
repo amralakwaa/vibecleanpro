@@ -293,6 +293,8 @@
     <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" width="narrow" />
     <x-public.blocks :blocks="$page->contentBlocks" :only="['faq']" :faqs="$faqs" width="narrow" />
 
+    <x-public.page-byline :business-profile="$profile" :updated-at="$page->updated_at" width="narrow" class="pt-8" />
+
     {{-- ===== 8. Decision - see for yourself, then talk to us ===== --}}
     <section @class(['surface-atmos relative isolate overflow-hidden text-white', 'border-t border-white/10' => ! $waveBeforeDecision])>
         @if ($waveBeforeDecision)

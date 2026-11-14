@@ -624,12 +624,12 @@ class StructuredDataGenerator
     }
 
     /**
-     * Whether the page shows its FAQs. Service, Area, Project, Article and
-     * Offer pages render them only through an active 'faq' content block.
+     * Whether the page shows its FAQs. Service, Area, Project, Article, Offer
+     * and About pages render them only through an active 'faq' content block.
      */
     private function rendersFaqs(Page $page): bool
     {
-        $blockRendered = [PageType::Service, PageType::Area, PageType::Project, PageType::Article, PageType::Offer];
+        $blockRendered = [PageType::Service, PageType::Area, PageType::Project, PageType::Article, PageType::Offer, PageType::About];
 
         if (! in_array($page->type, $blockRendered, true)) {
             return true;
