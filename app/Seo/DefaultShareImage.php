@@ -56,9 +56,13 @@ class DefaultShareImage
             return $this->url();
         }
 
-        // Ranked picks draw on every published project with a photo (its
-        // "after" photo, else its first), so listing pages still differ when
-        // only a few projects have a tagged "after" stage.
+        if ($after = $this->projectPhoto($rank)) {
+            return $after->url();
+        }
+
+        // Past the projects with a tagged "after" photo, draw on every
+        // published project with a photo (its first), so listing pages
+        // still differ when only a few projects have an "after" stage.
         $project = Project::query()
             ->whereHas('page', fn ($query) => $query->published())
             ->whereHas('media')
@@ -71,7 +75,7 @@ class DefaultShareImage
         return ($project?->media->firstWhere('pivot.stage', 'after') ?? $project?->media->first())?->url() ?? $this->url();
     }
 
-    private function projectPhoto(): ?Media
+    private function projectPhoto(int $rank = 0): ?Media
     {
         $heroProject = Project::query()
             ->whereHas('page', fn ($query) => $query->published())
@@ -79,6 +83,7 @@ class DefaultShareImage
             ->with('media')
             ->orderByDesc('is_featured')
             ->orderByDesc('completed_at')
+            ->skip($rank)
             ->first();
 
         return $heroProject?->media->firstWhere('pivot.stage', 'after');
