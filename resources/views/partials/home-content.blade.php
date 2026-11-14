@@ -64,7 +64,7 @@
                     <div class="max-w-2xl">
                         <p class="text-sm font-medium tracking-wide text-primary-700">خدماتنا</p>
                         <h2 id="home-services" class="mt-2 font-display text-3xl md:text-5xl md:leading-[1.1] font-medium tracking-tight text-ink-950 text-balance">
-                            اختر الخدمة التي يحتاجها مكانك
+                            ما الخدمة التي يحتاجها مكانك؟
                         </h2>
                     </div>
                     <a href="{{ route('public.services.index') }}" class="inline-flex items-center gap-2 min-h-11 font-medium text-primary-700 underline-offset-4 hover:underline">
@@ -488,7 +488,7 @@
                     <div>
                         <p class="text-sm font-medium tracking-wide text-primary-700">مناطق التغطية</p>
                         <h2 id="home-coverage" class="mt-2 font-display text-3xl md:text-4xl font-medium tracking-tight text-ink-950 text-balance">
-                            نصل إلى أحياء {{ $businessProfile?->city ?: 'الرياض' }}
+                            هل نصل إلى حيّك في {{ $businessProfile?->city ?: 'الرياض' }}؟
                         </h2>
                         <a href="{{ route('public.areas.index') }}" class="mt-5 inline-flex items-center gap-2 min-h-11 font-medium text-primary-700 underline-offset-4 hover:underline">
                             جميع المناطق
@@ -576,6 +576,11 @@
             </x-public.container>
         </section>
     @endif
+
+    {{-- Who prepared the page and when its content last changed - the
+         newest edit across published pages, since the homepage is built
+         from them. --}}
+    <x-public.page-byline :business-profile="$businessProfile" :updated-at="$contentUpdatedAt" class="bg-white" />
 
     {{-- ===== 9. Decision ===== --}}
     <section id="contact" class="surface-atmos relative isolate overflow-hidden text-white">

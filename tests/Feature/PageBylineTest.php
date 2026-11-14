@@ -55,6 +55,18 @@ class PageBylineTest extends TestCase
         $response->assertSee('آخر تحديث');
     }
 
+    public function test_the_homepage_shows_the_brand_and_the_latest_content_update(): void
+    {
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'name_ar' => 'فايب كلين برو']);
+        $page = $this->createCompliantServicePage(slug: 'home-dated-service');
+
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('فريق فايب كلين برو');
+        $response->assertSee('آخر تحديث: <time datetime="'.$page->fresh()->updated_at->toDateString().'">', false);
+    }
+
     public function test_a_service_page_without_a_reviewer_still_shows_the_brand_and_last_update(): void
     {
         BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'name_ar' => 'فايب كلين برو']);
