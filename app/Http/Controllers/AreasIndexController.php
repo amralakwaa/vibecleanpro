@@ -8,6 +8,7 @@ use App\Models\Area;
 use App\Models\AreaGroup;
 use App\Models\BusinessProfile;
 use App\Models\Page;
+use App\Seo\DefaultShareImage;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
@@ -103,7 +104,7 @@ class AreasIndexController extends Controller
             openGraph: [
                 'title' => 'مناطق التغطية',
                 'description' => 'نقدم خدمات التنظيف الاحترافية في عشرات أحياء الرياض — من الملقا والنرجس إلى التعاون والياسمين. تصفح قائمة الأحياء التي نغطيها.',
-                'image' => $businessProfile?->logo?->url(),
+                'image' => $businessProfile?->logo?->url() ?? app(DefaultShareImage::class)->urlForRank(3),
                 'url' => $this->urlResolver->absoluteUrl('/areas'),
                 'type' => 'website',
             ],

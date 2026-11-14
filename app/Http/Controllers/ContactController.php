@@ -7,6 +7,7 @@ use App\Events\LeadCreated;
 use App\Http\Requests\StoreLeadRequest;
 use App\Models\BusinessProfile;
 use App\Models\Lead;
+use App\Seo\DefaultShareImage;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
@@ -66,7 +67,7 @@ class ContactController extends Controller
             openGraph: [
                 'title' => 'تواصل معنا',
                 'description' => 'تواصل مع فايب كلين برو عبر واتساب أو الهاتف للحصول على عرض سعر مكتوب — فلل وشقق ومكاتب وواجهات. نرد سريعًا.',
-                'image' => $businessProfile?->logo?->url(),
+                'image' => $businessProfile?->logo?->url() ?? app(DefaultShareImage::class)->urlForRank(6),
                 'url' => $this->urlResolver->absoluteUrl('/contact'),
                 'type' => 'website',
             ],

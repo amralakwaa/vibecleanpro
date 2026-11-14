@@ -125,6 +125,25 @@ class ShareImageTest extends TestCase
         $this->assertSame($chosen->url(), $this->ogImage('/areas/al-olaya'));
     }
 
+    public function test_listing_pages_each_share_a_different_real_project_photo(): void
+    {
+        $photos = [];
+        foreach (range(1, 3) as $i) {
+            $project = Project::factory()->create(['is_featured' => false, 'completed_at' => now()->subDays($i)]);
+            $after = Media::factory()->create(['path' => "media/projects/after-{$i}.jpg"]);
+            $project->media()->attach($after->id, ['stage' => 'after', 'sort_order' => 0]);
+            $page = Page::factory()->create(['type' => PageType::Project, 'slug' => "job-{$i}"]);
+            $project->page()->save($page);
+            ContentBlock::factory()->for($page)->create(['type' => 'rich_text', 'data' => ['content' => 'نص.']]);
+            $page->update(['status' => PageStatus::Published]);
+            $photos[] = $after->url();
+        }
+
+        $this->assertSame($photos[0], $this->ogImage('/'));
+        $this->assertSame($photos[1], $this->ogImage('/projects'));
+        $this->assertSame($photos[2], $this->ogImage('/services'));
+    }
+
     public function test_without_any_image_no_og_image_tag_is_emitted(): void
     {
         $this->assertNull($this->ogImage('/contact'));

@@ -193,4 +193,13 @@
     @endif
 
     @include('pages.partials.index-companion')
+
+    {{-- Closing conversion band, the same one editor CTA blocks render. --}}
+    <x-public.cta
+        title="وجدت العرض المناسب؟ اطلب عرض سعر لمكانك"
+        description="أرسل تفاصيل مكانك، ويصلك عرض سعر مكتوب قبل التنفيذ. لا يتم الدفع عبر الموقع."
+        :quote-url="route('public.quote')"
+        :whatsapp-url="$businessProfile?->whatsappUrl('مرحبًا، أرغب في عرض سعر لخدمة تنظيف')"
+        :phone-url="$businessProfile?->phoneUrl()"
+    />
 </x-layouts.public>

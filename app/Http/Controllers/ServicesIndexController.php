@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BusinessProfile;
 use App\Models\Service;
+use App\Seo\DefaultShareImage;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
@@ -74,7 +75,7 @@ class ServicesIndexController extends Controller
             openGraph: [
                 'title' => 'خدمات التنظيف',
                 'description' => 'خدمات التنظيف الاحترافية بالرياض: تنظيف فلل وشقق ومكاتب، جلي رخام، تنظيف مكيفات، تنظيف واجهات، تعقيم، ومكافحة حشرات.',
-                'image' => $businessProfile?->logo?->url(),
+                'image' => $businessProfile?->logo?->url() ?? app(DefaultShareImage::class)->urlForRank(2),
                 'url' => $this->urlResolver->absoluteUrl('/services'),
                 'type' => 'website',
             ],

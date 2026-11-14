@@ -6,6 +6,7 @@ use App\Models\Area;
 use App\Models\BusinessProfile;
 use App\Models\Project;
 use App\Models\Service;
+use App\Seo\DefaultShareImage;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
@@ -84,7 +85,7 @@ class ProjectsIndexController extends Controller
             openGraph: [
                 'title' => 'أعمالنا ومشاريعنا',
                 'description' => 'نماذج من مشاريع التنظيف المنفذة بالرياض — فلل وشقق ومكاتب وواجهات. كل مشروع موثّق بالصور قبل وبعد.',
-                'image' => $businessProfile?->logo?->url(),
+                'image' => $businessProfile?->logo?->url() ?? app(DefaultShareImage::class)->urlForRank(1),
                 'url' => $canonical,
                 'type' => 'website',
             ],

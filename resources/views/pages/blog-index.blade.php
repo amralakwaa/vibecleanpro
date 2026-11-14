@@ -157,4 +157,13 @@
             </x-public.container>
         </section>
     @endif
+
+    {{-- Closing conversion band, the same one editor CTA blocks render. --}}
+    <x-public.cta
+        title="قرأت ما تحتاجه؟ اطلب عرض سعر لمكانك"
+        description="أرسل تفاصيل مكانك، ويصلك عرض سعر مكتوب قبل التنفيذ. لا يتم الدفع عبر الموقع."
+        :quote-url="route('public.quote')"
+        :whatsapp-url="$businessProfile?->whatsappUrl('مرحبًا، أرغب في عرض سعر لخدمة تنظيف')"
+        :phone-url="$businessProfile?->phoneUrl()"
+    />
 </x-layouts.public>

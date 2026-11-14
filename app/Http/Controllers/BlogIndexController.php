@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\ArticleCategory;
 use App\Models\BusinessProfile;
+use App\Seo\DefaultShareImage;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
@@ -79,14 +80,14 @@ class BlogIndexController extends Controller
         $canonical = $this->urlResolver->absoluteUrl($articles->currentPage() > 1 ? '/blog?page='.$articles->currentPage() : '/blog');
 
         $seo = new SeoHeadData(
-            title: 'دليل التنظيف في الرياض: أسعار وقوائم تحقق ونصائح | '.($businessProfile?->displayName() ?: config('app.name')),
+            title: 'دليل التنظيف في الرياض: أسعار وقوائم ونصائح | '.($businessProfile?->displayName() ?: config('app.name')),
             metaDescription: 'أدلة تنظيف عملية من الرياض: أسعار شركات التنظيف وعواملها، قوائم تحقق قبل الاستلام، نصائح العناية بالرخام والكنب والمكيفات، ومعايير اختيار الشركة الموثوقة.',
             canonicalUrl: $canonical,
             robotsContent: 'index, follow',
             openGraph: [
-                'title' => 'المدونة',
+                'title' => 'دليل التنظيف في الرياض: أسعار وقوائم ونصائح',
                 'description' => 'أدلة تنظيف عملية من الرياض: أسعار شركات التنظيف وعواملها، قوائم تحقق قبل الاستلام، نصائح العناية بالرخام والكنب والمكيفات.',
-                'image' => $businessProfile?->logo?->url(),
+                'image' => $businessProfile?->logo?->url() ?? app(DefaultShareImage::class)->urlForRank(4),
                 'url' => $canonical,
                 'type' => 'website',
             ],

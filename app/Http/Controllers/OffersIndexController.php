@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\OfferAvailability;
 use App\Models\BusinessProfile;
 use App\Models\Offer;
+use App\Seo\DefaultShareImage;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
@@ -73,7 +74,7 @@ class OffersIndexController extends Controller
             openGraph: [
                 'title' => 'العروض',
                 'description' => 'عروض وباقات تنظيف بالرياض بأسعار موسمية — تنظيف فلل وشقق ومكاتب. عروض محدودة المدة تشمل التنظيف الشامل وجلي الرخام وتنظيف المكيفات.',
-                'image' => $businessProfile?->logo?->url(),
+                'image' => $businessProfile?->logo?->url() ?? app(DefaultShareImage::class)->urlForRank(5),
                 'url' => $this->urlResolver->absoluteUrl('/offers'),
                 'type' => 'website',
             ],

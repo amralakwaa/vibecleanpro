@@ -44,6 +44,33 @@ class DefaultShareImage
         return ($this->projectPhoto() ?? $this->media())?->url();
     }
 
+    /**
+     * A distinct share image per listing page: the documented project photo
+     * at $rank in the same ordering (0 is what url() returns), so index pages
+     * stop sharing one picture while still showing real work. Falls back to
+     * url() when there are fewer documented projects than the rank.
+     */
+    public function urlForRank(int $rank): ?string
+    {
+        if ($rank === 0) {
+            return $this->url();
+        }
+
+        // Ranked picks draw on every published project with a photo (its
+        // "after" photo, else its first), so listing pages still differ when
+        // only a few projects have a tagged "after" stage.
+        $project = Project::query()
+            ->whereHas('page', fn ($query) => $query->published())
+            ->whereHas('media')
+            ->with(['media' => fn ($query) => $query->orderByPivot('sort_order')])
+            ->orderByDesc('is_featured')
+            ->orderByDesc('completed_at')
+            ->skip($rank)
+            ->first();
+
+        return ($project?->media->firstWhere('pivot.stage', 'after') ?? $project?->media->first())?->url() ?? $this->url();
+    }
+
     private function projectPhoto(): ?Media
     {
         $heroProject = Project::query()
