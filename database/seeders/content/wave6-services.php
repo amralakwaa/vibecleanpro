@@ -13,8 +13,10 @@
  * Boundaries that keep the pages honest:
  * - glass-facade-cleaning is glass on the building envelope at height;
  *   glass-cleaning keeps panes, partitions and shopfronts near the ground.
- * - No page quotes a price: these services are quote-only until the owner
- *   supplies a starting price.
+ * - Prices live on the Service record (admin-managed), never in this copy.
+ *   Owner decision 2026-11-18: starting prices set just under the
+ *   competitor's published ones, shown as approximate with the final price
+ *   after the survey; metal facades stay quote-only.
  * - Repairs, painting, re-sealing, rust treatment and machinery servicing
  *   are named as out of scope; we report what we see and nothing more.
  * - The only warranty is the 24-hour re-clean on /warranty.
