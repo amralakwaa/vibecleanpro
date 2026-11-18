@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\CachePublicPages;
 use App\Http\Middleware\CaptureLeadAttribution;
+use App\Http\Middleware\RedirectToCanonicalPath;
 use App\Http\Middleware\RedirectWwwToApex;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\TriggerBackgroundWork;
@@ -30,6 +31,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
         // named "web" group - Filament's admin panel registers its own
         // explicit middleware stack (see AdminPanelProvider), so this
         // never touches /admin.
+        // One public address per page: /index.php and capitalised slugs
+        // 301 to the canonical path before the page cache sees them.
+        $middleware->prependToGroup('web', RedirectToCanonicalPath::class);
+
         $middleware->appendToGroup('web', CaptureLeadAttribution::class);
 
         // Appended AFTER attribution and inside the session middleware, so a

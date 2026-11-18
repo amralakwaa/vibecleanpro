@@ -80,7 +80,7 @@ class StructuredDataGenerator
 
         $blocks = [[
             '@context' => 'https://schema.org',
-            '@type' => 'WebPage',
+            '@type' => $page->type === PageType::About ? 'AboutPage' : 'WebPage',
             '@id' => $url.'#webpage',
             'name' => $page->seoMetadata?->meta_title ?: $page->title,
             'url' => $url,

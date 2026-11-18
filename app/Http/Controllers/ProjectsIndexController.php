@@ -77,14 +77,18 @@ class ProjectsIndexController extends Controller
         $isPlainPage = $serviceFilter === null && $areaFilter === null && $projects->currentPage() > 1;
         $canonical = $this->urlResolver->absoluteUrl($isPlainPage ? '/projects?page='.$projects->currentPage() : '/projects');
 
+        // Page 2+ of a listing is its own indexable URL, so it gets its own title.
+        $pageLabel = $projects->currentPage() > 1 ? ' – صفحة '.$projects->currentPage() : '';
+        $pagePrefix = $projects->currentPage() > 1 ? 'الصفحة '.$projects->currentPage().': ' : '';
+
         $seo = new SeoHeadData(
-            title: 'أعمال تنظيف منفذة بالرياض موثقة بالصور | '.($businessProfile?->displayName() ?: config('app.name')),
-            metaDescription: 'نماذج من مشاريع التنظيف المنفذة بالرياض — فلل وشقق ومكاتب وواجهات. كل مشروع موثّق بالصور قبل وبعد لإثبات جودة العمل الميداني. تصفح الأعمال واحكم بنفسك.',
+            title: 'أعمال تنظيف منفذة بالرياض موثقة بالصور'.$pageLabel.' | '.($businessProfile?->displayName() ?: config('app.name')),
+            metaDescription: $pagePrefix.'نماذج من مشاريع التنظيف المنفذة بالرياض — فلل وشقق ومكاتب وواجهات. كل مشروع موثّق بصور من موقع العمل تثبت جودة التنفيذ. تصفح الأعمال واحكم بنفسك.',
             canonicalUrl: $canonical,
             robotsContent: 'index, follow',
             openGraph: [
                 'title' => 'أعمالنا ومشاريعنا',
-                'description' => 'نماذج من مشاريع التنظيف المنفذة بالرياض — فلل وشقق ومكاتب وواجهات. كل مشروع موثّق بالصور قبل وبعد.',
+                'description' => 'نماذج من مشاريع التنظيف المنفذة بالرياض — فلل وشقق ومكاتب وواجهات. كل مشروع موثّق بصور من موقع العمل.',
                 'image' => $businessProfile?->logo?->url() ?? app(DefaultShareImage::class)->urlForRank(1),
                 'url' => $canonical,
                 'type' => 'website',

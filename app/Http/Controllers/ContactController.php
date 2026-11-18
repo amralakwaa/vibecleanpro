@@ -8,6 +8,7 @@ use App\Http\Requests\StoreLeadRequest;
 use App\Models\BusinessProfile;
 use App\Models\Lead;
 use App\Seo\DefaultShareImage;
+use App\Seo\StructuredDataGenerator;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\BreadcrumbItem;
 use App\Seo\ValueObjects\SeoHeadData;
@@ -71,7 +72,7 @@ class ContactController extends Controller
                 'url' => $this->urlResolver->absoluteUrl('/contact'),
                 'type' => 'website',
             ],
-            structuredData: [$contactPage, $breadcrumbList, ...$this->indexCompanion->structuredData($companion)],
+            structuredData: [...app(StructuredDataGenerator::class)->sitewide(), $contactPage, $breadcrumbList, ...$this->indexCompanion->structuredData($companion)],
             breadcrumbs: [
                 new BreadcrumbItem('الرئيسية', '/'),
                 new BreadcrumbItem('تواصل معنا', null),

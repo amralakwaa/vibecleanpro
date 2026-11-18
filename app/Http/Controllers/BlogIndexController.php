@@ -79,9 +79,13 @@ class BlogIndexController extends Controller
         // articles listed only on page 2+ keep a crawl path.
         $canonical = $this->urlResolver->absoluteUrl($articles->currentPage() > 1 ? '/blog?page='.$articles->currentPage() : '/blog');
 
+        // Page 2+ of a listing is its own indexable URL, so it gets its own title.
+        $pageLabel = $articles->currentPage() > 1 ? ' – صفحة '.$articles->currentPage() : '';
+        $pagePrefix = $articles->currentPage() > 1 ? 'الصفحة '.$articles->currentPage().': ' : '';
+
         $seo = new SeoHeadData(
-            title: 'دليل التنظيف في الرياض: أسعار وقوائم ونصائح | '.($businessProfile?->displayName() ?: config('app.name')),
-            metaDescription: 'أدلة تنظيف عملية من الرياض: أسعار شركات التنظيف وعواملها، قوائم تحقق قبل الاستلام، نصائح العناية بالرخام والكنب والمكيفات، ومعايير اختيار الشركة الموثوقة.',
+            title: 'دليل التنظيف في الرياض: أسعار وقوائم ونصائح'.$pageLabel.' | '.($businessProfile?->displayName() ?: config('app.name')),
+            metaDescription: $pagePrefix.'أدلة تنظيف عملية من الرياض: أسعار شركات التنظيف وعواملها، قوائم تحقق قبل الاستلام، نصائح العناية بالرخام والكنب والمكيفات، ومعايير اختيار الشركة الموثوقة.',
             canonicalUrl: $canonical,
             robotsContent: 'index, follow',
             openGraph: [

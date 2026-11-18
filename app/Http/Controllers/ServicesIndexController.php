@@ -67,9 +67,13 @@ class ServicesIndexController extends Controller
             ],
         ];
 
+        // Page 2+ of a listing is its own indexable URL, so it gets its own title.
+        $pageLabel = $services->currentPage() > 1 ? ' – صفحة '.$services->currentPage() : '';
+        $pagePrefix = $services->currentPage() > 1 ? 'الصفحة '.$services->currentPage().': ' : '';
+
         $seo = new SeoHeadData(
-            title: 'خدمات التنظيف في الرياض | '.($businessProfile?->displayName() ?: config('app.name')),
-            metaDescription: 'خدمات التنظيف الاحترافية بالرياض: تنظيف فلل وشقق ومكاتب، جلي رخام، تنظيف مكيفات، تنظيف واجهات، تعقيم، ومكافحة حشرات. فريق متخصص وأسعار واضحة بدون مفاجآت.',
+            title: 'خدمات التنظيف في الرياض'.$pageLabel.' | '.($businessProfile?->displayName() ?: config('app.name')),
+            metaDescription: $pagePrefix.'خدمات التنظيف الاحترافية بالرياض: تنظيف فلل وشقق ومكاتب، جلي رخام، تنظيف مكيفات، تنظيف واجهات، تعقيم، ومكافحة حشرات. فريق متخصص وأسعار واضحة بدون مفاجآت.',
             canonicalUrl: $this->urlResolver->absoluteUrl($canonicalPath),
             robotsContent: 'index, follow',
             openGraph: [
