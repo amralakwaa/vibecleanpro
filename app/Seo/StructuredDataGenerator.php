@@ -300,7 +300,19 @@ class StructuredDataGenerator
                 default => null,
             };
 
-            if ($dayOfWeek === null || ! preg_match('/\b([01]?\d|2[0-3]):([0-5]\d)\b\D+\b([01]?\d|2[0-3]):([0-5]\d)\b/u', (string) $value, $matches)) {
+            if ($dayOfWeek === null) {
+                continue;
+            }
+
+            // "على مدار 24 ساعة" means open all day: schema.org writes that as
+            // 00:00-23:59, the form Google documents for round-the-clock hours.
+            if (preg_match('/24\s*ساعة/u', (string) $value)) {
+                $specifications[] = ['@type' => 'OpeningHoursSpecification', 'dayOfWeek' => $dayOfWeek, 'opens' => '00:00', 'closes' => '23:59'];
+
+                continue;
+            }
+
+            if (! preg_match('/\b([01]?\d|2[0-3]):([0-5]\d)\b\D+\b([01]?\d|2[0-3]):([0-5]\d)\b/u', (string) $value, $matches)) {
                 continue;
             }
 

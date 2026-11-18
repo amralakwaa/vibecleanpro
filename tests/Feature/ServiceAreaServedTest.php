@@ -27,6 +27,16 @@ class ServiceAreaServedTest extends TestCase
         $response->assertSee('"areaServed":{"@type":"City","name":"الرياض"}', false);
     }
 
+    public function test_round_the_clock_hours_are_published_as_open_all_day(): void
+    {
+        BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'city' => 'الرياض', 'working_hours' => ['كل أيام الأسبوع' => 'على مدار 24 ساعة']]);
+
+        $html = $this->get('/contact')->assertOk()->getContent();
+
+        $this->assertStringContainsString('"opens":"00:00","closes":"23:59"', $html);
+        $this->assertStringContainsString('على مدار 24 ساعة', $html);
+    }
+
     public function test_the_service_page_names_its_service_node_as_the_main_entity(): void
     {
         $page = $this->createCompliantServicePage(slug: 'warehouse-cleaning');
