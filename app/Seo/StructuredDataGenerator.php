@@ -90,6 +90,8 @@ class StructuredDataGenerator
             ...($page->published_at ? ['datePublished' => $page->published_at->toAtomString()] : []),
             'dateModified' => $page->updated_at->toAtomString(),
             ...$this->reviewer($page),
+            // A service page is about its Service node; say so in the graph.
+            ...($page->type === PageType::Service && $page->pageable instanceof Service ? ['mainEntity' => ['@id' => $url.'#service']] : []),
         ]];
 
         $blocks[] = $this->breadcrumbList($page);
@@ -346,8 +348,10 @@ class StructuredDataGenerator
         $data = array_filter([
             '@context' => 'https://schema.org',
             '@type' => 'Service',
+            '@id' => $this->canonical->resolve($page).'#service',
             'name' => $service->name,
-            'serviceType' => $service->category?->name ?? $service->name,
+            'serviceType' => $service->name,
+            ...($service->category?->name ? ['category' => $service->category->name] : []),
             'description' => $service->short_description ?: $page->seoMetadata?->meta_description,
             'url' => $this->canonical->resolve($page),
             'provider' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],

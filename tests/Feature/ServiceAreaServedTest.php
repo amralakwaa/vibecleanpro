@@ -26,4 +26,16 @@ class ServiceAreaServedTest extends TestCase
         $response->assertOk();
         $response->assertSee('"areaServed":{"@type":"City","name":"الرياض"}', false);
     }
+
+    public function test_the_service_page_names_its_service_node_as_the_main_entity(): void
+    {
+        $page = $this->createCompliantServicePage(slug: 'warehouse-cleaning');
+        $id = url('/services/warehouse-cleaning').'#service';
+
+        $response = $this->get('/services/warehouse-cleaning');
+
+        $response->assertOk();
+        $response->assertSee('"mainEntity":{"@id":"'.$id.'"}', false);
+        $response->assertSee('"@type":"Service","@id":"'.$id.'","name":"'.$page->pageable->name.'","serviceType":"'.$page->pageable->name.'"', false);
+    }
 }
