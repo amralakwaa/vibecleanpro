@@ -12,6 +12,7 @@
     @param string       $eyebrow      short family label (e.g. الخصوصية)
     @param array        $breadcrumbs  BreadcrumbItem[] from SEO
     @param bool         $isHub        the /trust hub reads slightly larger
+    @param string|null  $preparedBy   brand that prepared the page
     @param \Illuminate\Support\Carbon|null $updated  real last-updated stamp
     @param string|null  $backUrl      link back to the hub (non-hub pages)
 --}}
@@ -23,6 +24,7 @@
     'breadcrumbs' => [],
     'isHub' => false,
     'updated' => null,
+    'preparedBy' => null,
     'backUrl' => null,
 ])
 
@@ -72,8 +74,14 @@
                 <p class="mt-5 text-lg md:text-xl leading-relaxed text-ink-100/90 text-pretty">{{ $lede }}</p>
             @endif
 
-            @if ($updated || $backUrl)
+            @if ($updated || $backUrl || filled($preparedBy))
                 <div class="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-200">
+                    @if (filled($preparedBy))
+                        <span class="inline-flex items-center gap-1.5">
+                            <x-public.icon name="badge-check" class="w-4 h-4 text-ink-300" />
+                            إعداد: فريق {{ $preparedBy }}
+                        </span>
+                    @endif
                     @if ($updated)
                         <span class="inline-flex items-center gap-1.5">
                             <x-public.icon name="clock" class="w-4 h-4 text-ink-300" />

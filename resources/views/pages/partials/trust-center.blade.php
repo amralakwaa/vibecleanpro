@@ -29,6 +29,7 @@
     :breadcrumbs="$seo->breadcrumbs"
     :is-hub="$isHub"
     :updated="$page->updated_at"
+    :prepared-by="$businessProfile?->displayName()"
     :back-url="$isHub ? null : $hubUrl"
 />
 

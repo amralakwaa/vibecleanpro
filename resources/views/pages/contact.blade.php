@@ -174,6 +174,12 @@
 
                 <x-public.google-review-cta :business-profile="$businessProfile" class="mt-6" />
 
+                {{-- Before reaching out, the two things visitors most want to see. --}}
+                <p class="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                    <a href="{{ route('public.services.index') }}" class="inline-flex items-center min-h-11 font-medium text-primary-700 underline-offset-4 hover:underline">خدماتنا في الرياض</a>
+                    <a href="{{ route('public.projects.index') }}" class="inline-flex items-center min-h-11 font-medium text-primary-700 underline-offset-4 hover:underline">أعمالنا الموثقة بالصور</a>
+                </p>
+
                 {{-- The business path, named once - the same form with its own framing. --}}
                 @if (! $isBusinessContext)
                     <div class="surface-tint relative overflow-hidden rounded-2xl ring-1 ring-primary-200/60 p-5 mt-6">

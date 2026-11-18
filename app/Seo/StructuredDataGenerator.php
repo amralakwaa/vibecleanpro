@@ -6,6 +6,7 @@ use App\Enums\AreaTier;
 use App\Enums\PageType;
 use App\Enums\ServicePricingMode;
 use App\Models\Area;
+use App\Models\AreaGroup;
 use App\Models\Article;
 use App\Models\BusinessProfile;
 use App\Models\Faq;
@@ -99,6 +100,7 @@ class StructuredDataGenerator
             PageType::Project => $page->pageable instanceof Project ? [$this->caseStudy($page, $page->pageable)] : [],
             PageType::Offer => $page->pageable instanceof Offer ? [$this->offer($page, $page->pageable)] : [],
             PageType::Area => $page->pageable instanceof Area ? $this->areaServices($page->pageable) : [],
+            PageType::Landing => $page->pageable instanceof AreaGroup ? $this->areaGroupServices($page->pageable) : [],
             default => [],
         };
 
@@ -482,6 +484,35 @@ class StructuredDataGenerator
         }
 
         return $data;
+    }
+
+    /**
+     * A side-of-Riyadh landing page offers what its districts offer: every
+     * published service actively linked to one of the group's areas, served
+     * across that side of the city.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function areaGroupServices(AreaGroup $group): array
+    {
+        $services = Service::query()
+            ->whereHas('areas', fn ($query) => $query->where('area_group_id', $group->id)->where('service_area.is_active', true))
+            ->whereHas('page', fn ($query) => $query->published())
+            ->with('page')
+            ->orderBy('id')
+            ->get();
+
+        return $services->map(fn (Service $service) => array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Service',
+            'name' => $service->name,
+            'url' => $this->urlResolver->urlForPage($service->page),
+            'provider' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],
+            'areaServed' => [
+                '@type' => 'Place',
+                'name' => $group->name,
+            ],
+        ]))->values()->all();
     }
 
     /**
