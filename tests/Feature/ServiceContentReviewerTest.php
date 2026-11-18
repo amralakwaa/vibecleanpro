@@ -25,6 +25,7 @@ class ServiceContentReviewerTest extends TestCase
         $response->assertOk();
         $response->assertSee('مراجعة المحتوى الفني');
         $response->assertSee('صفة-المراجعة اسم-المراجعة');
+        $response->assertSee('فريق Vibe Clean Pro');
         $response->assertSee('"reviewedBy":{"@type":"Person","name":"اسم-المراجعة","jobTitle":"صفة-المراجعة"}', false);
         $response->assertSee('"lastReviewed"', false);
     }
