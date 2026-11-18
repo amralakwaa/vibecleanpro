@@ -116,7 +116,14 @@
             "pool-cleaning",
             "pest-control",
             "cleaning-contracts",
-            "glass-cleaning"
+            "glass-cleaning",
+            "glass-facade-cleaning",
+            "stone-facade-cleaning",
+            "cladding-cleaning",
+            "aluminium-profile-cleaning",
+            "metal-facade-cleaning",
+            "warehouse-cleaning",
+            "factory-cleaning"
         ],
         "articles": [
             "cleaning-prices-riyadh",

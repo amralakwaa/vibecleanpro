@@ -30,6 +30,6 @@ ServiceContentSeeder loads every `wave1-services*.php` file and groups definitio
 Settled on 2026-09-20 so nobody re-opens them:
 - CERTIFICATES: the site may say the company holds accreditation (owner-authorised), but must NEVER name a certificate, issuing body, number or date until a document exists in hand. Generic wording only.
 - PEST CONTROL (Wave 3): the page ships with no licence number and no licensing claim of any kind. It describes scope only.
-- WATER TANKS: scope is cleaning + disinfection with materials fit for drinking-water tanks. Insulation, repairs and plumbing are explicitly out of scope; the page says we report what we see and nothing more.
+- WATER TANKS: scope is cleaning + disinfection with materials fit for drinking-water tanks, plus leak detection and tank insulation as add-on services (owner confirmed 2026-11-18, replacing the 2026-09-20 "insulation out of scope" answer). Plumbing and other repairs remain out of scope.
 - AC: scope is cleaning filters, coil, fan, drain pan and drain line for split, window, central/duct and concealed units. Refrigerant, compressor and electrical repair are explicitly excluded on the page.
 - TERMS: the six policy clauses (scheduling/cancellation, payment, client duties, warranty, liability, complaints + governing law) are written and published; they carry no fee amount, no period, and no claim of legal review. A lawyer has NOT reviewed them - if one ever does, update the page, not the code.

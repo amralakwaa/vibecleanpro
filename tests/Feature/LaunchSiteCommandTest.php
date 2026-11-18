@@ -104,7 +104,8 @@ class LaunchSiteCommandTest extends TestCase
         // cleaning as its own service, so the whole catalogue is live; the
         // trust and legal pages publish through the same manifest as
         // standalone pages.
-        $this->assertCount(19, $manifest->publishServices);
+        // Wave 6 (2026-11-18) added five facade-material pages plus warehouses and factories.
+        $this->assertCount(26, $manifest->publishServices);
         $this->assertSame(['warranty', 'terms', 'privacy', 'about'], $manifest->publishPages);
         $this->assertCount(10, $manifest->publishArticles);
         // The 47 library groups became case studies: 34 publish, and the

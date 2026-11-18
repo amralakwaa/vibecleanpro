@@ -364,6 +364,11 @@ class StructuredDataGenerator
                 '@type' => 'Place',
                 'name' => $area->name,
             ])->all();
+        } elseif (filled($city = BusinessProfile::query()->value('city'))) {
+            // A service not tied to district pages is still offered across
+            // the business's city - the same areaServed the LocalBusiness
+            // block already states, so search engines know where it applies.
+            $data['areaServed'] = ['@type' => 'City', 'name' => $city];
         }
 
         // The same admin-entered price the page shows, expressed with

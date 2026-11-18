@@ -1852,6 +1852,167 @@
                 "facade-cleaning",
                 "post-construction-cleaning"
             ]
+        },
+        {
+            "slug": "glass-facade-cleaning",
+            "name": "تنظيف واجهات الزجاج",
+            "category": "business",
+            "capability": "available",
+            "sort_order": 22,
+            "is_featured": false,
+            "page": {
+                "title": "تنظيف واجهات زجاج بالرياض: ستائر زجاجية وأبراج ومحلات",
+                "meta_title": "تنظيف واجهات زجاج بالرياض | ستائر زجاجية وأبراج",
+                "meta_description": "تنظيف واجهات زجاج بالرياض للأبراج والمباني التجارية والمحلات: إزالة الغبار وبقع الماء بلا خطوط، برافعة سلة أو حبال حسب الارتفاع. معاينة وعرض سعر مكتوب."
+            },
+            "short_description": "تنظيف الواجهات الزجاجية والستائر الزجاجية على ارتفاع للأبراج والمباني التجارية، مع الإطارات والفواصل، وبطريقة وصول تُحدد بعد المعاينة.",
+            "featured_media_file": null,
+            "blocks": [],
+            "faqs": [],
+            "links": [
+                "facade-cleaning",
+                "glass-cleaning",
+                "cladding-cleaning",
+                "aluminium-profile-cleaning"
+            ]
+        },
+        {
+            "slug": "stone-facade-cleaning",
+            "name": "تنظيف واجهات الحجر والرخام",
+            "category": "business",
+            "capability": "available",
+            "sort_order": 23,
+            "is_featured": false,
+            "page": {
+                "title": "تنظيف واجهات حجر ورخام بالرياض: حجر طبيعي وكسر رخام",
+                "meta_title": "تنظيف واجهات حجر ورخام بالرياض | كسر رخام وحجر طبيعي",
+                "meta_description": "تنظيف واجهات الحجر الطبيعي والرخام وكسر الرخام بالرياض بضغط ومواد مضبوطة على نوع الحجر بعد تجربة على جزء صغير. إزالة الأتربة والأملاح البيضاء. معاينة وعرض سعر."
+            },
+            "short_description": "تنظيف واجهات الحجر الطبيعي والرخام وكسر الرخام للفلل والمباني بضغط ومواد مناسبة لكل حجر، بعد تجربة على جزء غير ظاهر.",
+            "featured_media_file": null,
+            "blocks": [],
+            "faqs": [],
+            "links": [
+                "facade-cleaning",
+                "marble-polishing",
+                "villa-cleaning",
+                "courtyard-cleaning"
+            ]
+        },
+        {
+            "slug": "cladding-cleaning",
+            "name": "تنظيف الكلادينج",
+            "category": "business",
+            "capability": "available",
+            "sort_order": 24,
+            "is_featured": false,
+            "page": {
+                "title": "تنظيف واجهات كلادينج بالرياض: ألواح ألمنيوم دون خدش طلائها",
+                "meta_title": "تنظيف واجهات كلادينج بالرياض | ألواح ألمنيوم مركبة",
+                "meta_description": "تنظيف واجهات الكلادينج بالرياض للمباني التجارية والمعارض: إزالة الغبار والخطوط السوداء وبقايا الفيلم الواقي بمواد لا تضر طلاء الألواح. معاينة وعرض سعر مكتوب."
+            },
+            "short_description": "تنظيف ألواح الكلادينج (الألمنيوم المركب) على واجهات المباني والمعارض: الغبار والخطوط السوداء وبقايا الفيلم الواقي، دون خدش الطلاء.",
+            "featured_media_file": null,
+            "blocks": [],
+            "faqs": [],
+            "links": [
+                "facade-cleaning",
+                "glass-facade-cleaning",
+                "aluminium-profile-cleaning",
+                "shop-cleaning"
+            ]
+        },
+        {
+            "slug": "aluminium-profile-cleaning",
+            "name": "تنظيف واجهات البروفايل",
+            "category": "business",
+            "capability": "available",
+            "sort_order": 25,
+            "is_featured": false,
+            "page": {
+                "title": "تنظيف واجهات بروفايل بالرياض: إطارات الألمنيوم ومجاريها",
+                "meta_title": "تنظيف واجهات بروفايل بالرياض | إطارات ومجاري الألمنيوم",
+                "meta_description": "تنظيف واجهات البروفايل بالرياض: إطارات الألمنيوم في النوافذ والستائر الزجاجية، مجاريها وفتحات تصريفها وآثار السيليكون، دون خدش الطلاء. معاينة وعرض سعر مكتوب."
+            },
+            "short_description": "تنظيف إطارات الألمنيوم (البروفايل) في النوافذ والستائر الزجاجية والأبواب: الإطارات والمجاري وفتحات التصريف وآثار السيليكون.",
+            "featured_media_file": null,
+            "blocks": [],
+            "faqs": [],
+            "links": [
+                "facade-cleaning",
+                "glass-facade-cleaning",
+                "cladding-cleaning",
+                "post-construction-cleaning"
+            ]
+        },
+        {
+            "slug": "metal-facade-cleaning",
+            "name": "تنظيف الواجهات والأسوار الحديدية",
+            "category": "business",
+            "capability": "available",
+            "sort_order": 26,
+            "is_featured": false,
+            "page": {
+                "title": "تنظيف واجهات حديد بالرياض: أسوار وبوابات ومظلات معدنية",
+                "meta_title": "تنظيف واجهات حديد بالرياض | أسوار وبوابات ومظلات",
+                "meta_description": "تنظيف الواجهات والأسوار والبوابات الحديدية والمعدنية بالرياض: غبار ودهون وآثار صدأ سطحي، بمواد مناسبة للدهان والحديد المجلفن والستانلس. معاينة وعرض سعر مكتوب."
+            },
+            "short_description": "تنظيف الواجهات المعدنية والأسوار والبوابات الحديدية والمظلات والشبك المعدني: الغبار والدهون وآثار الصدأ السطحي دون الإضرار بالدهان.",
+            "featured_media_file": null,
+            "blocks": [],
+            "faqs": [],
+            "links": [
+                "facade-cleaning",
+                "stone-facade-cleaning",
+                "courtyard-cleaning",
+                "warehouse-cleaning"
+            ]
+        },
+        {
+            "slug": "warehouse-cleaning",
+            "name": "تنظيف المستودعات",
+            "category": "business",
+            "capability": "available",
+            "sort_order": 27,
+            "is_featured": false,
+            "page": {
+                "title": "تنظيف مستودعات بالرياض: أرضيات ورفوف عالية دون إيقاف التشغيل",
+                "meta_title": "تنظيف مستودعات بالرياض | أرضيات ورفوف ورصيف تحميل",
+                "meta_description": "تنظيف المستودعات بالرياض: أرضيات الخرسانة والإيبوكسي، الرفوف العالية، أرصفة التحميل وخطوط السلامة، بجدول ينسق مع حركة التشغيل. معاينة وعرض سعر مكتوب."
+            },
+            "short_description": "تنظيف المستودعات: الأرضيات الخرسانية والإيبوكسي، الرفوف والممرات، أرصفة التحميل وخطوط السلامة، مع تنسيق العمل حول حركة التشغيل.",
+            "featured_media_file": null,
+            "blocks": [],
+            "faqs": [],
+            "links": [
+                "cleaning-contracts",
+                "factory-cleaning",
+                "office-cleaning",
+                "metal-facade-cleaning"
+            ]
+        },
+        {
+            "slug": "factory-cleaning",
+            "name": "تنظيف المصانع",
+            "category": "business",
+            "capability": "available",
+            "sort_order": 28,
+            "is_featured": false,
+            "page": {
+                "title": "تنظيف مصانع بالرياض: صالات الإنتاج والأرضيات والمرافق",
+                "meta_title": "تنظيف مصانع بالرياض | صالات إنتاج وأرضيات ومرافق",
+                "meta_description": "تنظيف المصانع بالرياض: صالات الإنتاج والأرضيات الزيتية والأسطح العالية والمرافق، بالتنسيق مع مسؤول السلامة وجدول الإنتاج. معاينة وعرض سعر مكتوب قبل التنفيذ."
+            },
+            "short_description": "تنظيف المصانع: صالات الإنتاج والأرضيات الزيتية والأسطح العالية والممرات والمرافق، بالتنسيق مع مسؤول السلامة وجدول الإنتاج.",
+            "featured_media_file": null,
+            "blocks": [],
+            "faqs": [],
+            "links": [
+                "cleaning-contracts",
+                "warehouse-cleaning",
+                "disinfection",
+                "office-cleaning"
+            ]
         }
     ],
     "area_groups": [

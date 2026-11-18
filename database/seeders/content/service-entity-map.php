@@ -56,10 +56,68 @@ return [
 
     'facade-cleaning' => [
         'primary' => 'تنظيف واجهات المباني بالرياض',
-        'secondary' => ['تنظيف زجاج المباني', 'تنظيف واجهات زجاجية', 'تنظيف واجهات بالحبال', 'تكلفة تنظيف الواجهات'],
+        'secondary' => ['شركة تنظيف واجهات بالرياض', 'تنظيف زجاج المباني', 'تنظيف واجهات بالحبال', 'تكلفة تنظيف الواجهات'],
         'intent' => 'transactional',
-        'related' => ['glass-cleaning', 'shop-cleaning', 'office-cleaning', 'post-construction-cleaning', 'courtyard-cleaning'],
+        'related' => ['glass-facade-cleaning', 'stone-facade-cleaning', 'cladding-cleaning', 'aluminium-profile-cleaning', 'metal-facade-cleaning', 'glass-cleaning'],
         'articles' => ['facade-cleaning-cost-riyadh', 'facade-access-rope-lift-scaffold', 'streak-free-glass-cleaning-riyadh'],
+    ],
+
+    // The facade hub owns the building; each material page below owns the
+    // query for that material (owner confirmed all five, 2026-11-18).
+    'glass-facade-cleaning' => [
+        'primary' => 'تنظيف واجهات زجاج بالرياض',
+        'secondary' => ['شركة تنظيف واجهات زجاج بالرياض', 'تنظيف واجهات زجاجية', 'تنظيف الستائر الزجاجية', 'تنظيف زجاج الأبراج'],
+        'intent' => 'transactional',
+        'related' => ['facade-cleaning', 'glass-cleaning', 'cladding-cleaning', 'aluminium-profile-cleaning'],
+        'articles' => ['facade-access-rope-lift-scaffold', 'streak-free-glass-cleaning-riyadh', 'facade-cleaning-cost-riyadh'],
+    ],
+
+    'stone-facade-cleaning' => [
+        'primary' => 'تنظيف واجهات حجر بالرياض',
+        'secondary' => ['شركة تنظيف واجهات حجر بالرياض', 'تنظيف واجهات رخام', 'تنظيف واجهات كسر رخام', 'تنظيف حجر الواجهات'],
+        'intent' => 'transactional',
+        'related' => ['facade-cleaning', 'marble-polishing', 'villa-cleaning', 'courtyard-cleaning'],
+        'articles' => ['facade-cleaning-cost-riyadh'],
+    ],
+
+    'cladding-cleaning' => [
+        'primary' => 'تنظيف واجهات كلادينج بالرياض',
+        'secondary' => ['تنظيف كلادينج', 'تنظيف ألواح الألمنيوم المركب', 'شركة تنظيف واجهات كلادينج'],
+        'intent' => 'transactional',
+        'related' => ['facade-cleaning', 'glass-facade-cleaning', 'aluminium-profile-cleaning', 'shop-cleaning'],
+        'articles' => ['facade-cleaning-cost-riyadh'],
+    ],
+
+    'aluminium-profile-cleaning' => [
+        'primary' => 'تنظيف واجهات بروفايل بالرياض',
+        'secondary' => ['تنظيف بروفايل الألمنيوم', 'تنظيف مجاري النوافذ', 'تنظيف إطارات الألمنيوم'],
+        'intent' => 'transactional',
+        'related' => ['facade-cleaning', 'glass-facade-cleaning', 'cladding-cleaning', 'post-construction-cleaning'],
+        'articles' => ['post-construction-handover-checklist'],
+    ],
+
+    'metal-facade-cleaning' => [
+        'primary' => 'تنظيف واجهات حديد بالرياض',
+        'secondary' => ['تنظيف أسوار حديد', 'تنظيف بوابات حديد', 'تنظيف المظلات المعدنية', 'تنظيف ستانلس ستيل'],
+        'intent' => 'transactional',
+        'related' => ['facade-cleaning', 'stone-facade-cleaning', 'courtyard-cleaning', 'warehouse-cleaning'],
+        'articles' => ['facade-cleaning-cost-riyadh'],
+    ],
+
+    'warehouse-cleaning' => [
+        'primary' => 'تنظيف مستودعات بالرياض',
+        'secondary' => ['شركة تنظيف مستودعات بالرياض', 'تنظيف أرضيات المستودعات', 'تنظيف رفوف المستودعات'],
+        'intent' => 'transactional',
+        'related' => ['cleaning-contracts', 'factory-cleaning', 'office-cleaning', 'metal-facade-cleaning'],
+        'articles' => ['how-to-choose-cleaning-company-riyadh'],
+    ],
+
+    'factory-cleaning' => [
+        'primary' => 'تنظيف مصانع بالرياض',
+        'secondary' => ['شركة تنظيف مصانع بالرياض', 'تنظيف صالات الإنتاج', 'تنظيف أرضيات المصانع'],
+        'intent' => 'transactional',
+        'related' => ['cleaning-contracts', 'warehouse-cleaning', 'disinfection', 'office-cleaning'],
+        'articles' => ['how-to-choose-cleaning-company-riyadh'],
     ],
 
     // Glass owns the pane; the facade owns the building. The split is

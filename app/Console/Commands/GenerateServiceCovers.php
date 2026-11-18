@@ -55,6 +55,10 @@ class GenerateServiceCovers extends Command
         'sofa-cleaning' => ['sofa', '#1e3a8a', '#3b7cf6', '#eff5ff'],
         'water-tank-cleaning' => ['tank', '#072554', '#1d4fd8', '#93bbfd'],
         'disinfection' => ['spray', '#0c1830', '#2563eb', '#dbe8fe'],
+        'stone-facade-cleaning' => ['marble', '#16233d', '#1d4fd8', '#bfd7fe'],
+        'aluminium-profile-cleaning' => ['window', '#0c1830', '#3b7cf6', '#dbe8fe'],
+        'metal-facade-cleaning' => ['apartment', '#243350', '#2563eb', '#93bbfd'],
+        'factory-cleaning' => ['shop', '#072554', '#1e40af', '#eff5ff'],
     ];
 
     /**
@@ -76,6 +80,10 @@ class GenerateServiceCovers extends Command
         'sofa-cleaning' => 'غلاف خدمة تنظيف الكنب من فايب كلين برو — رسم توضيحي لكنبة',
         'water-tank-cleaning' => 'غلاف خدمة تنظيف خزانات المياه من فايب كلين برو — رسم توضيحي لخزان مياه',
         'disinfection' => 'غلاف خدمة التعقيم والتطهير من فايب كلين برو — رسم توضيحي لأداة رش وقطرات',
+        'stone-facade-cleaning' => 'غلاف خدمة تنظيف واجهات الحجر والرخام من فايب كلين برو — رسم توضيحي لسطح حجري',
+        'aluminium-profile-cleaning' => 'غلاف خدمة تنظيف واجهات البروفايل من فايب كلين برو — رسم توضيحي لنافذة بإطار ألمنيوم',
+        'metal-facade-cleaning' => 'غلاف خدمة تنظيف الواجهات والأسوار الحديدية من فايب كلين برو — رسم توضيحي لواجهة مبنى',
+        'factory-cleaning' => 'غلاف خدمة تنظيف المصانع من فايب كلين برو — رسم توضيحي لواجهة منشأة',
     ];
 
     public function handle(): int
