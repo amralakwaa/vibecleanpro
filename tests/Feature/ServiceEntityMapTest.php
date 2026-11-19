@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\PageStatus;
 use App\Enums\PageType;
+use App\Models\AreaGroup;
 use App\Models\Page;
 use App\Seo\ServiceEntityMap;
 use App\Support\Content\PublishedLinkFilter;
@@ -120,6 +121,22 @@ class ServiceEntityMapTest extends TestCase
         $this->assertStringContainsString('الخدمة المحجوزة', $filtered, 'but its text stays in the sentence');
         $this->assertStringContainsString('href="/services/live-service"', $filtered);
         $this->assertNotNull($page->id.$live->id);
+    }
+
+    public function test_a_link_to_a_published_side_of_riyadh_page_is_kept(): void
+    {
+        $group = AreaGroup::query()->create(['name' => 'شمال الرياض', 'slug' => 'north-riyadh']);
+        $side = Page::factory()->create(['type' => PageType::Landing, 'slug' => 'north-riyadh']);
+        $side->forceFill([
+            'pageable_type' => $group->getMorphClass(),
+            'pageable_id' => $group->id,
+            'status' => PageStatus::Published,
+            'published_at' => now(),
+        ])->saveQuietly();
+
+        $html = '<p>راجع <a href="/areas/north-riyadh">شركة تنظيف شمال الرياض</a>.</p>';
+
+        $this->assertSame($html, app(PublishedLinkFilter::class)->filter($html));
     }
 
     public function test_the_filter_leaves_external_links_and_action_routes_alone(): void

@@ -4,6 +4,7 @@ namespace App\Support\Content;
 
 use App\Enums\PageStatus;
 use App\Models\Page;
+use App\Seo\UrlResolver;
 use Illuminate\Support\Collection;
 
 /**
@@ -24,6 +25,8 @@ class PublishedLinkFilter
      * @var Collection<int, string>|null
      */
     private ?Collection $publishedPaths = null;
+
+    public function __construct(private readonly UrlResolver $urlResolver) {}
 
     public function filter(?string $html): string
     {
@@ -73,21 +76,18 @@ class PublishedLinkFilter
     }
 
     /**
+     * Paths come from UrlResolver, the one URL policy, so a side-of-Riyadh
+     * landing page (served at /areas/{slug}) counts as reachable too -
+     * a hard-coded type map silently unwrapped every link to those pages.
+     *
      * @return Collection<int, string>
      */
     private function publishedPaths(): Collection
     {
         return $this->publishedPaths ??= Page::query()
             ->where('status', PageStatus::Published)
-            ->whereIn('type', ['service', 'article', 'project', 'area', 'offer'])
-            ->get(['slug', 'type'])
-            ->map(fn (Page $page): string => match ($page->type->value) {
-                'service' => '/services/'.$page->slug,
-                'article' => '/blog/'.$page->slug,
-                'project' => '/projects/'.$page->slug,
-                'area' => '/areas/'.$page->slug,
-                'offer' => '/offers/'.$page->slug,
-                default => '/'.$page->slug,
-            });
+            ->whereIn('type', ['service', 'article', 'project', 'area', 'offer', 'landing'])
+            ->get(['slug', 'type', 'pageable_type'])
+            ->map(fn (Page $page): string => $this->urlResolver->pathForPage($page));
     }
 }
