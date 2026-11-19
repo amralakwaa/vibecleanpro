@@ -4,7 +4,11 @@
     // this never runs a redundant query.
     $businessProfile ??= \App\Models\BusinessProfile::query()->first();
 
-    $whatsappUrl = $businessProfile?->whatsappUrl();
+    // A page can pre-write the customer's first WhatsApp line (a service
+    // page names its service), so the header, footer and mobile bar open
+    // the same context-aware chat as the page's own buttons.
+    $whatsappMessage ??= null;
+    $whatsappUrl = $businessProfile?->whatsappUrl($whatsappMessage);
     $phoneUrl = $businessProfile?->phoneUrl();
     $quoteUrl = route('public.quote');
     // The header's one action never links to the page it is on: the quote

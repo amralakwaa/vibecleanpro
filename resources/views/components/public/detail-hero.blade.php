@@ -83,13 +83,20 @@
                 @endif
 
                 <div class="mt-7 flex flex-wrap items-center gap-3" data-hero-cta>
-                    <x-public.call-button :business-profile="$businessProfile" />
-                    <x-public.button :href="$ctaUrl" :variant="filled($businessProfile?->phoneUrl()) ? 'secondary' : 'cta'" size="lg" icon="check-circle" :class="filled($businessProfile?->phoneUrl()) ? '' : 'shadow-lg shadow-primary-600/25'">{{ $ctaLabel }}</x-public.button>
-
+                    {{-- WhatsApp and a direct call are the two primary actions
+                         (owner decision 2026-11-19); the written quote is the
+                         quieter third path, and leads only when neither exists. --}}
                     @if ($whatsappUrl)
-                        <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp">
+                        <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp" class="shadow-lg shadow-primary-600/25">
                             {{ $whatsappLabel }}
                         </x-public.button>
+                    @endif
+                    <x-public.call-button :business-profile="$businessProfile" />
+
+                    @if ($whatsappUrl || filled($businessProfile?->phoneUrl()))
+                        <a href="{{ $ctaUrl }}" class="text-sm font-semibold text-primary-700 underline underline-offset-4 hover:text-primary-800">{{ $ctaLabel }}</a>
+                    @else
+                        <x-public.button :href="$ctaUrl" variant="cta" size="lg" icon="check-circle" class="shadow-lg shadow-primary-600/25">{{ $ctaLabel }}</x-public.button>
                     @endif
                 </div>
 

@@ -41,6 +41,8 @@
     'relatedItemType' => null,
     'only' => null,
     'except' => null,
+    'whatsappMessage' => null,
+    'phoneUrl' => null,
     'width' => 'default',
 ])
 
@@ -62,6 +64,12 @@
     $media = $mediaIds->isEmpty()
         ? collect()
         : \App\Models\Media::query()->whereIn('id', $mediaIds)->get()->keyBy('id');
+
+    // A bare wa.me link saved in the CMS opens an empty chat; the page's
+    // pre-written first line is added when the page supplies one.
+    $withWhatsappMessage = fn (?string $url): ?string => $url && $whatsappMessage && str_contains($url, 'wa.me/') && ! str_contains($url, 'text=')
+        ? $url.(str_contains($url, '?') ? '&' : '?').'text='.rawurlencode($whatsappMessage)
+        : $url;
 @endphp
 
 @foreach ($visibleBlocks as $block)
@@ -326,7 +334,7 @@
 
         @case('cta')
             @if (! empty($block->data['heading']))
-                <x-public.cta :title="$block->data['heading']" :quote-url="route('public.quote')" :whatsapp-url="$block->data['button_url'] ?? null" />
+                <x-public.cta :title="$block->data['heading']" :quote-url="route('public.quote')" :whatsapp-url="$withWhatsappMessage($block->data['button_url'] ?? null)" :phone-url="$phoneUrl" />
             @endif
             @break
 
@@ -450,13 +458,23 @@
                                     <p class="mt-3 text-white/75 leading-relaxed">{{ $block->data['body'] }}</p>
                                 @endif
                             </div>
+                            @php($bannerWhatsapp = $withWhatsappMessage($block->data['whatsapp_url'] ?? null))
                             <div class="mt-6 md:mt-0 flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
-                                @if (! empty($block->data['whatsapp_url']))
-                                    <a href="{{ $block->data['whatsapp_url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-primary-600 hover:bg-primary-700 text-white font-semibold transition-colors">
+                                @if ($bannerWhatsapp)
+                                    <a href="{{ $bannerWhatsapp }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-primary-600 hover:bg-primary-700 text-white font-semibold transition-colors">
                                         <x-public.icon name="whatsapp" class="w-5 h-5" /> {{ $block->data['whatsapp_label'] ?? 'تواصل عبر واتساب' }}
                                     </a>
                                 @endif
-                                <a href="{{ route('public.quote') }}" class="inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-white/10 hover:bg-white/15 ring-1 ring-white/20 text-white font-semibold transition-colors">اطلب عرض سعر</a>
+                                @if ($phoneUrl)
+                                    <a href="{{ $phoneUrl }}" class="inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-white/10 hover:bg-white/15 ring-1 ring-white/20 text-white font-semibold transition-colors">
+                                        <x-public.icon name="phone" class="w-5 h-5" /> اتصل الآن
+                                    </a>
+                                @endif
+                                <a href="{{ route('public.quote') }}" @class([
+                                    'inline-flex items-center justify-center gap-2 font-semibold transition-colors',
+                                    'min-h-12 px-6 rounded-full bg-white/10 hover:bg-white/15 ring-1 ring-white/20 text-white' => ! $bannerWhatsapp && ! $phoneUrl,
+                                    'text-sm text-white/75 underline underline-offset-4 hover:text-white' => $bannerWhatsapp || $phoneUrl,
+                                ])>اطلب عرض سعر</a>
                             </div>
                         </div>
                     </div>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<!--
+  AI Citation Finder: AI RANKING DASHBOARD TEMPLATE
+  Generated from the AI Ranking house style.
+
+  HOW TO FILL THIS TEMPLATE
+  - Replace every double-brace placeholder with a real value.
+  - Repeatable blocks are marked.
+    Duplicate the inner block once per row. Delete the block if there are no rows
+    and show the .empty state instead.
+  - Do NOT restyle. Do NOT add fonts, colours, or libraries.
+  - Never invent a number. If data is missing write "no data" and say why in
+    استُبعدت: مستندات Google Docs المحشوة بالكلمات، وصفحات مزرعة الروابط (harvard bionumbers، patch، goodreads، pearltrees)، ومنتدى هوامير (2018–2019، قديم)، ومواقع المنافسين. صفحة سبق رفضت القراءة (403) فحالتها غير معروفة. صفحات حراج ومستعمل والسوق المفتوح لم تُفتح صفحةً صفحة، فحالتها «غير معروف». الإجابات تتغير بين التشغيلات: تشغيل واحد يُعدّ ضجيجًا، أعد القياس بعد شهر..
+-->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فايب كلين برو — vibecleanpro.com · AI Citation Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..600&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   AI RANKING HOUSE STYLE: single source of truth
+   Inherited from local-seo-report/templates/report.html.template.
+   Do not restyle per skill. Edit here, then run shared/build_templates.py
+   to regenerate all five skill templates.
+   ============================================================ */
+:root{
+  --forest:#1c3a2e; --forest-2:#264c3b; --moss:#5b7a63;
+  --cream:#f4efe2; --cream-2:#ece5d3; --paper:#fbf8f0;
+  --gold:#c08a3e; --rust:#b4522f; --ink:#16241d;
+  --pass:#2f7d4e; --warn:#c08a3e; --fail:#b4522f;
+  --line:rgba(28,58,46,.16);
+  --shadow:0 1px 2px rgba(28,58,46,.06),0 12px 36px -12px rgba(28,58,46,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Schibsted Grotesk",system-ui,sans-serif;
+  background:var(--cream); color:var(--ink);
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(1200px 600px at 85% -10%, rgba(192,138,62,.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(91,122,99,.14), transparent 55%);
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 28px}
+.reveal{opacity:0;transform:translateY(18px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.reveal{animation:none;opacity:1;transform:none}}
+
+/* ---------- header ---------- */
+header.top{background:linear-gradient(160deg,var(--forest),var(--forest-2));color:var(--cream);position:relative;overflow:hidden}
+header.top::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle at center, rgba(192,138,62,.45), transparent 65%)}
+.top .wrap{padding:54px 28px 46px;position:relative;z-index:2}
+.brandrow{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,239,226,.7)}
+.brandrow b{color:var(--cream);font-weight:600}
+h1{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(2.4rem,6vw,4rem);line-height:1.02;margin:26px 0 6px;letter-spacing:-.01em}
+h1 em{font-style:italic;color:#e7c690}
+.sub{font-size:1.02rem;color:rgba(244,239,226,.82);max-width:52ch}
+.datechip{display:inline-flex;gap:.5rem;align-items:center;margin-top:22px;background:rgba(244,239,226,.12);border:1px solid rgba(244,239,226,.25);padding:.5rem .9rem;border-radius:999px;font-size:.82rem;letter-spacing:.04em}
+.datechip span{width:7px;height:7px;border-radius:50%;background:#7bd39a;box-shadow:0 0 0 4px rgba(123,211,154,.18)}
+
+/* ---------- KPI band ---------- */
+.heroband{background:var(--paper);border-bottom:1px solid var(--line)}
+.heroband .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0}
+.stat{padding:30px 22px;border-right:1px solid var(--line);position:relative}
+.stat:last-child{border-right:none}
+.stat .k{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(1.9rem,4.4vw,2.9rem);line-height:1;color:var(--forest);letter-spacing:-.02em}
+.stat .l{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--moss);margin-top:10px}
+.stat .w{font-size:.72rem;color:#9a9684;margin-top:3px}
+.stat.is-fail .k{color:var(--fail)}
+.stat.is-warn .k{color:var(--warn)}
+@media(max-width:720px){.heroband .wrap{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:none}.stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--line)}}
+
+/* ---------- sections ---------- */
+main{padding:60px 0 30px}
+section{margin-bottom:58px}
+.seclabel{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+.seclabel .num{font-family:"Fraunces",serif;font-style:italic;color:var(--gold);font-size:1.1rem}
+.seclabel h2{font-family:"Fraunces",serif;font-weight:500;font-size:1.85rem;letter-spacing:-.01em;color:var(--forest)}
+.seclabel .win{margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--moss);border:1px solid var(--line);padding:.3rem .7rem;border-radius:999px}
+.meaning{background:var(--cream-2);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;font-size:.95rem;margin-top:18px;color:#3a4a40}
+.meaning b{color:var(--forest)}
+
+/* ---------- cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:720px){.cards{grid-template-columns:repeat(2,1fr)}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.card .k{font-family:"Fraunces",serif;font-size:2rem;color:var(--forest);line-height:1;letter-spacing:-.02em}
+.card .l{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--moss);margin-top:9px}
+.card.flag{border-color:rgba(180,82,47,.4);background:linear-gradient(180deg,#fbf1ec,var(--paper))}
+.card.flag .k{color:var(--rust)}
+.card.flag .tag{font-size:.68rem;color:var(--rust);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-top:6px;display:block}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:var(--shadow)}
+
+/* ---------- tables ---------- */
+.tbl{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin-top:6px}
+.tbl th{text-align:left;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--moss);padding:14px 18px;background:var(--cream-2);border-bottom:1px solid var(--line)}
+.tbl td{padding:13px 18px;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td.q{font-weight:500;color:var(--ink)}
+.tbl td.num{font-family:"Fraunces",serif;font-weight:600;font-size:1.02rem;white-space:nowrap}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.bar{height:6px;border-radius:3px;background:var(--cream-2);overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--moss),var(--forest))}
+
+/* ---------- badges + status ---------- */
+.badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;
+  padding:.34rem .72rem;border-radius:999px;border:1px solid var(--line);background:var(--cream-2);color:var(--forest)}
+.badge.solid{background:linear-gradient(150deg,var(--forest),var(--forest-2));color:var(--cream);border-color:transparent}
+.badge.gold{background:rgba(192,138,62,.14);border-color:rgba(192,138,62,.4);color:#8a5f1f}
+.st{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;white-space:nowrap}
+.st::before{content:"";width:9px;height:9px;border-radius:50%;flex:none}
+.st.pass{color:var(--pass)}      .st.pass::before{background:var(--pass);box-shadow:0 0 0 3px rgba(47,125,78,.15)}
+.st.warn{color:var(--warn)}      .st.warn::before{background:var(--warn);box-shadow:0 0 0 3px rgba(192,138,62,.15)}
+.st.fail{color:var(--fail)}      .st.fail::before{background:var(--fail);box-shadow:0 0 0 3px rgba(180,82,47,.15)}
+.st.na{color:#9a9684}            .st.na::before{background:#c9c4b3}
+.intent{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:.24rem .6rem;border-radius:6px;white-space:nowrap}
+.intent.info{background:rgba(91,122,99,.16);color:#3f5a48}
+.intent.comm{background:rgba(192,138,62,.16);color:#8a5f1f}
+.intent.trans{background:rgba(47,125,78,.16);color:#215a38}
+.intent.nav{background:rgba(28,58,46,.1);color:var(--forest)}
+
+/* ---------- checklist (skill 3) ---------- */
+.checks{list-style:none}
+.checks li{display:grid;grid-template-columns:130px 1fr;gap:18px;padding:16px 0;border-bottom:1px dashed var(--line);align-items:start}
+.checks li:last-child{border-bottom:none}
+.checks .what{font-weight:500;color:var(--forest)}
+.checks .why{display:block;color:#6c7a6f;font-size:.88rem;margin-top:3px}
+.checks .fix{display:block;font-size:.88rem;margin-top:6px;padding:10px 12px;background:var(--cream-2);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;color:#3a4a40}
+
+/* ---------- score dial ---------- */
+.score{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.score .n{font-family:"Fraunces",serif;font-size:4rem;line-height:1;color:var(--forest);letter-spacing:-.03em}
+.score .n small{font-size:1.2rem;color:var(--moss)}
+.score .track{flex:1;min-width:180px;height:10px;border-radius:5px;background:var(--cream-2);overflow:hidden}
+.score .track i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--pass))}
+
+/* ---------- ordered focus / gap list ---------- */
+.focus ol{list-style:none;counter-reset:f;margin-top:8px}
+.focus li{counter-increment:f;display:flex;gap:16px;padding:15px 0;border-bottom:1px dashed var(--line)}
+.focus li:last-child{border-bottom:none}
+.focus li::before{content:counter(f);font-family:"Fraunces",serif;font-style:italic;color:var(--gold);font-size:1.2rem;min-width:26px}
+.focus li b{color:var(--forest)}
+.focus li small{display:block;color:#6c7a6f;font-size:.85rem;margin-top:2px}
+
+/* ---------- dark feature panel (skill 5 / highlights) ---------- */
+.feature{background:linear-gradient(150deg,var(--forest),var(--forest-2));color:var(--cream);border-radius:18px;padding:30px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.feature::after{content:"";position:absolute;right:-80px;bottom:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(231,198,144,.35),transparent 65%)}
+.feature .ey{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#e7c690}
+.feature h3{font-family:"Fraunces",serif;font-weight:500;font-size:1.5rem;margin:8px 0 18px;max-width:34ch}
+.feature .rows{display:flex;gap:30px;flex-wrap:wrap;position:relative;z-index:2}
+.feature .r .n{font-family:"Fraunces",serif;font-size:2.3rem;line-height:1;color:#fff}
+.feature .r .s{font-size:.8rem;color:rgba(244,239,226,.8);margin-top:6px}
+
+/* ---------- draft preview (skill 2) ---------- */
+.draft{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:30px 34px;box-shadow:var(--shadow);max-height:620px;overflow-y:auto}
+.draft h2,.draft h3{font-family:"Fraunces",serif;font-weight:500;color:var(--forest);margin:26px 0 10px}
+.draft h2{font-size:1.4rem}.draft h3{font-size:1.12rem}
+.draft p{margin:0 0 14px}
+.draft a{color:#215a38;text-decoration:underline;text-underline-offset:2px}
+.draft .marker{background:rgba(180,82,47,.14);border:1px dashed rgba(180,82,47,.5);color:var(--rust);font-weight:600;padding:12px 14px;border-radius:8px;display:block;margin:14px 0}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:.92rem}
+.kv dt{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--moss);padding-top:3px}
+.kv dd{color:var(--ink);word-break:break-word}
+pre.code{background:var(--ink);color:#dfe7df;padding:18px;border-radius:12px;overflow-x:auto;font-size:.8rem;line-height:1.5}
+
+/* ---------- empty state ---------- */
+.empty{background:var(--cream-2);border:1px dashed var(--line);border-radius:14px;padding:28px;text-align:center;color:#6c7a6f}
+.empty b{display:block;font-family:"Fraunces",serif;font-size:1.2rem;color:var(--forest);margin-bottom:6px}
+
+/* ---------- footer ---------- */
+footer{padding:40px 0 70px;color:#7d8a7f;font-size:.82rem}
+footer .wrap{border-top:1px solid var(--line);padding-top:26px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.note{font-size:.8rem;color:#8a8773;max-width:60ch}
+
+/* ---------- print ---------- */
+@media print{
+  body::before{display:none}
+  .draft{max-height:none;overflow:visible}
+  section{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap reveal">
+    <div class="brandrow"><span>AI Citations</span><b>AI Ranking</b></div>
+    <h1>لا توجد قائمة عربية موثوقة تحسم «أفضل شركة تنظيف بالرياض»، وهذه فرصة</h1>
+    <p class="sub">8 أسئلة شراء، والمصادر التي يقرأها الذكاء الاصطناعي في هذا السوق إعلانات مبوبة وقائمة واحدة تحريرية (بيوت). فايب كلين غير موجودة في أي منها بعد.</p>
+    <div class="datechip"><span></span>فايب كلين برو — vibecleanpro.com · generated 2026-11-19</div>
+  </div>
+</header>
+
+<div class="heroband">
+  <div class="wrap">
+    <div class="stat"><div class="k">8</div><div class="l">Buyer questions</div><div class="w">checked 2026-11-19</div></div>
+    <div class="stat"><div class="k">8</div><div class="l">Pages that decide it</div><div class="w">after dropping rivals' own sites</div></div>
+    <div class="stat is-fail"><div class="k">0<small>/8</small></div><div class="l">You're on</div><div class="w">فايب كلين برو</div></div>
+    <div class="stat"><div class="k">4</div><div class="l">Quick wins</div><div class="w">low effort, this week</div></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="reveal">
+    <div class="seclabel"><span class="num">01</span><h2>Where you stand</h2><span class="win">تشغيل واحد، بحث Claude</span></div>
+    <div class="feature">
+      <div class="ey">The pages AI reads before it answers</div>
+      <h3>صفر من 8 صفحات</h3>
+      <div class="rows">
+        <div class="r"><div class="n">8</div><div class="s">pages decide your market</div></div>
+        <div class="r"><div class="n">0</div><div class="s">already mention فايب كلين برو</div></div>
+        <div class="r"><div class="n">0<span style="font-size:1.2rem">/8</span></div><div class="s">answers that name you</div></div>
+      </div>
+    </div>
+    <!-- Zero is a real and useful answer. Never mark a page "on it" without quoting the line. -->
+    <div class="meaning"><b>لا ذكر لفايب كلين ولا لسدرة أو الجواد في المصادر التي ظهرت</b> السوق العربي لهذه الأسئلة فارغ تقريبًا من المصادر المستقلة: صفحات Google Docs محشوة بالكلمات وإعلانات حراج ومرجان ومستعمل والسوق المفتوح. من يدخل هذه المصادر أولًا، ومعها تقييمات Google، هو من سيُذكر.</div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">02</span><h2>What the answers say now</h2><span class="win">8 questions</span></div>
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>Buyer question</th><th>Who gets named</th><th>You?</th><th>Sources behind it</th></tr></thead>
+      <tbody>
+
+        <tr>
+          <td class="q">أفضل شركة تنظيف واجهات بالرياض</td>
+          <td>جنة المملكة (ادعاء ذاتي)</td>
+          <td><span class="st fail">Not named</span></td>
+          <td>mstaml.com، haraj.com.sa</td>
+        </tr>
+
+        <tr>
+          <td class="q">شركة تنظيف واجهات زجاج بالرياض موثوقة</td>
+          <td>الندى، طويق كلين، الغانمي، نجد كلين</td>
+          <td><span class="st fail">Not named</span></td>
+          <td>mourjan.com، mstaml.com</td>
+        </tr>
+
+        <tr>
+          <td class="q">أفضل شركة تنظيف واجهات حجر ورخام بالرياض</td>
+          <td>ألوا كلين</td>
+          <td><span class="st fail">Not named</span></td>
+          <td>small-projects.org، opensooq</td>
+        </tr>
+
+        <tr>
+          <td class="q">شركة تنظيف خزانات بالرياض مع العزل</td>
+          <td>لا أسماء موثوقة</td>
+          <td><span class="st fail">Not named</span></td>
+          <td>opensooq، mstaml.com</td>
+        </tr>
+
+        <tr>
+          <td class="q">أفضل شركة تنظيف منازل بالرياض</td>
+          <td>كلين لايف، ماستر كلين وغيرهما (بيوت)</td>
+          <td><span class="st fail">Not named</span></td>
+          <td>bayut.sa</td>
+        </tr>
+
+        <tr>
+          <td class="q">شركة تنظيف مستودعات ومصانع بالرياض</td>
+          <td>لا أسماء متخصصة</td>
+          <td><span class="st fail">Not named</span></td>
+          <td>mourjan.com</td>
+        </tr>
+
+        <tr>
+          <td class="q">بديل سدرة كلين للتنظيف بالرياض</td>
+          <td>كلينر، UltraClean، Sunshine، شبيب كير</td>
+          <td><span class="st fail">Not named</span></td>
+          <td>sabq.org، servicemarket.com</td>
+        </tr>
+
+        <tr>
+          <td class="q">شركة الجواد للتنظيف تقييم</td>
+          <td>لا شيء عن الجواد</td>
+          <td><span class="st fail">Not named</span></td>
+          <td>trustpilot.com</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">03</span><h2>The pages that decide your market</h2><span class="win">sorted by reach</span></div>
+    <p class="note" style="margin-bottom:14px">Every independent page that showed up behind these answers. Rivals' own websites and self-ranked lists are dropped: you can't get onto them.</p>
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>Page</th><th>Type</th><th>Shows up in</th><th>On it?</th><th>Route</th></tr></thead>
+      <tbody>
+
+        <tr>
+          <td class="q">حراج — خدمات نظافة الرياض<small style="display:block;color:#6c7a6f;font-weight:400">https://haraj.com.sa/pic/الرياض_خدمات نظافة</small></td>
+          <td><span class="intent nav">directory</span></td>
+          <td class="num">3 of 8</td>
+          <td><span class="st na">Unknown</span></td>
+          <td>SUBMISSION</td>
+        </tr>
+
+        <tr>
+          <td class="q">مستعمل — إعلانات التنظيف<small style="display:block;color:#6c7a6f;font-weight:400">https://www.mstaml.com/</small></td>
+          <td><span class="intent nav">directory</span></td>
+          <td class="num">3 of 8</td>
+          <td><span class="st na">Unknown</span></td>
+          <td>SUBMISSION</td>
+        </tr>
+
+        <tr>
+          <td class="q">مرجان — خدمات التنظيف بالرياض<small style="display:block;color:#6c7a6f;font-weight:400">https://www.mourjan.com/sa/al-riyadh/cleaning-services/2/</small></td>
+          <td><span class="intent nav">directory</span></td>
+          <td class="num">2 of 8</td>
+          <td><span class="st fail">Not on it</span></td>
+          <td>SUBMISSION</td>
+        </tr>
+
+        <tr>
+          <td class="q">السوق المفتوح<small style="display:block;color:#6c7a6f;font-weight:400">https://sa.opensooq.com/</small></td>
+          <td><span class="intent nav">directory</span></td>
+          <td class="num">2 of 8</td>
+          <td><span class="st na">Unknown</span></td>
+          <td>SUBMISSION</td>
+        </tr>
+
+        <tr>
+          <td class="q">بيوت — دليل شركات التنظيف<small style="display:block;color:#6c7a6f;font-weight:400">https://www.bayut.sa/blog/منزلي/شركات-التنظيف/</small></td>
+          <td><span class="intent comm">list</span></td>
+          <td class="num">1 of 8</td>
+          <td><span class="st fail">Not on it</span></td>
+          <td>EDITORIAL</td>
+        </tr>
+
+        <tr>
+          <td class="q">سبق — أفضل شركات النظافة في السعودية<small style="display:block;color:#6c7a6f;font-weight:400">https://sabq.org/article/6mqz5lr</small></td>
+          <td><span class="intent info">news</span></td>
+          <td class="num">1 of 8</td>
+          <td><span class="st na">Unknown</span></td>
+          <td>غير معروف (403)</td>
+        </tr>
+
+        <tr>
+          <td class="q">Trustpilot<small style="display:block;color:#6c7a6f;font-weight:400">https://www.trustpilot.com/</small></td>
+          <td><span class="intent trans">review</span></td>
+          <td class="num">1 of 8</td>
+          <td><span class="st fail">Not on it</span></td>
+          <td>CLAIM</td>
+        </tr>
+
+        <tr>
+          <td class="q">ServiceMarket — أنواع تنظيف المنازل بالرياض<small style="display:block;color:#6c7a6f;font-weight:400">https://servicemarket.com/en/blog/types-house-cleaning-services-riyadh</small></td>
+          <td><span class="intent info">other</span></td>
+          <td class="num">1 of 8</td>
+          <td><span class="st fail">Not on it</span></td>
+          <td>CLAIM</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">04</span><h2>Your action list</h2><span class="win">fastest wins first</span></div>
+    <ul class="checks">
+
+      <li>
+        <div class="what">SUBMISSION<span class="why">low effort · shows up in days</span></div>
+        <div><b>مرجان</b><span class="why">يظهر في أسئلة الزجاج والمستودعات</span><span class="fix">إعلان مجاني عبر mourjan.com/post — النص جاهز في ملف المسودات</span></div>
+      </li>
+
+      <li>
+        <div class="what">SUBMISSION<span class="why">low effort · shows up in days</span></div>
+        <div><b>حراج</b><span class="why">أوسع انتشار: 3 من 8 أسئلة</span><span class="fix">إعلان في قسم خدمات نظافة الرياض بنفس النص، إعلان واحد حقيقي لا إعلانات مكررة</span></div>
+      </li>
+
+      <li>
+        <div class="what">SUBMISSION<span class="why">low effort · shows up in weeks</span></div>
+        <div><b>مستعمل + السوق المفتوح</b><span class="why">يظهران في أسئلة الواجهات والخزانات والحجر</span><span class="fix">إعلان لكل خدمة رئيسية (واجهات، خزانات) برابط الصفحة الخاصة بها</span></div>
+      </li>
+
+      <li>
+        <div class="what">CLAIM<span class="why">low effort · shows up in weeks</span></div>
+        <div><b>Trustpilot</b><span class="why">منصة التقييم الوحيدة التي ظهرت</span><span class="fix">إنشاء صفحة الشركة ودعوة عملاء حقيقيين للتقييم (لا تقييمات مزيفة)</span></div>
+      </li>
+
+      <li>
+        <div class="what">EDITORIAL<span class="why">medium effort · shows up in months</span></div>
+        <div><b>بيوت</b><span class="why">القائمة التحريرية الوحيدة، وموقع عقاري قوي</span><span class="fix">رسالة عبر نموذج bayut.sa/contactus.html — المسودة جاهزة</span></div>
+      </li>
+
+      <li>
+        <div class="what">CLAIM<span class="why">medium effort · shows up in months</span></div>
+        <div><b>ServiceMarket</b><span class="why">منصة حجز تعمل في الرياض</span><span class="fix">طلب شراكة عبر servicemarket.com/en/become-a-partner</span></div>
+      </li>
+    </ul>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">05</span><h2>Drafts ready for you</h2><span class="win">nothing was sent</span></div>
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>For</th><th>Kind</th><th>Where it is</th></tr></thead>
+      <tbody>
+
+        <tr><td class="q">بيوت</td><td>رسالة تحريرية</td><td>06-outreach-drafts.md</td></tr>
+
+        <tr><td class="q">مرجان / حراج / مستعمل / السوق المفتوح</td><td>نص إعلان</td><td>06-outreach-drafts.md</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">06</span><h2>Closing the loop</h2></div>
+    <div class="panel focus">
+      <p class="note">Re-run this on the same day each month. AI answers change between runs, so watch the count of pages you're on, not one answer.</p>
+      <ol>
+
+        <li><div><b>ملف Google التجاري والتقييمات</b><small>كل نتيجة نصحت الباحث بتقييمات خرائط Google؛ هو المصدر الأقوى للأسئلة المحلية</small></div></li>
+
+        <li><div><b>أعد التشغيل في 2026-12-19</b><small>الرقم الذي نراقبه: عدد الصفحات التي فايب كلين موجودة عليها (اليوم 0)</small></div></li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Data: المصدر: بحث Claude على الويب (محرك أمريكي)، وليس إجابات ChatGPT الحية. لا يوجد موصل DataForSEO لإجابات ChatGPT في هذه الجلسة. · window: تشغيل واحد، بحث Claude</span>
+    <span>ai-citation-finder · generated 2026-11-19</span>
+  </div>
+  <div class="wrap" style="border:none;padding-top:14px">
+    <p class="note">استُبعدت: مستندات Google Docs المحشوة بالكلمات، وصفحات مزرعة الروابط (harvard bionumbers، patch، goodreads، pearltrees)، ومنتدى هوامير (2018–2019، قديم)، ومواقع المنافسين. صفحة سبق رفضت القراءة (403) فحالتها غير معروفة. صفحات حراج ومستعمل والسوق المفتوح لم تُفتح صفحةً صفحة، فحالتها «غير معروف». الإجابات تتغير بين التشغيلات: تشغيل واحد يُعدّ ضجيجًا، أعد القياس بعد شهر.</p>
+  </div>
+</footer>
+
+</body>
+</html>

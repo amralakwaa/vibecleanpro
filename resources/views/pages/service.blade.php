@@ -27,10 +27,12 @@
     customer-facing empty state - it simply disappears.
 --}}
 @php
-    // Phone is deliberately absent from this page's CTAs - it stays
-    // reachable from the header menu, the footer and the mobile bar, so
-    // no section here ever stacks quote + WhatsApp + phone together.
-    $whatsappUrl = $businessProfile?->whatsappUrl('مرحبًا، أرغب في الاستفسار عن خدمة '.$service->name);
+    // Owner decision (2026-11-19): WhatsApp and a direct call are this
+    // page's two primary actions; the written quote form is secondary.
+    // The WhatsApp chat opens pre-written with the service and a prompt
+    // for the district, so the first message already carries a lead.
+    $whatsappMessage = 'مرحبًا، أرغب في عرض سعر لخدمة '.$service->name.' في الرياض. الحي: ';
+    $whatsappUrl = $businessProfile?->whatsappUrl($whatsappMessage);
     $urlResolver = app(\App\Seo\UrlResolver::class);
     $quoteUrl = route('public.quote', ['service' => $service->id]);
 
@@ -44,6 +46,10 @@
     $hasProjectPhotos = $projectShowcases->isNotEmpty() || $projectCards->contains(fn ($project) => $project->media->isNotEmpty());
     $leadTestimonial = $testimonials->first();
     $otherTestimonials = $testimonials->skip(1)->take(2);
+    // Where the review came from (Google, WhatsApp...). Read from the raw
+    // column so one legacy value outside the enum never breaks the page.
+    $reviewSourceLabel = fn ($testimonial) => \App\Enums\TestimonialSource::tryFrom((string) $testimonial->getRawOriginal('source'))?->label();
+    $reviewSummary ??= null;
 
     $leadOffer = $offers->first();
     $moreOffers = $offers->skip(1);
@@ -68,7 +74,7 @@
     };
 @endphp
 
-<x-layouts.public :seo="$seo" :business-profile="$businessProfile">
+<x-layouts.public :seo="$seo" :business-profile="$businessProfile" :whatsapp-message="$whatsappMessage">
 
     {{-- ===== 1. Service hero (light, framed photograph, price once) ===== --}}
     <x-public.detail-hero
@@ -78,8 +84,9 @@
         :description="$service->short_description"
         :image="$service->featuredMedia"
         :cta-url="$quoteUrl"
-        cta-label="اطلب عرض سعر"
+        cta-label="أو اطلب عرض سعر مكتوب"
         :whatsapp-url="$whatsappUrl"
+        whatsapp-label="اطلب السعر على واتساب"
         :business-profile="$businessProfile"
         :price="$service->publicPrice()"
         :cues="$cues"
@@ -100,7 +107,7 @@
          last checked. Mirrors the WebPage reviewedBy/lastReviewed data. --}}
     <x-public.page-byline :business-profile="$businessProfile" :updated-at="$page->updated_at" show-reviewer />
 
-    <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" :related="$related" related-item-type="service" />
+    <x-public.blocks :blocks="$page->contentBlocks" :except="['faq']" :related="$related" related-item-type="service" :whatsapp-message="$whatsappMessage" :phone-url="$businessProfile?->phoneUrl()" />
 
     {{-- ===== 5. Real evidence for THIS service ===== --}}
     @if ($projects->isNotEmpty() && ! $hasProjectPhotos)
@@ -310,11 +317,17 @@
                     <figure class="surface-tint relative overflow-hidden rounded-3xl p-8 md:p-10 reveal">
                         <div class="glow-primary absolute -top-16 -end-16 w-56 h-56 opacity-70" aria-hidden="true"></div>
                         <h2 id="service-testimonials" class="relative text-sm font-medium tracking-wide text-primary-700">آراء العملاء</h2>
+                        @if ($reviewSummary?->total > 0)
+                            <p class="relative mt-2 flex items-center gap-2 text-sm text-neutral-700">
+                                <span class="text-amber-500" aria-hidden="true">★★★★★</span>
+                                <span><span class="font-semibold tabular-nums">{{ number_format((float) $reviewSummary->average, 1) }}</span> من 5، متوسط <span class="tabular-nums">{{ $reviewSummary->total }}</span> {{ $reviewSummary->total > 10 ? 'رأيًا' : 'آراء' }} موثّقة من عملائنا</span>
+                            </p>
+                        @endif
                         <blockquote class="relative mt-4 font-display text-xl md:text-3xl font-light leading-[1.5] text-ink-950 text-balance">
                             {{ $leadTestimonial->content }}
                         </blockquote>
                         <figcaption class="relative mt-5 text-sm text-neutral-600">
-                            {{ collect([$leadTestimonial->author_name, $leadTestimonial->area?->name])->filter()->implode(' · ') }}
+                            {{ collect([$leadTestimonial->author_name, $leadTestimonial->area?->name, $reviewSourceLabel($leadTestimonial)])->filter()->implode(' · ') }}
                         </figcaption>
                     </figure>
 
@@ -324,7 +337,7 @@
                                 <li class="py-5 first:pt-0">
                                     <p class="text-neutral-700 leading-relaxed">{{ $testimonial->content }}</p>
                                     <p class="mt-2 text-sm text-neutral-500">
-                                        {{ collect([$testimonial->author_name, $testimonial->area?->name])->filter()->implode(' · ') }}
+                                        {{ collect([$testimonial->author_name, $testimonial->area?->name, $testimonial->service_id !== $service->id ? $testimonial->service?->name : null, $reviewSourceLabel($testimonial)])->filter()->implode(' · ') }}
                                     </p>
                                 </li>
                             @endforeach
@@ -405,13 +418,14 @@
                     <h2 class="font-display text-3xl md:text-5xl md:leading-[1.1] font-medium tracking-tight text-white text-balance">
                         {{ 'هل تحتاج '.$service->name.'؟' }}
                     </h2>
-                    <p class="mt-4 text-lg text-white/85 leading-relaxed max-w-xl">أرسل تفاصيل احتياجك وسنعود إليك بعرض سعر مناسب. لا يتم الدفع عبر الموقع.</p>
+                    <p class="mt-4 text-lg text-white/85 leading-relaxed max-w-xl">أرسل صورة المكان وحيّك على واتساب أو اتصل بنا مباشرة، فنعطيك سعرًا تقريبيًا، ثم يصلك السعر النهائي مكتوبًا بعد المعاينة. لا يتم الدفع عبر الموقع.</p>
                 </div>
                 <div class="flex flex-col items-start gap-3 lg:items-stretch">
-                    <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle" class="shadow-lg shadow-primary-900/40 lg:justify-center">اطلب عرض سعر</x-public.button>
                     @if ($whatsappUrl)
-                        <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp" class="lg:justify-center">تواصل عبر واتساب</x-public.button>
+                        <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp" class="shadow-lg shadow-primary-900/40 lg:justify-center">أرسل صورة على واتساب</x-public.button>
                     @endif
+                    <x-public.call-button :business-profile="$businessProfile" class="lg:justify-center" number-class="inline" />
+                    <a href="{{ $quoteUrl }}" class="text-sm font-semibold text-white/80 underline underline-offset-4 hover:text-white lg:text-center">أو اطلب عرض سعر مكتوب</a>
                 </div>
             </div>
         </x-public.container>

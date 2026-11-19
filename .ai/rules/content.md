@@ -14,7 +14,7 @@ Execution order is decided by, in order: search demand, commercial intent, compe
 Still binding: the service's capability_status must be confirmed (a page for a service the company cannot perform is a lie), and the Publishing Gate still refuses any page that references pending/private/placeholder media. Missing operational detail is asked of the owner, never invented.
 
 ## Owner-supplied trust points; the multi-year warranty is retired
-Owner stated on 2026-09-20 that a Saudi team and accreditation certificates are facts and may appear on the homepage, About, service pages, trust sections and CTAs. Their specifics (certificate names, issuing bodies, registration numbers) are asked of the owner, never invented.
+Owner stated on 2026-09-20 that a Saudi team is a fact and may appear on the homepage, About, service pages, trust sections and CTAs. **Accreditation wording changed on 2026-11-19 (owner delegated the call):** the only active credentials are the company's own published standards (issuer Vibe Clean Pro); ISO is "planned" and the official licence "pending" in the credentials table. So public copy says «معايير عمل موثّقة ومنشورة في مركز الثقة», never «شهادات اعتماد» or any wording implying third-party accreditation, until a credential issued by an outside body is `active` and `is_public` in the credentials table.
 
 **The "warranty of up to 10 years" claim was withdrawn by the owner on 2026-10-31 and is permanently retired.** The only warranty is the one on /warranty: a free re-clean of the part in question when the customer reports it within 24 hours of handover. Never reintroduce a multi-year or per-service warranty period; any longer warranty must be supplied by the owner as a specific term for a specific service. Seeders, content files, trust points and tests state the 24-hour re-clean, and TrustLegalPagesTest / WarrantyAndTrustTest assert that "10 سنوات" does not appear. Keep /terms and /warranty consistent.
 
@@ -28,7 +28,7 @@ ServiceContentSeeder loads every `wave1-services*.php` file and groups definitio
 
 ## Credentials, licences and service scope: the standing answers
 Settled on 2026-09-20 so nobody re-opens them:
-- CERTIFICATES: the site may say the company holds accreditation (owner-authorised), but must NEVER name a certificate, issuing body, number or date until a document exists in hand. Generic wording only.
+- CERTIFICATES (revised 2026-11-19): no accreditation claim at all until an outside body's credential is active and public in the credentials table; until then say «معايير عمل موثّقة». Never name a certificate, issuing body, number or date without the document in hand.
 - PEST CONTROL (Wave 3): the page ships with no licence number and no licensing claim of any kind. It describes scope only.
 - WATER TANKS: scope is cleaning + disinfection with materials fit for drinking-water tanks, plus leak detection and tank insulation as add-on services (owner confirmed 2026-11-18, replacing the 2026-09-20 "insulation out of scope" answer). Plumbing and other repairs remain out of scope.
 - AC: scope is cleaning filters, coil, fan, drain pan and drain line for split, window, central/duct and concealed units. Refrigerant, compressor and electrical repair are explicitly excluded on the page.

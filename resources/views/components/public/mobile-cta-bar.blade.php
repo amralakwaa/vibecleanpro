@@ -1,9 +1,8 @@
 {{--
-    Mobile conversion bar: three actions with clear hierarchy.
-    1. Call (blue, dominant width) — most customers prefer to ring
-    2. Quote (secondary, compact) — the written-estimate path
-    3. WhatsApp (green, icon-only) — async channel
-    With no phone on file the quote button takes the dominant slot again.
+    Mobile conversion bar: WhatsApp and Call side by side at equal width,
+    the two channels Riyadh customers actually use. The written quote stays
+    in the header and on each page; it takes the bar only when the business
+    has neither channel on file.
 
     Fixed height, safe-area aware, lg:hidden; the layout gives <main>
     matching bottom padding so this never covers page content.
@@ -22,35 +21,26 @@
         :aria-hidden="hidden"
         class="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white/95 backdrop-blur border-t border-neutral-200 pb-[env(safe-area-inset-bottom)] transition-transform duration-300"
     >
+        {{-- WhatsApp and call share the bar as equal primaries (owner
+             decision 2026-11-19); the quote form only fills the bar when
+             neither channel exists. --}}
         <div class="flex items-center gap-2 p-3">
+            @if ($whatsappUrl)
+                <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="md" icon="whatsapp" class="grow basis-0 min-h-12">
+                    واتساب
+                </x-public.button>
+            @endif
+
             @if ($phoneUrl)
-                <x-public.button :href="$phoneUrl" variant="cta" size="md" icon="phone" class="grow min-h-12">
+                <x-public.button :href="$phoneUrl" variant="cta" size="md" icon="phone" class="grow basis-0 min-h-12">
                     اتصل الآن
                 </x-public.button>
             @endif
 
-            @if ($quoteUrl)
-                <x-public.button
-                    :href="$quoteUrl"
-                    :variant="$phoneUrl ? 'secondary' : 'cta'"
-                    size="md"
-                    icon="check-circle"
-                    :class="$phoneUrl ? 'shrink-0 min-h-12 !px-4' : 'grow min-h-12'"
-                >
+            @if ($quoteUrl && ! $whatsappUrl && ! $phoneUrl)
+                <x-public.button :href="$quoteUrl" variant="cta" size="md" icon="check-circle" class="grow min-h-12">
                     طلب خدمة
                 </x-public.button>
-            @endif
-
-            @if ($whatsappUrl)
-                <x-public.button
-                    :href="$whatsappUrl"
-                    external
-                    variant="whatsapp"
-                    size="md"
-                    icon="whatsapp"
-                    class="shrink-0 !px-4 min-h-12 min-w-12"
-                    aria-label="تواصل عبر واتساب"
-                />
             @endif
         </div>
     </div>

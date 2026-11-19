@@ -14,6 +14,7 @@ use App\Models\Page;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\TeamMember;
+use App\Models\Testimonial;
 use App\Seo\RedirectResolver;
 use App\Seo\SeoHeadResolver;
 use App\Seo\UrlResolver;
@@ -271,6 +272,27 @@ class PublicPageController extends Controller
             ->limit(6)
             ->get();
 
+        // Most services have one review of their own, which reads thin at
+        // the moment of decision. The company's other approved reviews are
+        // just as real, so they fill the section up to three - this
+        // service's own reviews always lead.
+        if ($testimonials->count() < 3) {
+            $testimonials = $testimonials->concat(
+                Testimonial::query()
+                    ->approved()
+                    ->with('area', 'service')
+                    ->whereKeyNot($testimonials->modelKeys())
+                    ->orderByDesc('is_featured')
+                    ->orderBy('sort_order')
+                    ->limit(3 - $testimonials->count())
+                    ->get()
+            );
+        }
+
+        $reviewSummary = Testimonial::query()->approved()->whereNotNull('rating')
+            ->selectRaw('count(*) as total, avg(rating) as average')
+            ->first();
+
         // When an editor has already placed a manual related_content block
         // (see blocks.blade.php), the automatic "خدمات ذات صلة" fallback
         // below must not render a second, duplicate related-services
@@ -301,6 +323,7 @@ class PublicPageController extends Controller
             'related' => $related,
             'offers' => $offers,
             'testimonials' => $testimonials,
+            'reviewSummary' => $reviewSummary,
             'hasManualRelatedBlock' => $hasManualRelatedBlock,
             'articles' => $articles,
         ], 200);

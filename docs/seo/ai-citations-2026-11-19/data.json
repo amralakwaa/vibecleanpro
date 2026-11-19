@@ -1,0 +1,59 @@
+{
+  "tokens": {
+    "SUBJECT": "فايب كلين برو — vibecleanpro.com",
+    "HEADLINE": "لا توجد قائمة عربية موثوقة تحسم «أفضل شركة تنظيف بالرياض»، وهذه فرصة",
+    "SUBHEAD": "8 أسئلة شراء، والمصادر التي يقرأها الذكاء الاصطناعي في هذا السوق إعلانات مبوبة وقائمة واحدة تحريرية (بيوت). فايب كلين غير موجودة في أي منها بعد.",
+    "RUN_DATE": "2026-11-19",
+    "DATA_WINDOW": "تشغيل واحد، بحث Claude",
+    "BRAND": "فايب كلين برو",
+    "QUESTIONS_CHECKED": "8",
+    "SOURCES_COUNT": "8",
+    "ON_COUNT": "0",
+    "ON_CLASS": "is-fail",
+    "NAMED_COUNT": "0",
+    "QUICK_WINS": "4",
+    "STANDING_HEADLINE": "صفر من 8 صفحات",
+    "STANDING_VERDICT": "لا ذكر لفايب كلين ولا لسدرة أو الجواد في المصادر التي ظهرت",
+    "STANDING_NOTE": "السوق العربي لهذه الأسئلة فارغ تقريبًا من المصادر المستقلة: صفحات Google Docs محشوة بالكلمات وإعلانات حراج ومرجان ومستعمل والسوق المفتوح. من يدخل هذه المصادر أولًا، ومعها تقييمات Google، هو من سيُذكر.",
+    "SOURCE_NOTE": "المصدر: بحث Claude على الويب (محرك أمريكي)، وليس إجابات ChatGPT الحية. لا يوجد موصل DataForSEO لإجابات ChatGPT في هذه الجلسة.",
+    "DATA_NOTES": "استُبعدت: مستندات Google Docs المحشوة بالكلمات، وصفحات مزرعة الروابط (harvard bionumbers، patch، goodreads، pearltrees)، ومنتدى هوامير (2018–2019، قديم)، ومواقع المنافسين. صفحة سبق رفضت القراءة (403) فحالتها غير معروفة. صفحات حراج ومستعمل والسوق المفتوح لم تُفتح صفحةً صفحة، فحالتها «غير معروف». الإجابات تتغير بين التشغيلات: تشغيل واحد يُعدّ ضجيجًا، أعد القياس بعد شهر."
+  },
+  "rows": {
+    "QUESTION_ROW": [
+      {"ROW_QUESTION": "أفضل شركة تنظيف واجهات بالرياض", "ROW_NAMED": "جنة المملكة (ادعاء ذاتي)", "ROW_YOU": "Not named", "ROW_YOU_CLASS": "fail", "ROW_SOURCES": "mstaml.com، haraj.com.sa"},
+      {"ROW_QUESTION": "شركة تنظيف واجهات زجاج بالرياض موثوقة", "ROW_NAMED": "الندى، طويق كلين، الغانمي، نجد كلين", "ROW_YOU": "Not named", "ROW_YOU_CLASS": "fail", "ROW_SOURCES": "mourjan.com، mstaml.com"},
+      {"ROW_QUESTION": "أفضل شركة تنظيف واجهات حجر ورخام بالرياض", "ROW_NAMED": "ألوا كلين", "ROW_YOU": "Not named", "ROW_YOU_CLASS": "fail", "ROW_SOURCES": "small-projects.org، opensooq"},
+      {"ROW_QUESTION": "شركة تنظيف خزانات بالرياض مع العزل", "ROW_NAMED": "لا أسماء موثوقة", "ROW_YOU": "Not named", "ROW_YOU_CLASS": "fail", "ROW_SOURCES": "opensooq، mstaml.com"},
+      {"ROW_QUESTION": "أفضل شركة تنظيف منازل بالرياض", "ROW_NAMED": "كلين لايف، ماستر كلين وغيرهما (بيوت)", "ROW_YOU": "Not named", "ROW_YOU_CLASS": "fail", "ROW_SOURCES": "bayut.sa"},
+      {"ROW_QUESTION": "شركة تنظيف مستودعات ومصانع بالرياض", "ROW_NAMED": "لا أسماء متخصصة", "ROW_YOU": "Not named", "ROW_YOU_CLASS": "fail", "ROW_SOURCES": "mourjan.com"},
+      {"ROW_QUESTION": "بديل سدرة كلين للتنظيف بالرياض", "ROW_NAMED": "كلينر، UltraClean، Sunshine، شبيب كير", "ROW_YOU": "Not named", "ROW_YOU_CLASS": "fail", "ROW_SOURCES": "sabq.org، servicemarket.com"},
+      {"ROW_QUESTION": "شركة الجواد للتنظيف تقييم", "ROW_NAMED": "لا شيء عن الجواد", "ROW_YOU": "Not named", "ROW_YOU_CLASS": "fail", "ROW_SOURCES": "trustpilot.com"}
+    ],
+    "SOURCE_ROW": [
+      {"ROW_PAGE": "حراج — خدمات نظافة الرياض", "ROW_URL": "https://haraj.com.sa/pic/الرياض_خدمات نظافة", "ROW_TYPE": "directory", "ROW_TYPE_CLASS": "nav", "ROW_REACH": "3 of 8", "ROW_ON": "Unknown", "ROW_ON_CLASS": "na", "ROW_ROUTE": "SUBMISSION"},
+      {"ROW_PAGE": "مستعمل — إعلانات التنظيف", "ROW_URL": "https://www.mstaml.com/", "ROW_TYPE": "directory", "ROW_TYPE_CLASS": "nav", "ROW_REACH": "3 of 8", "ROW_ON": "Unknown", "ROW_ON_CLASS": "na", "ROW_ROUTE": "SUBMISSION"},
+      {"ROW_PAGE": "مرجان — خدمات التنظيف بالرياض", "ROW_URL": "https://www.mourjan.com/sa/al-riyadh/cleaning-services/2/", "ROW_TYPE": "directory", "ROW_TYPE_CLASS": "nav", "ROW_REACH": "2 of 8", "ROW_ON": "Not on it", "ROW_ON_CLASS": "fail", "ROW_ROUTE": "SUBMISSION"},
+      {"ROW_PAGE": "السوق المفتوح", "ROW_URL": "https://sa.opensooq.com/", "ROW_TYPE": "directory", "ROW_TYPE_CLASS": "nav", "ROW_REACH": "2 of 8", "ROW_ON": "Unknown", "ROW_ON_CLASS": "na", "ROW_ROUTE": "SUBMISSION"},
+      {"ROW_PAGE": "بيوت — دليل شركات التنظيف", "ROW_URL": "https://www.bayut.sa/blog/منزلي/شركات-التنظيف/", "ROW_TYPE": "list", "ROW_TYPE_CLASS": "comm", "ROW_REACH": "1 of 8", "ROW_ON": "Not on it", "ROW_ON_CLASS": "fail", "ROW_ROUTE": "EDITORIAL"},
+      {"ROW_PAGE": "سبق — أفضل شركات النظافة في السعودية", "ROW_URL": "https://sabq.org/article/6mqz5lr", "ROW_TYPE": "news", "ROW_TYPE_CLASS": "info", "ROW_REACH": "1 of 8", "ROW_ON": "Unknown", "ROW_ON_CLASS": "na", "ROW_ROUTE": "غير معروف (403)"},
+      {"ROW_PAGE": "Trustpilot", "ROW_URL": "https://www.trustpilot.com/", "ROW_TYPE": "review", "ROW_TYPE_CLASS": "trans", "ROW_REACH": "1 of 8", "ROW_ON": "Not on it", "ROW_ON_CLASS": "fail", "ROW_ROUTE": "CLAIM"},
+      {"ROW_PAGE": "ServiceMarket — أنواع تنظيف المنازل بالرياض", "ROW_URL": "https://servicemarket.com/en/blog/types-house-cleaning-services-riyadh", "ROW_TYPE": "other", "ROW_TYPE_CLASS": "info", "ROW_REACH": "1 of 8", "ROW_ON": "Not on it", "ROW_ON_CLASS": "fail", "ROW_ROUTE": "CLAIM"}
+    ],
+    "ACTION_ROW": [
+      {"ROW_ROUTE": "SUBMISSION", "ROW_EFFORT": "low", "ROW_SPEED": "days", "ROW_PAGE": "مرجان", "ROW_WHY": "يظهر في أسئلة الزجاج والمستودعات", "ROW_ACTION": "إعلان مجاني عبر mourjan.com/post — النص جاهز في ملف المسودات"},
+      {"ROW_ROUTE": "SUBMISSION", "ROW_EFFORT": "low", "ROW_SPEED": "days", "ROW_PAGE": "حراج", "ROW_WHY": "أوسع انتشار: 3 من 8 أسئلة", "ROW_ACTION": "إعلان في قسم خدمات نظافة الرياض بنفس النص، إعلان واحد حقيقي لا إعلانات مكررة"},
+      {"ROW_ROUTE": "SUBMISSION", "ROW_EFFORT": "low", "ROW_SPEED": "weeks", "ROW_PAGE": "مستعمل + السوق المفتوح", "ROW_WHY": "يظهران في أسئلة الواجهات والخزانات والحجر", "ROW_ACTION": "إعلان لكل خدمة رئيسية (واجهات، خزانات) برابط الصفحة الخاصة بها"},
+      {"ROW_ROUTE": "CLAIM", "ROW_EFFORT": "low", "ROW_SPEED": "weeks", "ROW_PAGE": "Trustpilot", "ROW_WHY": "منصة التقييم الوحيدة التي ظهرت", "ROW_ACTION": "إنشاء صفحة الشركة ودعوة عملاء حقيقيين للتقييم (لا تقييمات مزيفة)"},
+      {"ROW_ROUTE": "EDITORIAL", "ROW_EFFORT": "medium", "ROW_SPEED": "months", "ROW_PAGE": "بيوت", "ROW_WHY": "القائمة التحريرية الوحيدة، وموقع عقاري قوي", "ROW_ACTION": "رسالة عبر نموذج bayut.sa/contactus.html — المسودة جاهزة"},
+      {"ROW_ROUTE": "CLAIM", "ROW_EFFORT": "medium", "ROW_SPEED": "months", "ROW_PAGE": "ServiceMarket", "ROW_WHY": "منصة حجز تعمل في الرياض", "ROW_ACTION": "طلب شراكة عبر servicemarket.com/en/become-a-partner"}
+    ],
+    "DRAFT_ROW": [
+      {"ROW_PAGE": "بيوت", "ROW_KIND": "رسالة تحريرية", "ROW_WHERE": "06-outreach-drafts.md"},
+      {"ROW_PAGE": "مرجان / حراج / مستعمل / السوق المفتوح", "ROW_KIND": "نص إعلان", "ROW_WHERE": "06-outreach-drafts.md"}
+    ],
+    "NEXT_ROW": [
+      {"ROW_NEXT": "ملف Google التجاري والتقييمات", "ROW_NEXT_WHY": "كل نتيجة نصحت الباحث بتقييمات خرائط Google؛ هو المصدر الأقوى للأسئلة المحلية"},
+      {"ROW_NEXT": "أعد التشغيل في 2026-12-19", "ROW_NEXT_WHY": "الرقم الذي نراقبه: عدد الصفحات التي فايب كلين موجودة عليها (اليوم 0)"}
+    ]
+  }
+}

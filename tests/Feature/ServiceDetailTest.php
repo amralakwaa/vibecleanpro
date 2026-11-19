@@ -368,16 +368,23 @@ class ServiceDetailTest extends TestCase
         $response->assertSee('خدمة ممتازة والتزام بالوقت.');
     }
 
-    public function test_a_testimonial_linked_to_a_different_service_is_not_shown(): void
+    /**
+     * Owner decision 2026-11-19: a service short of its own reviews borrows
+     * the company's other approved ones, labelled with the service they
+     * were written about - but its own reviews always come first.
+     */
+    public function test_a_review_of_a_different_service_fills_in_after_this_services_own_and_names_its_service(): void
     {
         $page = $this->createCompliantServicePage(slug: 'service-without-this-testimonial');
-        $otherService = Service::factory()->create();
+        $otherService = Service::factory()->create(['name' => 'خدمة أخرى']);
 
+        Testimonial::factory()->create(['service_id' => $page->pageable_id, 'author_name' => 'عميل هذه الخدمة']);
         Testimonial::factory()->create(['service_id' => $otherService->id, 'author_name' => 'عميل خدمة أخرى']);
 
         $response = $this->get('/services/service-without-this-testimonial');
 
-        $response->assertDontSee('عميل خدمة أخرى');
+        $response->assertSeeInOrder(['عميل هذه الخدمة', 'عميل خدمة أخرى · ']);
+        $response->assertSee('خدمة أخرى');
     }
 
     public function test_related_services_fallback_shows_automatically_when_no_manual_related_content_block_exists(): void

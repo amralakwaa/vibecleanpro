@@ -25,19 +25,21 @@
             @endif
 
             @if ($quoteUrl || $whatsappUrl || $phoneUrl)
+                {{-- WhatsApp and call lead (owner decision 2026-11-19); the
+                     quote form is the quieter path, and leads only alone. --}}
                 <div class="mt-8 flex flex-wrap items-center gap-4">
-                    @if ($quoteUrl)
-                        <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle" class="shadow-lg shadow-primary-900/40">اطلب عرض سعر</x-public.button>
-                    @endif
-
                     @if ($whatsappUrl)
-                        <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp">تواصل عبر واتساب</x-public.button>
+                        <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp" class="shadow-lg shadow-primary-900/40">تواصل عبر واتساب</x-public.button>
                     @endif
 
                     @if ($phoneUrl)
-                        <a href="{{ $phoneUrl }}" class="inline-flex items-center gap-2 min-h-11 text-sm font-medium text-white/80 hover:text-white transition-colors">
-                            <x-public.icon name="phone" class="w-4 h-4" /> أو اتصل بنا
-                        </a>
+                        <x-public.button :href="$phoneUrl" variant="cta" size="lg" icon="phone">اتصل الآن</x-public.button>
+                    @endif
+
+                    @if ($quoteUrl && ($whatsappUrl || $phoneUrl))
+                        <a href="{{ $quoteUrl }}" class="inline-flex items-center gap-2 min-h-11 text-sm font-medium text-white/80 underline underline-offset-4 hover:text-white transition-colors">أو اطلب عرض سعر مكتوب</a>
+                    @elseif ($quoteUrl)
+                        <x-public.button :href="$quoteUrl" variant="cta" size="lg" icon="check-circle" class="shadow-lg shadow-primary-900/40">اطلب عرض سعر</x-public.button>
                     @endif
                 </div>
             @endif
