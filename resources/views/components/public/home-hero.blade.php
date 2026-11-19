@@ -92,11 +92,19 @@
             @endif
 
             <div class="mt-8 flex flex-wrap items-center gap-3" data-hero-cta>
-                <x-public.call-button :business-profile="$businessProfile" class="!shadow-primary-900/40" />
-                <x-public.button :href="$ctaUrl" :variant="filled($businessProfile?->phoneUrl()) ? 'secondary' : 'cta'" size="lg" icon="check-circle" :class="filled($businessProfile?->phoneUrl()) ? '' : 'shadow-lg shadow-primary-900/40'">{{ $ctaLabel }}</x-public.button>
-
+                {{-- Same order as every service page (owner decision 2026-11-19):
+                     WhatsApp and a direct call are the two equal primaries, the
+                     written quote is a quiet text link, and leads only when
+                     neither channel exists. --}}
                 @if ($whatsappUrl)
-                    <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp">واتساب</x-public.button>
+                    <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp" class="w-full sm:w-auto justify-center shadow-lg shadow-primary-900/40">تواصل عبر واتساب</x-public.button>
+                @endif
+                <x-public.call-button :business-profile="$businessProfile" class="!shadow-primary-900/40" />
+
+                @if ($whatsappUrl || filled($businessProfile?->phoneUrl()))
+                    <a href="{{ $ctaUrl }}" class="inline-flex items-center min-h-11 px-1 text-sm font-semibold text-white/90 underline underline-offset-4">أو {{ $ctaLabel }} مكتوب</a>
+                @else
+                    <x-public.button :href="$ctaUrl" variant="cta" size="lg" icon="check-circle" class="shadow-lg shadow-primary-900/40">{{ $ctaLabel }}</x-public.button>
                 @endif
 
                 @if ($secondaryUrl && $secondaryLabel)

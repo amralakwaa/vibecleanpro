@@ -87,14 +87,14 @@
                          (owner decision 2026-11-19); the written quote is the
                          quieter third path, and leads only when neither exists. --}}
                     @if ($whatsappUrl)
-                        <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp" class="shadow-lg shadow-primary-600/25">
+                        <x-public.button :href="$whatsappUrl" external variant="whatsapp" size="lg" icon="whatsapp" class="w-full sm:w-auto justify-center shadow-lg shadow-primary-600/25">
                             {{ $whatsappLabel }}
                         </x-public.button>
                     @endif
                     <x-public.call-button :business-profile="$businessProfile" />
 
                     @if ($whatsappUrl || filled($businessProfile?->phoneUrl()))
-                        <a href="{{ $ctaUrl }}" class="text-sm font-semibold text-primary-700 underline underline-offset-4 hover:text-primary-800">{{ $ctaLabel }}</a>
+                        <a href="{{ $ctaUrl }}" class="inline-flex items-center min-h-11 px-1 text-sm font-semibold text-primary-700 underline underline-offset-4 hover:text-primary-800">{{ $ctaLabel }}</a>
                     @else
                         <x-public.button :href="$ctaUrl" variant="cta" size="lg" icon="check-circle" class="shadow-lg shadow-primary-600/25">{{ $ctaLabel }}</x-public.button>
                     @endif

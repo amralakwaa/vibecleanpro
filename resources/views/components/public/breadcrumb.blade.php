@@ -12,7 +12,10 @@
     <nav aria-label="breadcrumb" {{ $attributes->class(['text-sm']) }}>
         <ol class="flex flex-wrap items-center gap-2 text-neutral-500">
             @foreach ($items as $item)
-                <li class="flex items-center gap-2">
+                {{-- On phones the current page is dropped from the visible trail:
+                     the H1 right below already names it, and repeating a long
+                     title pushed the actions down. The JSON-LD keeps it. --}}
+                <li @class(['items-center gap-2', 'flex' => ! $loop->last, 'hidden sm:flex' => $loop->last])>
                     @if (! $loop->first)
                         <span aria-hidden="true" class="text-neutral-300">/</span>
                     @endif

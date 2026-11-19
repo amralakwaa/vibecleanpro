@@ -45,7 +45,7 @@
         :image="$heroImage"
         :kicker="($businessProfile?->displayName() ?: config('app.name')).' — '.($businessProfile?->tagline ?: 'شركة تنظيف في الرياض')"
         heading="نظافة تراها من أول نظرة"
-        description="تنظيف احترافي للفلل والشقق والمكاتب في الرياض - فريق مدرّب، سعر واضح قبل البدء، ونتيجة موثقة بالصور."
+        description="تنظيف احترافي للفلل والشقق والمكاتب في الرياض: فريق مدرّب، سعر واضح قبل البدء، ونتيجة موثقة بالصور."
         :cta-url="$quoteUrl"
         cta-label="اطلب عرض سعر"
         :whatsapp-url="$whatsappUrl"
