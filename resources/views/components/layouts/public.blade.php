@@ -96,14 +96,19 @@
             // displacing. Featured first, then by the editor's own order, so
             // the choice stays in the panel rather than hard-coded here.
             // Only services whose page is actually published are linked.
+            //
+            // One column per category (homes / businesses), up to 13 each:
+            // the money pages are linked from every page of the site, the
+            // way the policy pages already were, instead of only the first
+            // eight services.
             $footerServices = \App\Models\Service::query()
                 ->whereHas('page', fn ($query) => $query->published())
-                ->with('page')
+                ->with(['page', 'category'])
                 ->orderByDesc('is_featured')
                 ->orderBy('sort_order')
-                ->limit(8)
                 ->get()
-                ->mapWithKeys(fn ($service) => [$service->name => $urlResolver->urlForPage($service->page)])
+                ->groupBy(fn ($service) => $service->category?->name ?? 'خدماتنا')
+                ->map(fn ($services) => $services->take(13)->mapWithKeys(fn ($service) => [$service->name => $urlResolver->urlForPage($service->page)])->all())
                 ->all();
 
             return [$aboutUrl, $legalLinks, $trustLinks, $footerServices];

@@ -17,6 +17,7 @@ use App\Models\TeamMember;
 use App\Models\Testimonial;
 use App\Seo\RedirectResolver;
 use App\Seo\SeoHeadResolver;
+use App\Seo\ServiceEntityMap;
 use App\Seo\UrlResolver;
 use App\Seo\ValueObjects\SeoHeadData;
 use Illuminate\Database\Eloquent\Builder;
@@ -235,13 +236,7 @@ class PublicPageController extends Controller
             ->limit(6)
             ->get();
 
-        $related = Service::query()
-            ->whereKeyNot($service->id)
-            ->whereHas('page', fn ($query) => $query->published())
-            ->when($service->service_category_id, fn ($query) => $query->where('service_category_id', $service->service_category_id))
-            ->with('page')
-            ->limit(3)
-            ->get();
+        $related = $this->relatedServices($service, $page->slug);
 
         // Only offers that are Active right now (never Scheduled, never
         // Expired) - unlike /offers and the homepage, which also surface
@@ -644,6 +639,51 @@ class PublicPageController extends Controller
      * @param  Builder<Project>  $query
      * @return SupportCollection<int, Project>
      */
+    /**
+     * The three services shown under "خدمات ذات صلة".
+     *
+     * The closest siblings named in the Service Entity Map come first (a
+     * glass-facade page points at stone and cladding, not at sofas). The
+     * rest is filled from the same category by walking forward in
+     * sort_order from this service and wrapping round, so every service is
+     * linked from its neighbours - the old "first three of the category"
+     * gave the same three pages every link and left newer services almost
+     * unlinked.
+     *
+     * @return SupportCollection<int, Service>
+     */
+    private function relatedServices(Service $service, string $slug): SupportCollection
+    {
+        $limit = 3;
+        $published = fn (Builder $query) => $query->whereKeyNot($service->id)
+            ->whereHas('page', fn ($page) => $page->published())
+            ->with('page');
+
+        $mapped = collect(app(ServiceEntityMap::class)->for($slug)['related'] ?? []);
+        $siblings = $mapped->isEmpty() ? collect() : $published(Service::query())
+            ->whereHas('page', fn ($page) => $page->whereIn('slug', $mapped->all()))
+            ->get()
+            ->sortBy(fn (Service $related) => $mapped->search($related->page->slug))
+            ->take($limit)
+            ->values();
+
+        if ($siblings->count() >= $limit) {
+            return $siblings;
+        }
+
+        $ring = $published(Service::query())
+            ->whereKeyNot($siblings->pluck('id')->all())
+            ->when($service->service_category_id, fn ($query) => $query->where('service_category_id', $service->service_category_id))
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+        $position = (int) $service->sort_order;
+        $ring = $ring->filter(fn (Service $related) => $related->sort_order > $position)
+            ->concat($ring->filter(fn (Service $related) => $related->sort_order <= $position));
+
+        return $siblings->concat($ring->take($limit - $siblings->count()))->values();
+    }
+
     private function nextInRing(Builder $query, int $currentId, int $limit = 3): SupportCollection
     {
         $after = (clone $query)->where('projects.id', '>', $currentId)->orderBy('projects.id')->limit($limit)->get();

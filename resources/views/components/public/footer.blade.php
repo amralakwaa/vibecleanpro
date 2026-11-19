@@ -186,7 +186,7 @@
         <div class="h-px bg-gradient-to-l from-transparent via-white/15 to-transparent mb-10" aria-hidden="true"></div>
 
         {{-- Links grid --}}
-        <div class="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             @if ($navItems)
                 <div>
                     <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">روابط سريعة</p>
@@ -207,11 +207,18 @@
                  cleaning company's footer should name what it cleans; the
                  policies are one click away through the trust hub in the
                  legal row below. --}}
-            @if ($serviceLinks)
+            {{-- Grouped as category => [name => url]; a flat [name => url]
+                 list still renders as one "خدماتنا" column. --}}
+            @php
+                $serviceGroups = collect($serviceLinks)->every(fn ($value) => is_array($value))
+                    ? $serviceLinks
+                    : ($serviceLinks ? ['خدماتنا' => $serviceLinks] : []);
+            @endphp
+            @foreach ($serviceGroups as $groupLabel => $groupLinks)
                 <div>
-                    <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">خدماتنا</p>
+                    <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">{{ $groupLabel }}</p>
                     <ul class="space-y-2.5 text-sm">
-                        @foreach ($serviceLinks as $label => $url)
+                        @foreach ($groupLinks as $label => $url)
                             <li>
                                 <a href="{{ $url }}" class="inline-flex items-center gap-1.5 text-ink-200 hover:text-white hover:translate-x-[-2px] transition-all duration-150">
                                     <span class="w-1 h-1 rounded-full bg-primary-500/60 shrink-0"></span>
@@ -221,7 +228,7 @@
                         @endforeach
                     </ul>
                 </div>
-            @endif
+            @endforeach
 
             <div>
                 <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">تواصل معنا</p>
