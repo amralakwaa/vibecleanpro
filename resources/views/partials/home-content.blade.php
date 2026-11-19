@@ -31,7 +31,7 @@
     // Hero facts - only real, published counts and stored identity.
     $facts = collect([
         $businessProfile?->city ? ['label' => 'نخدم', 'value' => $businessProfile->city] : null,
-        $publishedAreas >= 3 ? ['label' => 'مناطق التغطية', 'value' => $publishedAreas.' '.($publishedAreas <= 10 ? 'أحياء' : 'حيًا')] : null,
+        $publishedAreas >= 3 ? ['label' => 'أحياء نركّز عليها', 'value' => $publishedAreas.' '.($publishedAreas <= 10 ? 'أحياء' : 'حيًا')] : null,
         $publishedProjects >= 3 ? ['label' => 'أعمال موثقة', 'value' => $publishedProjects.' '.($publishedProjects <= 10 ? 'مشاريع' : 'مشروعًا')] : null,
     ])->filter()->values()->all();
 
@@ -221,7 +221,7 @@
             <div class="max-w-2xl">
                 <p class="text-sm font-semibold tracking-wide text-primary-700">نماذج من أعمالنا في الرياض</p>
                 <h2 id="home-videos" class="mt-2 font-display text-3xl md:text-5xl md:leading-[1.1] font-medium tracking-tight text-ink-950 text-balance">شاهد فريقنا أثناء العمل</h2>
-                <p class="mt-4 text-lg text-neutral-600 leading-relaxed">لقطات حقيقية من مواقع العمل: فريق سعودي بزيّ موحّد ومعدات مخصّصة — من تنظيف الواجهات الزجاجية إلى الأرضيات الخارجية وما بعد البناء.</p>
+                <p class="mt-4 text-lg text-neutral-600 leading-relaxed">لقطات حقيقية من مواقع العمل: فريق مدرب بزيّ موحّد ومعدات مخصّصة — من تنظيف الواجهات الزجاجية إلى الأرضيات الخارجية وما بعد البناء.</p>
             </div>
             <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
                 <x-public.video-evidence slug="team" caption="فريق فايب كلين برو بالزيّ الموحّد" />

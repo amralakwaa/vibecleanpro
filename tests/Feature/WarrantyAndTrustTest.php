@@ -81,7 +81,8 @@ class WarrantyAndTrustTest extends TestCase
         }
 
         $home = $this->get('/')->getContent();
-        $this->assertStringContainsString('فريق سعودي مدرب', $home);
+        $this->assertStringContainsString('إدارة سعودية وفريق مدرب', $home);
+        $this->assertStringNotContainsString('فريق سعودي', $home);
         $this->assertStringContainsString('ضمان إعادة التنظيف خلال 24 ساعة', $home);
         $this->assertStringNotContainsString('10 سنوات', $home);
 
@@ -90,7 +91,7 @@ class WarrantyAndTrustTest extends TestCase
         // page cache is invalidated on save - a bare query-builder update
         // would bypass the model events the cache listens to.
         // The negative assertion uses the point's description, not its title:
-        // the words "فريق سعودي مدرب" also appear in the profile's identity
+        // the trust point's title words can also appear in the profile's identity
         // statement, which is a different field on the same page.
         BusinessProfile::query()->sole()->update(['trust_points' => [['title' => 'نقطة محرّرة', 'description' => 'وصف']]]);
         $home = $this->get('/')->getContent();

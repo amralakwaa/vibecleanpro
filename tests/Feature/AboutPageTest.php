@@ -145,11 +145,11 @@ class AboutPageTest extends TestCase
 
         $html = $this->get('/about')->getContent();
         $this->assertStringContainsString('مدينة-من-الإدارة', $html);
-        $this->assertStringNotContainsString('مناطق التغطية</dt>', $html);
+        $this->assertStringNotContainsString('أحياء نركّز عليها</dt>', $html);
 
         $this->createCompliantAreaPage(slug: 'area-c');
         $html = $this->get('/about')->getContent();
-        $this->assertStringContainsString('مناطق التغطية</dt>', $html);
+        $this->assertStringContainsString('أحياء نركّز عليها</dt>', $html);
         $this->assertStringContainsString('3 أحياء', $html);
         $this->assertStringContainsString('href="'.route('public.areas.index').'"', $html);
     }

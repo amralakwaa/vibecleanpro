@@ -121,7 +121,7 @@ class HomepageV2Test extends TestCase
     {
         BusinessProfile::query()->create(['name' => 'Vibe Clean Pro', 'city' => 'الرياض']);
 
-        $this->assertStringNotContainsString('مناطق التغطية</dt>', $this->get('/')->getContent());
+        $this->assertStringNotContainsString('أحياء نركّز عليها</dt>', $this->get('/')->getContent());
 
         foreach (['fa', 'fb', 'fc'] as $slug) {
             $this->createCompliantAreaPage(slug: 'fact-'.$slug);
@@ -129,7 +129,7 @@ class HomepageV2Test extends TestCase
         $this->createCompliantAreaPage(slug: 'fact-draft', status: PageStatus::Draft);
 
         $html = $this->get('/')->getContent();
-        $this->assertStringContainsString('مناطق التغطية</dt>', $html);
+        $this->assertStringContainsString('أحياء نركّز عليها</dt>', $html);
         $this->assertStringContainsString('3 أحياء', $html);
     }
 
