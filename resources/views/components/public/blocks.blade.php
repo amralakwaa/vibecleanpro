@@ -313,9 +313,9 @@
             @break
 
         @case('video')
-            {{-- Real field-work clips as evidence. Each card is a click-to-load
-                 facade (see x-public.video-evidence): only a lazy poster is in
-                 the DOM until the viewer presses play, so a video block never
+            {{-- Real field-work clips as evidence. Each card holds a preload="none"
+                 video behind a lazy poster (see x-public.video-evidence): nothing
+                 downloads until the viewer presses play, so a video block never
                  touches the page's critical path. --}}
             @php($clips = array_values(array_filter($block->data['items'] ?? [], fn ($clip) => filled($clip['slug'] ?? null))))
             @if ($clips !== [])

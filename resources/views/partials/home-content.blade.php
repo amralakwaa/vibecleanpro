@@ -214,7 +214,7 @@
     @endif
 
     {{-- ===== 3b. Video evidence - the branded team at work. Performance-safe:
-         posters are lazy and the <video> only enters the DOM on click, so this
+         posters are lazy and each <video> is preload="none" until played, so this
          section adds zero video bytes to initial load (see x-public.video-evidence). --}}
     <section class="surface-tint relative" aria-labelledby="home-videos">
         <x-public.container width="wide" class="py-16 md:py-24">
