@@ -45,8 +45,12 @@ class BlogIndexTest extends TestCase
         $this->createPublishedArticle('featured-article', 'مقال فريد للاختبار');
 
         $html = $this->get('/blog')->getContent();
+        // The ItemList JSON-LD names every listed article for search
+        // engines; "not duplicated" is about what the visitor sees.
+        $visible = preg_replace('#<script type="application/ld\+json">.*?</script>#s', '', $html);
 
-        $this->assertSame(1, substr_count($html, 'مقال فريد للاختبار'));
+        $this->assertSame(1, substr_count($visible, 'مقال فريد للاختبار'));
+        $this->assertStringContainsString('"@type":"ItemList"', $html);
     }
 
     public function test_the_index_shows_an_empty_state_when_no_articles_are_published(): void
