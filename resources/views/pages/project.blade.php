@@ -282,7 +282,12 @@
                 <div class="max-w-2xl reveal">
                     <p class="text-sm font-medium tracking-wide text-primary-700">الدليل</p>
                     <h2 id="project-evidence" class="mt-2 font-display text-3xl md:text-5xl md:leading-[1.1] font-medium tracking-tight text-ink-950 text-balance">
-                        ما تم قبل العمل، وأثناءه، وبعده
+                        {{ match (true) {
+                            $beforeImages->isNotEmpty() && $afterImages->isNotEmpty() => 'ما تم قبل العمل، وأثناءه، وبعده',
+                            $beforeImages->isNotEmpty() => 'الموقع قبل العمل وأثناءه',
+                            $afterImages->isNotEmpty() => 'العمل أثناء التنفيذ وبعده',
+                            default => 'صور من الموقع أثناء العمل',
+                        } }}
                     </h2>
                 </div>
 

@@ -92,6 +92,7 @@ class StructuredDataGenerator
             ...$this->reviewer($page),
             // A service page is about its Service node; say so in the graph.
             ...($page->type === PageType::Service && $page->pageable instanceof Service ? ['mainEntity' => ['@id' => $url.'#service']] : []),
+            ...($page->type === PageType::Project && $page->pageable instanceof Project ? ['mainEntity' => ['@id' => $url.'#project']] : []),
         ]];
 
         $blocks[] = $this->breadcrumbList($page);
@@ -601,6 +602,7 @@ class StructuredDataGenerator
             ->filter(fn (Service $service) => $service->page !== null)
             ->map(fn (Service $service) => [
                 '@type' => 'Service',
+                '@id' => $this->canonical->resolve($service->page).'#service',
                 'name' => $service->name,
                 'url' => $this->canonical->resolve($service->page),
             ])
@@ -628,12 +630,14 @@ class StructuredDataGenerator
         return array_filter([
             '@context' => 'https://schema.org',
             '@type' => 'CreativeWork',
+            '@id' => $this->canonical->resolve($page).'#project',
             'name' => $page->title,
             'url' => $this->canonical->resolve($page),
             'dateCreated' => $project->completed_at?->toDateString(),
             'about' => $services,
             'contentLocation' => $location,
             'image' => $photos,
+            'creator' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],
             'publisher' => ['@id' => $this->urlResolver->absoluteUrl('/').'#business'],
         ]);
     }

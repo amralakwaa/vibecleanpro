@@ -225,9 +225,9 @@
             </div>
             <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
                 <x-public.video-evidence slug="team" caption="فريق فايب كلين برو بالزيّ الموحّد" />
-                <x-public.video-evidence slug="glass-height-01" caption="تنظيف واجهة زجاجية مرتفعة" />
+                <x-public.video-evidence slug="glass-height-01" caption="تنظيف جدار زجاجي مرتفع" />
                 <x-public.video-evidence slug="courtyard-scrub" caption="فرك وغسيل أرضيات خارجية" />
-                <x-public.video-evidence slug="post-construction-vacuum" caption="شفط المياه بعد الغسيل العميق" />
+                <x-public.video-evidence slug="post-construction-vacuum" caption="شفط المياه والمخلفات بعد الغسيل العميق" />
             </div>
         </x-public.container>
     </section>
