@@ -272,28 +272,41 @@
             </div>
         </div>
 
-        {{-- Bottom bar --}}
-        <div class="mt-12 pt-6 border-t border-white/[0.07] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-400">
-            <p>
-                &copy; {{ now()->year }} {{ $businessProfile?->displayName() ?: config('app.name') }}. جميع الحقوق محفوظة.
-                @if ($registration = $businessProfile?->publicCommercialRegistration())
-                    <span class="ms-2">السجل التجاري: <span dir="ltr">{{ $registration }}</span></span>
-                @endif
-            </p>
-
-            {{-- The trust hub joins the legal row, so every policy is still
-                 reachable from every page - through one link instead of the
-                 five that used to sit in their own column. --}}
-            @if ($legalLinks || $trustLinks)
-                <ul class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        {{-- Bottom bar, centred on every screen like the credit line below
+             it: the trust and policy links first (dot-separated, 44px tap
+             rows on phones), then the copyright and the commercial
+             registration - one line on wide screens, two on a phone. The
+             trust hub joins the legal row, so every policy is reachable
+             from every page through one link. --}}
+        <div class="mt-12 pt-6 border-t border-white/[0.07] flex flex-col items-center gap-3 text-center text-xs text-ink-400">
+            @if ($legalLinks)
+                <ul class="flex flex-wrap items-center justify-center gap-x-2 text-ink-300">
                     @foreach ($legalLinks as $label => $url)
-                        <li><a href="{{ $url }}" class="inline-flex min-h-11 lg:min-h-0 items-center hover:text-white transition-colors">{{ $label }}</a></li>
-                    @endforeach
-                    @foreach ($trustLinks as $label => $url)
-                        <li><a href="{{ $url }}" class="inline-flex min-h-11 lg:min-h-0 items-center hover:text-white transition-colors">{{ $label }}</a></li>
+                        <li class="flex items-center gap-x-2">
+                            @unless ($loop->first)
+                                <span aria-hidden="true" class="text-white/20">·</span>
+                            @endunless
+                            <a href="{{ $url }}" class="inline-flex min-h-11 lg:min-h-0 items-center hover:text-white transition-colors">{{ $label }}</a>
+                        </li>
                     @endforeach
                 </ul>
             @endif
+            {{-- The trust hub gathers every policy, so it gets its own line
+                 instead of wrapping onto one with a stray separator. --}}
+            @foreach ($trustLinks as $label => $url)
+                <a href="{{ $url }}" class="inline-flex min-h-11 lg:min-h-0 items-center gap-1.5 font-semibold text-ink-200 hover:text-white transition-colors">
+                    <x-public.icon name="shield-check" class="w-4 h-4 text-primary-400" />
+                    {{ $label }}
+                </a>
+            @endforeach
+
+            <p class="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 leading-relaxed">
+                <span>&copy; {{ now()->year }} {{ $businessProfile?->displayName() ?: config('app.name') }}. جميع الحقوق محفوظة.</span>
+                @if ($registration = $businessProfile?->publicCommercialRegistration())
+                    <span aria-hidden="true" class="hidden sm:inline text-white/20">·</span>
+                    <span>السجل التجاري: <span dir="ltr" class="tabular-nums">{{ $registration }}</span></span>
+                @endif
+            </p>
         </div>
 
         @if (filled($businessProfile?->credit_name))
