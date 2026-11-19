@@ -16,7 +16,9 @@
  * - Prices live on the Service record (admin-managed), never in this copy.
  *   Owner decision 2026-11-18: starting prices set just under the
  *   competitor's published ones, shown as approximate with the final price
- *   after the survey; metal facades stay quote-only.
+ *   after the survey. Metal facades were quote-only until 2026-11-19, when
+ *   the owner asked for an approximate price: starting from 150 SAR
+ *   (minimum order, between stone at 140 and cladding at 375).
  * - Repairs, painting, re-sealing, rust treatment and machinery servicing
  *   are named as out of scope; we report what we see and nothing more.
  * - The only warranty is the 24-hour re-clean on /warranty.
