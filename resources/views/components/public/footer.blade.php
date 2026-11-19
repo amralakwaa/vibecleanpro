@@ -138,6 +138,10 @@
             white-space: nowrap;
         }
         .leaflet-vcp-tooltip::before { display: none; }
+        @media (max-width: 1023.98px) {
+            .ft-group:not(.is-open) .ft-list { display: none; }
+            .ft-group .ft-list { padding-top: .5rem; padding-bottom: .5rem; }
+        }
     </style>
 
     @php
@@ -185,42 +189,30 @@
         {{-- Divider --}}
         <div class="h-px bg-gradient-to-l from-transparent via-white/15 to-transparent mb-10" aria-hidden="true"></div>
 
-        {{-- Links grid --}}
-        {{-- Below md every group spans the width and lays its links out in two
-             columns: the list is half as tall on a phone and each link keeps a
-             44px tap height; from lg the columns sit side by side, compact. --}}
-        <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-            @if ($navItems)
-                <div>
-                    <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">روابط سريعة</p>
-                    <ul class="grid grid-cols-2 gap-x-4 md:block text-sm">
-                        @foreach ($navItems as $label => $url)
-                            <li>
-                                <a href="{{ $url }}" class="flex min-h-11 lg:min-h-0 lg:pt-2 items-center gap-1.5 leading-snug text-ink-200 hover:text-white hover:translate-x-[-2px] transition-all duration-150">
-                                    <span class="w-1 h-1 rounded-full bg-primary-500/60 shrink-0"></span>
-                                    {{ $label }}
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            {{-- Services, where the five-link policy column used to be. A
-                 cleaning company's footer should name what it cleans; the
-                 policies are one click away through the trust hub in the
-                 legal row below. --}}
-            {{-- Grouped as category => [name => url]; a flat [name => url]
-                 list still renders as one "خدماتنا" column. --}}
-            @php
-                $serviceGroups = collect($serviceLinks)->every(fn ($value) => is_array($value))
-                    ? $serviceLinks
-                    : ($serviceLinks ? ['خدماتنا' => $serviceLinks] : []);
-            @endphp
-            @foreach ($serviceGroups as $groupLabel => $groupLinks)
-                <div>
-                    <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">{{ $groupLabel }}</p>
-                    <ul class="grid grid-cols-2 gap-x-4 md:block text-sm">
+        {{-- Links grid. Below lg each link group is a collapsible panel: the
+             heading is a button that opens a two-column list with 44px tap
+             rows, so the phone footer is a few lines tall until the visitor
+             asks for more. The links are always in the HTML (only hidden by
+             CSS), so search engines read every one of them. From lg the
+             groups sit side by side as compact open columns. --}}
+        @php
+            // Services grouped as category => [name => url]; a flat
+            // [name => url] list still renders as one "خدماتنا" group.
+            $serviceGroups = collect($serviceLinks)->every(fn ($value) => is_array($value))
+                ? $serviceLinks
+                : ($serviceLinks ? ['خدماتنا' => $serviceLinks] : []);
+            $linkGroups = array_filter(['روابط سريعة' => $navItems] + $serviceGroups);
+        @endphp
+        <div class="grid gap-y-1 md:gap-10 md:grid-cols-2 lg:grid-cols-4">
+            @foreach ($linkGroups as $groupLabel => $groupLinks)
+                <div class="ft-group" x-data="{ open: false }" :class="open && 'is-open'">
+                    <button type="button" class="lg:hidden flex w-full items-center justify-between min-h-11 text-start text-sm font-semibold text-white border-b border-white/[0.07]"
+                        @click="open = ! open" :aria-expanded="open.toString()" aria-controls="footer-group-{{ $loop->index }}">
+                        {{ $groupLabel }}
+                        <x-public.icon name="chevron-down" class="w-4 h-4 text-ink-400 transition-transform" ::class="open && 'rotate-180'" />
+                    </button>
+                    <p class="hidden lg:block text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">{{ $groupLabel }}</p>
+                    <ul id="footer-group-{{ $loop->index }}" class="ft-list grid grid-cols-2 gap-x-4 md:block text-sm">
                         @foreach ($groupLinks as $label => $url)
                             <li>
                                 <a href="{{ $url }}" class="flex min-h-11 lg:min-h-0 lg:pt-2 items-center gap-1.5 leading-snug text-ink-200 hover:text-white hover:translate-x-[-2px] transition-all duration-150">
@@ -233,7 +225,7 @@
                 </div>
             @endforeach
 
-            <div>
+            <div class="mt-8 md:mt-0">
                 <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">تواصل معنا</p>
                 <ul class="space-y-3 text-sm">
                     @if ($phoneUrl && $businessProfile?->phone)
