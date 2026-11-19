@@ -1,58 +1,114 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div dir="rtl">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# فايب كلين برو | Vibe Clean Pro
 
-## About Laravel
+**الموقع الرسمي لشركة [فايب كلين برو](https://vibecleanpro.com/)، شركة تنظيف في الرياض.** تقدّم الشركة تنظيف المنازل والفلل والشقق والمكاتب، وتنظيف واجهات المباني بالرافعات والحبال، وتنظيف المنشآت والمستودعات والمصانع.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+هذا المستودع هو الكود الكامل للموقع: واجهة عربية بالكامل من اليمين لليسار ومصمّمة للجوال أولًا، ولوحة تحكم يدير منها فريق الشركة الخدمات والأحياء والمشاريع والمقالات والعروض دون كتابة كود.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+🌐 **الموقع:** [vibecleanpro.com](https://vibecleanpro.com/)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+</div>
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## روابط الموقع | Live site
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+<div dir="rtl">
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+| القسم | الرابط |
+| --- | --- |
+| الصفحة الرئيسية | [شركة تنظيف بالرياض](https://vibecleanpro.com/) |
+| جميع الخدمات | [خدمات التنظيف في الرياض](https://vibecleanpro.com/services) |
+| تنظيف الواجهات | [شركة تنظيف واجهات بالرياض](https://vibecleanpro.com/services/facade-cleaning) |
+| تنظيف المنازل | [تنظيف المنازل بالرياض](https://vibecleanpro.com/services/home-cleaning) |
+| تنظيف الفلل | [تنظيف الفلل بالرياض](https://vibecleanpro.com/services/villa-cleaning) |
+| تنظيف المكاتب | [تنظيف المكاتب والشركات](https://vibecleanpro.com/services/office-cleaning) |
+| ما بعد البناء | [تنظيف ما بعد البناء والتشطيب](https://vibecleanpro.com/services/post-construction-cleaning) |
+| تنظيف الخزانات | [تنظيف خزانات المياه](https://vibecleanpro.com/services/water-tank-cleaning) |
+| مناطق الخدمة | [أحياء الرياض التي نخدمها](https://vibecleanpro.com/areas) |
+| أعمالنا | [مشاريع موثّقة بالصور](https://vibecleanpro.com/projects) |
+| المدونة | [أدلة التنظيف والأسعار](https://vibecleanpro.com/blog) |
+| من نحن | [عن فايب كلين برو](https://vibecleanpro.com/about) |
+| مركز الثقة | [الضمان والسياسات](https://vibecleanpro.com/trust) |
 
-## Agentic Development
+</div>
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
+
+## ماذا يحتوي المشروع؟ | What's inside
+
+<div dir="rtl">
+
+### للزائر (الواجهة العامة)
+- **صفحات خدمات** لكل خدمة: السعر التقريبي «يبدأ من» عندما تحدده الإدارة، وطريقة العمل، وصور حقيقية من أعمال الشركة، وأسئلة شائعة، وآراء عملاء.
+- **صفحات أحياء** لا تُنشر إلا إذا كان فيها محتوى مختلف وأعمال حقيقية في الحي، فلا توجد صفحات مكررة تتبدّل فيها أسماء الأحياء فقط.
+- **صفحات مشاريع (دراسات حالة)** بصور قبل العمل وأثناءه وبعده، مرتبطة بالخدمة والحي.
+- **مدونة** بأدلة عملية عن التنظيف والأسعار.
+- **تواصل مباشر:** واتساب برسالة جاهزة لكل خدمة، واتصال مباشر، ونموذج عرض سعر مكتوب، وشريط ثابت لأزرار التواصل على الجوال.
+- **مركز ثقة** يجمع الضمان والشروط والخصوصية ومعايير العمل.
+
+### لفريق الشركة (لوحة التحكم)
+- لوحة تحكم مبنية بـ Filament لإدارة: الخدمات وتصنيفاتها، والأحياء ومجموعاتها، والمشاريع، والمقالات، والعروض، والأسئلة الشائعة، وآراء العملاء، والفريق، والوسائط، والطلبات، والتحويلات (Redirects)، والصلاحيات.
+- **بوابة نشر (Publishing Gate):** ترفض نشر صفحة ناقصة، مثل صفحة بلا محتوى كافٍ، أو بصور غير معتمدة، أو بمشروع لم يؤكده المالك.
+- مكتبة وسائط تولّد نسخًا بأحجام متعددة وبصيغة WebP، وتفصل بين الصور الحقيقية والصور التوضيحية.
+
+### السيو المحلي والبحث بالذكاء الاصطناعي
+- عنوان ووصف و Canonical ووسوم Open Graph لكل صفحة، تُدار من لوحة التحكم.
+- بيانات منظمة (JSON-LD) مرتبطة ببعضها: LocalBusiness وService وCreativeWork للمشاريع وArticle وBreadcrumbList وVideoObject.
+- خريطة موقع XML تتولد تلقائيًا، وملف `llms.txt` لمحركات الذكاء الاصطناعي.
+- محلّل روابط داخلية يكشف الصفحات اليتيمة والروابط المكسورة، وخريطة علاقات بين الخدمات توزّع الروابط بينها.
+- أوامر تدقيق سيو من سطر الأوامر: `seo:audit` و`seo:check-links`، وتقارير جاهزية الأحياء والمشاريع.
+
+### الأداء والجودة
+- تخزين مؤقت للصفحات العامة، وتحميل كسول للصور والفيديو والخريطة.
+- أكثر من 850 اختبارًا آليًا (PHPUnit) تغطي الصفحات والسيو والنشر والصلاحيات.
+- نسخ احتياطي مجدول لقاعدة البيانات.
+
+</div>
+
+## التقنيات | Tech stack
+
+| | |
+| --- | --- |
+| Backend | PHP 8.4, Laravel 13 |
+| Admin panel | Filament 5, Livewire 4, spatie/laravel-permission |
+| Frontend | Blade, Tailwind CSS 4, Alpine.js, Vite |
+| Database | MySQL |
+| Testing | PHPUnit, Laravel Pint |
+
+## التشغيل محليًا | Local setup
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/amralakwaa/vibecleanpro.git
+cd vibecleanpro
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+npm run build
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+لتشغيل الاختبارات:
 
-## Contributing
+```bash
+php artisan test --compact
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+<div dir="rtl">
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## المطوّر | Developer
 
-## Security Vulnerabilities
+صمّم الموقع وطوّره **عمر بلال الأكوع** ([@amralakwaa](https://github.com/amralakwaa)): الواجهة ولوحة التحكم والبنية التقنية والسيو المحلي.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+هل تحتاج موقعًا بهذا المستوى لشركتك؟ تواصل معي عبر [GitHub](https://github.com/amralakwaa).
 
-## License
+## الحقوق
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+© فايب كلين برو. جميع الحقوق محفوظة. محتوى الموقع وصوره وعلامته التجارية ملك للشركة، ولا يُسمح بإعادة استخدامها.
+
+</div>
