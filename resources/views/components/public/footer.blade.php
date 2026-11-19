@@ -186,14 +186,17 @@
         <div class="h-px bg-gradient-to-l from-transparent via-white/15 to-transparent mb-10" aria-hidden="true"></div>
 
         {{-- Links grid --}}
-        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        {{-- Below md every group spans the width and lays its links out in two
+             columns: the list is half as tall on a phone and each link keeps a
+             44px tap height; from lg the columns sit side by side, compact. --}}
+        <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
             @if ($navItems)
                 <div>
                     <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">روابط سريعة</p>
-                    <ul class="space-y-2.5 text-sm">
+                    <ul class="grid grid-cols-2 gap-x-4 md:block text-sm">
                         @foreach ($navItems as $label => $url)
                             <li>
-                                <a href="{{ $url }}" class="inline-flex items-center gap-1.5 text-ink-200 hover:text-white hover:translate-x-[-2px] transition-all duration-150">
+                                <a href="{{ $url }}" class="flex min-h-11 lg:min-h-0 lg:pt-2 items-center gap-1.5 leading-snug text-ink-200 hover:text-white hover:translate-x-[-2px] transition-all duration-150">
                                     <span class="w-1 h-1 rounded-full bg-primary-500/60 shrink-0"></span>
                                     {{ $label }}
                                 </a>
@@ -217,10 +220,10 @@
             @foreach ($serviceGroups as $groupLabel => $groupLinks)
                 <div>
                     <p class="text-[0.7rem] font-semibold tracking-widest text-ink-400 uppercase mb-4">{{ $groupLabel }}</p>
-                    <ul class="space-y-2.5 text-sm">
+                    <ul class="grid grid-cols-2 gap-x-4 md:block text-sm">
                         @foreach ($groupLinks as $label => $url)
                             <li>
-                                <a href="{{ $url }}" class="inline-flex items-center gap-1.5 text-ink-200 hover:text-white hover:translate-x-[-2px] transition-all duration-150">
+                                <a href="{{ $url }}" class="flex min-h-11 lg:min-h-0 lg:pt-2 items-center gap-1.5 leading-snug text-ink-200 hover:text-white hover:translate-x-[-2px] transition-all duration-150">
                                     <span class="w-1 h-1 rounded-full bg-primary-500/60 shrink-0"></span>
                                     {{ $label }}
                                 </a>
@@ -292,10 +295,10 @@
             @if ($legalLinks || $trustLinks)
                 <ul class="flex flex-wrap items-center gap-x-4 gap-y-2">
                     @foreach ($legalLinks as $label => $url)
-                        <li><a href="{{ $url }}" class="hover:text-white transition-colors">{{ $label }}</a></li>
+                        <li><a href="{{ $url }}" class="inline-flex min-h-11 lg:min-h-0 items-center hover:text-white transition-colors">{{ $label }}</a></li>
                     @endforeach
                     @foreach ($trustLinks as $label => $url)
-                        <li><a href="{{ $url }}" class="hover:text-white transition-colors">{{ $label }}</a></li>
+                        <li><a href="{{ $url }}" class="inline-flex min-h-11 lg:min-h-0 items-center hover:text-white transition-colors">{{ $label }}</a></li>
                     @endforeach
                 </ul>
             @endif
